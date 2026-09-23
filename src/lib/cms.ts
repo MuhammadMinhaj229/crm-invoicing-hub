@@ -388,10 +388,10 @@ export const SECTION_DEFS: SectionDef[] = [
     defaults: {
       tagline: "We help Gulf families take care of their people back home in India.",
       links: [
-        cta("Services", "#services"),
-        cta("How it works", "#how-it-works"),
-        cta("FAQ", "#faq"),
-        cta("Contact", "#contact"),
+        cta("Services", "/services"),
+        cta("How it works", "/about"),
+        cta("Questions", "/faq"),
+        cta("Talk to us", "/contact"),
       ],
       legal: "© SAFAR N MANZIL. All rights reserved.",
       crmLabel: "Team login",
