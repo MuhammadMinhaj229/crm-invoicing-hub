@@ -326,7 +326,7 @@ function BuilderPage() {
       <div className="flex min-h-0 flex-1">
         {/* Layers */}
         {!preview && (
-          <aside className="hidden w-60 shrink-0 overflow-y-auto border-r border-border bg-card p-3 lg:block">
+          <aside className="hidden w-56 shrink-0 overflow-y-auto border-r border-border bg-card p-3 xl:block">
             <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">Sections (drag to reorder)</p>
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
               <SortableContext items={doc.blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
@@ -345,7 +345,7 @@ function BuilderPage() {
 
         {/* Canvas */}
         <div className="min-w-0 flex-1 overflow-y-auto bg-muted/60 p-4" onClick={() => setSelected(null)}>
-          <div className="mx-auto overflow-hidden rounded-xl bg-background shadow-lg transition-[width]" style={{ width: DEVICES[device], maxWidth: "100%" }}>
+          <div className="@container mx-auto overflow-hidden rounded-xl bg-background shadow-lg transition-[width]" style={{ width: DEVICES[device], maxWidth: "100%" }}>
             <EditProvider value={editApi}>
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
                 <SortableContext items={doc.blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
@@ -383,7 +383,7 @@ function BuilderPage() {
 
         {/* Settings */}
         {!preview && (
-          <aside className="hidden w-80 shrink-0 overflow-y-auto border-l border-border bg-card p-4 md:block">
+          <aside className="hidden w-72 shrink-0 overflow-y-auto border-l border-border bg-card p-4 md:block">
             {selectedBlock ? (
               <BlockSettings block={selectedBlock} onChange={(nb) => updateBlock(nb.id, () => nb)} />
             ) : (

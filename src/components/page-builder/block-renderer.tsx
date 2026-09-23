@@ -159,7 +159,7 @@ function Frame({ block, children }: { block: Block; children: ReactNode }) {
     <section
       id={block.anchor || undefined}
       style={style}
-      className={cn(BG[l.background], l.hideMobile && "max-md:hidden", l.hideDesktop && "md:hidden")}
+      className={cn(BG[l.background], l.hideMobile && "@max-3xl:hidden", l.hideDesktop && "@3xl:hidden")}
     >
       <div
         className={cn(
@@ -255,14 +255,14 @@ function BlockBody({ block }: { block: Block }) {
       const p = block.props;
       const Title = block.type === "hero" ? "h1" : "h2";
       return (
-        <div className={cn("grid items-center gap-10 md:grid-cols-2", p.imageSide === "left" && "md:[&>*:first-child]:order-2")}>
+        <div className={cn("grid items-center gap-10 @3xl:grid-cols-2", p.imageSide === "left" && "@3xl:[&>*:first-child]:order-2")}>
           <div>
             <Editable as="p" path="eyebrow" value={p.eyebrow} className="mb-3 block text-sm font-bold uppercase tracking-wider text-primary" placeholder="Small line" />
             <Editable
               as={Title}
               path="title"
               value={p.title}
-              className={cn("block font-display font-bold leading-tight", block.type === "hero" ? "text-4xl md:text-6xl" : "text-3xl md:text-4xl")}
+              className={cn("block font-display font-bold leading-tight", block.type === "hero" ? "text-4xl @3xl:text-6xl" : "text-3xl @3xl:text-4xl")}
             />
             <Editable as="p" multiline path="text" value={p.text} className="mt-4 block text-lg opacity-80" />
             <Buttons items={p.buttons} basePath="buttons" align={align} />
@@ -273,7 +273,7 @@ function BlockBody({ block }: { block: Block }) {
     }
     case "heading": {
       const p = block.props;
-      const size = p.level === "h1" ? "text-4xl md:text-5xl" : p.level === "h2" ? "text-3xl md:text-4xl" : "text-2xl";
+      const size = p.level === "h1" ? "text-4xl @3xl:text-5xl" : p.level === "h2" ? "text-3xl @3xl:text-4xl" : "text-2xl";
       return (
         <div>
           <Editable as="p" path="eyebrow" value={p.eyebrow} className="mb-2 block text-sm font-bold uppercase tracking-wider text-primary" placeholder="Small line" />
@@ -294,10 +294,10 @@ function BlockBody({ block }: { block: Block }) {
       return <Buttons items={block.props.items} basePath="items" align={align} />;
     case "cards": {
       const p = block.props;
-      const cols = { 1: "md:grid-cols-1", 2: "md:grid-cols-2", 3: "md:grid-cols-3", 4: "md:grid-cols-4" }[p.columns];
+      const cols = { 1: "@3xl:grid-cols-1", 2: "@3xl:grid-cols-2", 3: "@3xl:grid-cols-3", 4: "@3xl:grid-cols-4" }[p.columns];
       return (
         <div>
-          <Editable as="h2" path="title" value={p.title} className="block font-display text-3xl font-bold md:text-4xl" placeholder="Section title" />
+          <Editable as="h2" path="title" value={p.title} className="block font-display text-3xl font-bold @3xl:text-4xl" placeholder="Section title" />
           <Editable as="p" multiline path="subtitle" value={p.subtitle} className="mt-3 block max-w-2xl text-lg opacity-80" placeholder="Subtitle" />
           <div className={cn("mt-8 grid gap-5 text-left", cols)}>
             {p.items.map((c, i) => {
@@ -388,12 +388,12 @@ export function RenderBlock({ block }: { block: Block }) {
 
 export function BlockRenderer({ blocks }: { blocks: Block[] }) {
   return (
-    <>
+    <div className="@container">
       {blocks
         .filter((b) => !b.hidden && b.type !== "navigation")
         .map((b) => (
           <RenderBlock key={b.id} block={b} />
         ))}
-    </>
+    </div>
   );
 }
