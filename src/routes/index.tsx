@@ -213,8 +213,9 @@ function ContactForm({ whatsapp, email }: { whatsapp: string; email: string }) {
 }
 
 function LandingPage() {
-  useThemeSync();
   const { settings } = useWorkspaceSettings();
+  useThemeSync(settings);
+
   const fallback = useMemo(() => defaultSections(), []);
   const { data: sections = fallback } = useQuery({
     queryKey: ["cms-published"],
