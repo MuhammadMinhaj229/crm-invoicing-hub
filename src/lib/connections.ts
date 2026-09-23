@@ -176,9 +176,12 @@ export function removeIntegrationValues(id: string): void {
 
 export function isIntegrationConfigured(definition: IntegrationDefinition): boolean {
   const values = getIntegrationValues(definition.id);
-  return definition.fields
-    .filter((field) => !field.optional)
-    .every((field) => Boolean(values[field.key]?.trim()));
+  const required = definition.fields.filter((field) => !field.optional);
+  const requiredOk = required.every((field) => Boolean(values[field.key]?.trim()));
+  // An integration whose fields are all optional (e.g. finance) still
+  // needs at least one value filled before it counts as configured.
+  const anyFilled = definition.fields.some((field) => Boolean(values[field.key]?.trim()));
+  return requiredOk && anyFilled;
 }
 
 /** Generic reachability probe for non-database integrations. */
