@@ -17,8 +17,8 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-script: "Dancing Script", "Segoe Script", cursive;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -53,20 +53,27 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-legacy-coral: var(--legacy-coral);
+  --color-legacy-peach: var(--legacy-peach);
+  --color-legacy-warm: var(--legacy-warm);
+  --color-legacy-light: var(--legacy-light);
+  --color-legacy-teal: var(--legacy-teal);
+  --color-legacy-deep: var(--legacy-deep);
+  --color-legacy-ink: var(--legacy-ink);
 }
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.984 0.006 75);
-  --foreground: oklch(0.27 0.045 258);
+  --background: oklch(0.975 0.008 84);
+  --foreground: oklch(0.245 0.04 184);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.27 0.045 258);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.27 0.045 258);
-  --primary: oklch(0.76 0.14 42);
-  --primary-foreground: oklch(0.25 0.045 258);
-  --secondary: oklch(0.85 0.085 50);
-  --secondary-foreground: oklch(0.25 0.045 258);
+  --primary: oklch(0.725 0.165 37);
+  --primary-foreground: oklch(0.235 0.04 184);
+  --secondary: oklch(0.875 0.08 45);
+  --secondary-foreground: oklch(0.245 0.04 184);
   --muted: oklch(0.955 0.018 72);
   --muted-foreground: oklch(0.5 0.03 260);
   --accent: oklch(0.91 0.055 52);
@@ -75,7 +82,14 @@
   --destructive-foreground: oklch(0.985 0.005 75);
   --border: oklch(0.915 0.02 68);
   --input: oklch(0.915 0.02 68);
-  --ring: oklch(0.76 0.14 42);
+  --ring: oklch(0.49 0.09 181);
+  --legacy-coral: oklch(0.725 0.165 37);
+  --legacy-peach: oklch(0.875 0.08 45);
+  --legacy-warm: oklch(0.975 0.008 84);
+  --legacy-light: oklch(0.99 0.004 84);
+  --legacy-teal: oklch(0.49 0.09 181);
+  --legacy-deep: oklch(0.18 0.035 181);
+  --legacy-ink: oklch(0.245 0.04 184);
   --chart-1: oklch(0.762 0.128 49.5);
   --chart-2: oklch(0.65 0.12 200);
   --chart-3: oklch(0.45 0.08 258);
@@ -190,6 +204,39 @@ html {
   0%, 13% { opacity: 0; transform: translateY(100%); }
   17%, 29% { opacity: 1; transform: translateY(0); }
   33%, 100% { opacity: 0; transform: translateY(-100%); }
+}
+
+@keyframes legacy-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -0.75rem, 0); }
+}
+
+.legacy-float {
+  animation: legacy-float 8s ease-in-out infinite;
+}
+
+.legacy-grid {
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--legacy-light) 45%, transparent) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+
+.approval-sheet {
+  background-image: linear-gradient(90deg, transparent 0, transparent 2.2rem, color-mix(in oklab, var(--legacy-coral) 22%, transparent) 2.2rem, color-mix(in oklab, var(--legacy-coral) 22%, transparent) calc(2.2rem + 1px), transparent calc(2.2rem + 1px));
+}
+
+.legacy-hero header {
+  background: color-mix(in oklab, var(--legacy-deep) 90%, transparent);
+  color: var(--legacy-light);
+  backdrop-filter: blur(20px);
+}
+
+.legacy-hero header > div:last-of-type {
+  border-color: color-mix(in oklab, var(--legacy-light) 14%, transparent);
+}
+
+.legacy-hero header nav a,
+.legacy-hero header > div:last-of-type > a {
+  color: var(--legacy-light);
 }
 
 .utility-carousel {

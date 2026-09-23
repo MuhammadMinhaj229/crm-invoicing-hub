@@ -73,7 +73,7 @@ export interface WorkspaceSettings {
 
 export const DEFAULT_SETTINGS: WorkspaceSettings = {
   branding: {
-    name: "SAFAR N MANZIL",
+    name: "Safar N manzil",
     tagline: "We do. We assist. We connect.",
     initial: "S",
     logoUrl: "",
@@ -81,11 +81,11 @@ export const DEFAULT_SETTINGS: WorkspaceSettings = {
     logoStyle: "lockup",
   },
   theme: {
-    primary: "#FF9B70",
-    secondary: "#FFC2A3",
-    accent: "#FFDCCB",
-    background: "#FFF8F3",
-    foreground: "#18294A",
+    primary: "#F98768",
+    secondary: "#FFD0BE",
+    accent: "#FFD0BE",
+    background: "#F8F6F1",
+    foreground: "#123B39",
     radius: 8,
     density: "comfortable",
     sidebarStyle: "warm",
