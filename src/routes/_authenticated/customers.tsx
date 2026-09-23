@@ -10,12 +10,16 @@ import { EmptyState } from "../../components/empty-state";
 import { useWorkspaceSettings } from "../../hooks/use-workspace-settings";
 import {
   buildRetention,
+  completeTask,
   convertLeadToContact,
+  createFollowUpTask,
   createLead,
   fetchContacts,
   fetchInvoices,
   fetchLeads,
   fetchRequests,
+  fetchTasks,
+  markReactivated,
   updateLeadStatus,
   type ContactRow,
   type LeadRow,
