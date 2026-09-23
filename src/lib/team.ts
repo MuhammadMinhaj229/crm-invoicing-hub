@@ -50,7 +50,7 @@ function normalize(value: unknown): TeamMember[] {
       id: String(row["id"] ?? crypto.randomUUID()),
       name: String(row["name"] ?? ""),
       email: String(row["email"] ?? "").trim().toLowerCase(),
-      role: row["role"] === "admin" ? "admin" : "member",
+      role: (row["role"] === "admin" ? "admin" : "member") as TeamMember["role"],
       sections: Array.isArray(row["sections"]) ? (row["sections"] as string[]).map(String) : [],
     }))
     .filter((member) => member.email.length > 0);
