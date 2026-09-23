@@ -178,3 +178,10 @@ html {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Ambient background drift: composited transform only, disabled by the
+   reduced-motion block above. */
+@keyframes ambient-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(3%, 4%, 0) scale(1.08); }
+}
