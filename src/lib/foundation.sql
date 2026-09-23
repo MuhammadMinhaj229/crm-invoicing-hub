@@ -642,3 +642,104 @@ begin
   create policy public_read_knowledge on public.knowledge_entries for select to anon using (is_public);
 exception when duplicate_object then null;
 end $$;
+
+-- ============================================================
+-- Phase D — Conversations, integrations, social and automation
+-- Additive only. Safe to run again.
+-- ============================================================
+
+create table if not exists public.conversations (
+  id uuid primary key default gen_random_uuid(),
+  channel text not null,                    -- whatsapp | instagram | facebook | email | web
+  account_id text,                          -- which connected account/number
+  external_id text,                         -- chat id at the provider
+  contact_id uuid references public.contacts(id) on delete set null,
+  lead_id uuid references public.leads(id) on delete set null,
+  display_name text,
+  phone text,
+  status text not null default 'open',      -- open | pending | closed
+  assigned_to uuid,
+  tags text[] not null default '{}',
+  service_interest text,
+  unread_count integer not null default 0,
+  last_message_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (channel, external_id)
+);
+create index if not exists conversations_last_message_idx on public.conversations (last_message_at desc);
+create index if not exists conversations_contact_idx on public.conversations (contact_id);
+
+create table if not exists public.messages (
+  id uuid primary key default gen_random_uuid(),
+  conversation_id uuid not null references public.conversations(id) on delete cascade,
+  direction text not null check (direction in ('in','out')),
+  channel text not null,
+  external_id text,
+  body text,
+  media_url text,
+  media_type text,
+  status text not null default 'sent',      -- queued | sent | delivered | read | failed
+  error text,
+  author text,
+  sent_at timestamptz not null default now(),
+  created_at timestamptz not null default now(),
+  unique (channel, external_id)
+);
+create index if not exists messages_conversation_idx on public.messages (conversation_id, sent_at);
+
+create table if not exists public.message_templates (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique,
+  channel text not null default 'whatsapp',
+  body text not null,
+  updated_at timestamptz not null default now()
+);
+
+-- Non-secret integration state. Secrets stay in server environment variables.
+create table if not exists public.integrations (
+  key text primary key,                     -- whatsapp_evolution | whatsapp_meta | instagram | facebook | gbp | linkedin | youtube
+  label text not null,
+  status text not null default 'not_connected', -- not_connected | connected | error
+  config jsonb not null default '{}',
+  last_checked_at timestamptz,
+  last_error text,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.social_posts (
+  id uuid primary key default gen_random_uuid(),
+  channel text not null,
+  account_key text,
+  body text not null,
+  media_url text,
+  scheduled_for timestamptz,
+  status text not null default 'draft',     -- draft | scheduled | published | failed
+  external_id text,
+  error text,
+  created_at timestamptz not null default now(),
+  published_at timestamptz
+);
+
+alter table public.leads add column if not exists score_reasons jsonb not null default '[]';
+alter table public.leads add column if not exists last_scored_at timestamptz;
+
+do $$
+declare t text;
+begin
+  foreach t in array array['conversations','messages','message_templates','integrations','social_posts'] loop
+    execute format('alter table public.%1$s enable row level security', t);
+    begin
+      execute format('create policy team_read_%1$s on public.%1$s for select to authenticated using (public.is_team(auth.uid()))', t);
+      execute format('create policy team_write_%1$s on public.%1$s for insert to authenticated with check (public.can_write(auth.uid()))', t);
+      execute format('create policy team_update_%1$s on public.%1$s for update to authenticated using (public.can_write(auth.uid()))', t);
+      execute format('create policy admin_delete_%1$s on public.%1$s for delete to authenticated using (public.has_role(auth.uid(), ''super_admin'') or public.has_role(auth.uid(), ''admin''))', t);
+    exception when duplicate_object then null;
+    end;
+  end loop;
+end $$;
+
+grant select, insert, update, delete on public.conversations, public.messages,
+  public.message_templates, public.integrations, public.social_posts to authenticated;
+grant all on public.conversations, public.messages, public.message_templates,
+  public.integrations, public.social_posts to service_role;
