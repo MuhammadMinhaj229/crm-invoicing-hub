@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { site } from "../content/site";
 import { fetchPublishedContent } from "../lib/cms";
 import type { ContactChannels } from "../types/site";
+import { useWorkspaceSettings } from "./use-workspace-settings";
 
 function str(source: Record<string, unknown> | undefined, key: string, fallback: string): string {
   const value = source?.[key];
@@ -15,6 +16,7 @@ function str(source: Record<string, unknown> | undefined, key: string, fallback:
  * still empty.
  */
 export function useSiteContact(): ContactChannels {
+  const { settings } = useWorkspaceSettings();
   const { data } = useQuery({
     queryKey: ["published-content"],
     queryFn: fetchPublishedContent,
@@ -22,10 +24,11 @@ export function useSiteContact(): ContactChannels {
   });
 
   const contact = data?.['contact'];
+  const configured = settings.publicContact;
   return {
-    whatsapp: str(contact, "whatsapp", site.contact.whatsapp),
-    phone: str(contact, "phone", site.contact.phone),
-    email: str(contact, "email", site.contact.email),
-    location: str(contact, "location", site.contact.location),
+    whatsapp: configured.whatsapp || str(contact, "whatsapp", site.contact.whatsapp),
+    phone: configured.phone || str(contact, "phone", site.contact.phone),
+    email: configured.email || str(contact, "email", site.contact.email),
+    location: configured.location || str(contact, "location", site.contact.location),
   };
 }

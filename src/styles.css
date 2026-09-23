@@ -230,7 +230,6 @@ html {
 @utility glass-nav {
   background: color-mix(in oklab, var(--legacy-light) 72%, transparent);
   backdrop-filter: blur(22px) saturate(1.5);
-  -webkit-backdrop-filter: blur(22px) saturate(1.5);
   border: 1px solid color-mix(in oklab, var(--legacy-ink) 8%, transparent);
   box-shadow: var(--shadow-soft);
 }
@@ -238,7 +237,6 @@ html {
 @utility glass-nav-dark {
   background: color-mix(in oklab, var(--legacy-deep) 62%, transparent);
   backdrop-filter: blur(22px) saturate(1.4);
-  -webkit-backdrop-filter: blur(22px) saturate(1.4);
   border: 1px solid color-mix(in oklab, var(--legacy-light) 14%, transparent);
   box-shadow: 0 24px 60px -30px oklch(0 0 0 / 0.55);
 }

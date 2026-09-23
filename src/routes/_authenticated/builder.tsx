@@ -667,6 +667,8 @@ function newItem(block: Block, key: string): Record<string, unknown> {
   if (key === "buttons" || (key === "items" && block.type === "buttons")) return { ...btn("New button", "/contact") };
   if (key === "links") return { id: uid(), label: "New link", href: "/" };
   if (block.type === "faq") return { id: uid(), question: "New question?", answer: "Answer." };
+  if (block.type === "storyCarousel") return { id: uid(), title: "New story", accent: "Highlighted line", text: "", image: "", imageAlt: "" };
+  if (block.type === "invoiceExample") return { id: uid(), title: "New line", text: "Explain what is shown" };
   return { id: uid(), title: "New card", text: "", image: "", href: "" };
 }
 

@@ -8,6 +8,8 @@ import { submitWebsiteEnquiry } from "../../lib/website-capture";
 import { track } from "../../lib/analytics";
 import type { Block, BlockLayout, ButtonItem } from "../../lib/page-builder/model";
 import { cn } from "../../lib/utils";
+import { StoryCarousel } from "../site/story-carousel";
+import { InvoiceExample } from "../site/invoice-example";
 
 /* ---------- editing context ---------- */
 
@@ -297,6 +299,14 @@ function BlockBody({ block }: { block: Block }) {
     case "proofReturn": {
       const p = block.props;
       return <div className="grid items-center gap-10 bg-legacy-deep px-5 py-16 text-legacy-light @3xl:grid-cols-2 @3xl:px-12"><Picture src={p.image} alt={p.imageAlt} className="max-h-[34rem] rounded-none object-contain" /><div><Editable as="p" path="eyebrow" value={p.eyebrow} className="block text-xs font-bold uppercase tracking-widest text-legacy-peach" /><Editable as="h2" path="title" value={p.title} className="mt-4 block font-display text-4xl font-semibold @3xl:text-6xl" /><Editable as="p" multiline path="text" value={p.text} className="mt-4 block text-legacy-light/65" /><div className="mt-7 divide-y divide-legacy-light/15 border-y border-legacy-light/15">{p.items.map((item, index) => <Editable key={item.id} as="p" path={`items.${index}.title`} value={item.title} className="block py-4" />)}</div></div></div>;
+    }
+    case "storyCarousel": {
+      const p = block.props;
+      return <StoryCarousel slides={p.items} editing={editing} />;
+    }
+    case "invoiceExample": {
+      const p = block.props;
+      return <InvoiceExample title={p.title} text={p.text} rows={p.items} />;
     }
     case "hero":
     case "imageText": {

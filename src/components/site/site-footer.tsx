@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { Lock } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Lock, Youtube, Globe2 } from "lucide-react";
 
 import type { SectionContent } from "../../lib/cms";
 import { BrandMark } from "../brand-mark";
+import { useWorkspaceSettings } from "../../hooks/use-workspace-settings";
+import { useSiteContact } from "../../hooks/use-site-contact";
 
 function str(content: SectionContent, key: string, fallback = ""): string {
   const value = content[key];
@@ -20,12 +22,15 @@ export function SiteFooter({
   brandName: string;
   logoStyle?: "lockup" | "image";
 }) {
+  const { settings } = useWorkspaceSettings();
+  const configuredContact = useSiteContact();
+  const SocialIcon = ({ platform }: { platform: string }) => platform === "instagram" ? <Instagram className="h-4 w-4" /> : platform === "facebook" ? <Facebook className="h-4 w-4" /> : platform === "linkedin" ? <Linkedin className="h-4 w-4" /> : platform === "youtube" ? <Youtube className="h-4 w-4" /> : <Globe2 className="h-4 w-4" />;
   const links = Array.isArray(footer['links'])
     ? (footer['links'] as { label?: string; href?: string }[])
     : [];
-  const whatsapp = str(contact, "whatsapp");
-  const email = str(contact, "email");
-  const phone = str(contact, "phone");
+  const whatsapp = configuredContact.whatsapp || str(contact, "whatsapp");
+  const email = configuredContact.email || str(contact, "email");
+  const phone = configuredContact.phone || str(contact, "phone");
 
   return (
     <footer className="bg-legacy-deep text-legacy-light">
@@ -92,6 +97,13 @@ export function SiteFooter({
               </li>
             ) : null}
           </ul>
+          {settings.socialLinks.some((item) => item.enabled && /^https:\/\//.test(item.url)) ? (
+            <div className="mt-6 flex flex-wrap gap-2" aria-label="Social profiles">
+              {settings.socialLinks.filter((item) => item.enabled && /^https:\/\//.test(item.url)).map((item) => (
+                <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer" aria-label={item.label} className="grid h-11 w-11 place-items-center rounded-full border border-legacy-light/15 text-legacy-light/75 transition hover:border-primary hover:text-primary"><SocialIcon platform={item.platform} /></a>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
 
