@@ -1089,6 +1089,7 @@ function SettingsPage() {
       {tab === "appearance" ? <AppearanceTab /> : null}
       {tab === "workspace" ? <WorkspaceTab /> : null}
       {tab === "rules" ? <BusinessRulesTab /> : null}
+      {tab === "scoring" ? <ScoringTab /> : null}
     </div>
   );
 }
