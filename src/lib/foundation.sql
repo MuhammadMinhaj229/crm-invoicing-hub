@@ -379,3 +379,266 @@ insert into public.organizations (slug, name) values
   ('safa-fresh', 'SAFA FRESH'),
   ('safa-foods', 'SAFA FOODS')
 on conflict (slug) do nothing;
+
+-- ============================================================
+-- VISITOR INTELLIGENCE, IDENTITY AND EVENT BACKBONE
+-- Safe to re-run. Adds website tracking and the customer journey.
+-- ============================================================
+
+-- Anonymous website visitor. Never holds personal information until
+-- the person identifies themselves through a form or a message.
+create table if not exists public.visitors (
+  id uuid primary key default gen_random_uuid(),
+  visitor_key text not null unique,      -- first-party id stored in the browser
+  contact_id uuid references public.contacts(id) on delete set null,
+  first_seen_at timestamptz not null default now(),
+  last_seen_at timestamptz not null default now(),
+  first_landing_page text,
+  first_referrer text,
+  first_utm_source text,
+  first_utm_medium text,
+  first_utm_campaign text,
+  session_count integer not null default 0,
+  event_count integer not null default 0
+);
+
+create table if not exists public.visitor_sessions (
+  id uuid primary key default gen_random_uuid(),
+  session_key text not null unique,
+  visitor_key text not null,
+  started_at timestamptz not null default now(),
+  last_event_at timestamptz not null default now(),
+  landing_page text,
+  referrer text,
+  utm_source text,
+  utm_medium text,
+  utm_campaign text,
+  utm_term text,
+  utm_content text,
+  device text,
+  browser text,
+  os text,
+  language text,
+  country text
+);
+
+-- One row per meaningful action on the public website.
+create table if not exists public.events (
+  id uuid primary key default gen_random_uuid(),
+  event_key text not null unique,        -- client generated; makes retries harmless
+  name text not null,                    -- page.viewed | service.viewed | whatsapp.clicked | ...
+  visitor_key text not null,
+  session_key text,
+  contact_id uuid references public.contacts(id) on delete set null,
+  lead_id uuid references public.leads(id) on delete set null,
+  route text,
+  page_title text,
+  properties jsonb not null default '{}',
+  occurred_at timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists events_visitor_idx on public.events (visitor_key, occurred_at desc);
+create index if not exists events_contact_idx on public.events (contact_id, occurred_at desc);
+create index if not exists events_name_idx on public.events (name, occurred_at desc);
+create index if not exists visitor_sessions_visitor_idx on public.visitor_sessions (visitor_key, started_at desc);
+
+-- Which anonymous device belongs to which known person, and why we believe it.
+create table if not exists public.identity_links (
+  id uuid primary key default gen_random_uuid(),
+  visitor_key text not null,
+  contact_id uuid not null references public.contacts(id) on delete cascade,
+  signal text not null,                  -- form | whatsapp | phone | email | manual
+  confidence text not null default 'confirmed', -- confirmed | probable
+  linked_at timestamptz not null default now(),
+  unique (visitor_key, contact_id)
+);
+
+-- Anything we are not sure about waits here for a human decision.
+create table if not exists public.identity_review_queue (
+  id uuid primary key default gen_random_uuid(),
+  visitor_key text,
+  candidate_contact_id uuid references public.contacts(id) on delete cascade,
+  reason text not null,
+  payload jsonb not null default '{}',
+  status text not null default 'open',   -- open | merged | dismissed
+  created_at timestamptz not null default now(),
+  resolved_at timestamptz,
+  resolved_by uuid references auth.users(id)
+);
+
+-- ---------- Marketing attribution ----------
+create table if not exists public.campaigns (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid references public.organizations(id),
+  name text not null,
+  utm_source text,
+  utm_medium text,
+  utm_campaign text unique,
+  channel text,
+  started_on date,
+  ended_on date,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.attribution_touches (
+  id uuid primary key default gen_random_uuid(),
+  visitor_key text,
+  contact_id uuid references public.contacts(id) on delete cascade,
+  lead_id uuid references public.leads(id) on delete cascade,
+  touch_type text not null,              -- first | latest | conversion
+  source text,
+  medium text,
+  campaign text,
+  landing_page text,
+  occurred_at timestamptz not null default now()
+);
+
+-- ---------- Lead history, scoring and feedback ----------
+create table if not exists public.lead_events (
+  id uuid primary key default gen_random_uuid(),
+  lead_id uuid not null references public.leads(id) on delete cascade,
+  kind text not null,                    -- status_changed | assigned | note | scored | contacted
+  detail text,
+  from_value text,
+  to_value text,
+  actor_id uuid references auth.users(id),
+  created_at timestamptz not null default now()
+);
+
+alter table public.leads add column if not exists visitor_key text;
+alter table public.leads add column if not exists score integer not null default 0;
+alter table public.leads add column if not exists score_updated_at timestamptz;
+alter table public.leads add column if not exists contact_id uuid references public.contacts(id) on delete set null;
+alter table public.leads add column if not exists consent_marketing boolean not null default false;
+
+create table if not exists public.feedback (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid references public.organizations(id),
+  contact_id uuid references public.contacts(id) on delete cascade,
+  service_request_id uuid references public.service_requests(id) on delete set null,
+  rating integer check (rating between 1 and 5),
+  comment text,
+  channel text not null default 'website',
+  status text not null default 'received', -- received | reviewed | actioned
+  created_at timestamptz not null default now()
+);
+
+-- ---------- Channels, automation and reliability ----------
+create table if not exists public.social_accounts (
+  id uuid primary key default gen_random_uuid(),
+  platform text not null,                -- instagram | facebook | google_business | linkedin | youtube
+  account_label text not null,
+  external_id text,
+  status text not null default 'disconnected',
+  config jsonb not null default '{}',    -- non-secret config only
+  last_ok_at timestamptz,
+  created_at timestamptz not null default now(),
+  unique (platform, account_label)
+);
+
+create table if not exists public.automations (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  trigger_event text not null,
+  conditions jsonb not null default '[]',
+  actions jsonb not null default '[]',
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.automation_runs (
+  id uuid primary key default gen_random_uuid(),
+  automation_id uuid references public.automations(id) on delete cascade,
+  event_key text,
+  status text not null,                  -- success | skipped | failed
+  detail text,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.webhook_events (
+  id uuid primary key default gen_random_uuid(),
+  provider text not null,
+  external_id text,
+  event_type text,
+  payload jsonb not null default '{}',
+  processing_status text not null default 'received', -- received | processed | failed
+  error text,
+  retry_count integer not null default 0,
+  received_at timestamptz not null default now(),
+  unique (provider, external_id)
+);
+
+create table if not exists public.notifications (
+  id uuid primary key default gen_random_uuid(),
+  kind text not null,                    -- high_priority_lead | sla_breach | automation_failed | integration_down
+  title text not null,
+  body text,
+  entity text,
+  entity_id uuid,
+  severity text not null default 'info', -- info | warning | critical
+  read_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+-- Single place for services, prices, areas, hours, FAQs and policies.
+create table if not exists public.knowledge_entries (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid references public.organizations(id),
+  category text not null,                -- service | price | area | hours | faq | policy | offer | brand
+  code text,
+  title text not null,
+  body text,
+  amount numeric(14,2),
+  currency text not null default 'INR',
+  metadata jsonb not null default '{}',
+  is_public boolean not null default false,
+  sort_order integer not null default 0,
+  updated_at timestamptz not null default now(),
+  unique (category, code)
+);
+
+-- ---------- Grants ----------
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant all on all tables in schema public to service_role;
+
+-- The public website may only ADD its own tracking rows and enquiries.
+grant insert on public.visitors to anon;
+grant insert, update on public.visitor_sessions to anon;
+grant insert on public.events to anon;
+grant insert on public.leads to anon;
+grant insert on public.feedback to anon;
+grant select on public.knowledge_entries to anon;
+
+-- ---------- Row level security ----------
+do $$
+declare t text;
+begin
+  foreach t in array array[
+    'visitors','visitor_sessions','events','identity_links','identity_review_queue',
+    'campaigns','attribution_touches','lead_events','feedback','social_accounts',
+    'automations','automation_runs','webhook_events','notifications','knowledge_entries'
+  ] loop
+    execute format('alter table public.%1$s enable row level security', t);
+    begin
+      execute format('create policy team_read_%1$s on public.%1$s for select to authenticated using (public.is_team(auth.uid()))', t);
+      execute format('create policy team_write_%1$s on public.%1$s for insert to authenticated with check (public.can_write(auth.uid()))', t);
+      execute format('create policy team_update_%1$s on public.%1$s for update to authenticated using (public.can_write(auth.uid()))', t);
+      execute format('create policy admin_delete_%1$s on public.%1$s for delete to authenticated using (public.has_role(auth.uid(), ''super_admin'') or public.has_role(auth.uid(), ''admin''))', t);
+    exception when duplicate_object then null;
+    end;
+  end loop;
+end $$;
+
+do $$
+begin
+  create policy public_insert_visitors on public.visitors for insert to anon with check (true);
+  create policy public_insert_sessions on public.visitor_sessions for insert to anon with check (true);
+  create policy public_update_sessions on public.visitor_sessions for update to anon using (true) with check (true);
+  create policy public_insert_events on public.events for insert to anon with check (contact_id is null and lead_id is null);
+  create policy public_insert_leads on public.leads for insert to anon with check (source = 'website');
+  create policy public_insert_feedback on public.feedback for insert to anon with check (true);
+  create policy public_read_knowledge on public.knowledge_entries for select to anon using (is_public);
+exception when duplicate_object then null;
+end $$;
