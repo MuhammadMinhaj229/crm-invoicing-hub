@@ -333,9 +333,34 @@ function BuilderPage() {
             <ExternalLink className="h-4 w-4" /> Live page
           </a>
         ) : null}
-        <span className="ml-auto text-xs text-muted-foreground">
-          {{ saved: "Draft saved", saving: "Saving…", unsaved: "Unsaved changes", local: "Saved on this device only", error: "Could not save" }[saveState]}
+        <span className="ml-auto text-right text-xs text-muted-foreground">
+          <span className="block">
+            {{
+              saved: savedAt ? `Draft saved at ${savedAt.toLocaleTimeString()}` : "Draft saved",
+              saving: "Saving…",
+              unsaved: "Not saved yet — press Save draft",
+              local: savedAt
+                ? `Saved on this device at ${savedAt.toLocaleTimeString()}`
+                : "Saved on this device only",
+              error: "Could not save",
+            }[saveState]}
+          </span>
+          <span className="block">
+            {publishedAt
+              ? `Live since ${publishedAt.toLocaleTimeString()} — visitors see it now`
+              : meta.status === "published"
+                ? "Published — changes appear on the website within a few seconds of publishing"
+                : "Drafts are private. Publishing shows changes on the website in a few seconds."}
+          </span>
         </span>
+        <button
+          type="button"
+          onClick={saveNow}
+          disabled={saveState === "saving"}
+          className="h-9 rounded-full border border-border px-4 text-sm font-semibold disabled:opacity-60"
+        >
+          {saveState === "saving" ? "Saving…" : "Save draft"}
+        </button>
         {meta.status === "published" ? (
           <button type="button" onClick={unpublish} className="h-9 rounded-full border border-border px-4 text-sm font-semibold">
             Take down
