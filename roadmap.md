@@ -34,6 +34,12 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 
 ## Phase 7 — Finance: invoices, payments, expenses, payables, profit; Invoify entry point
 ## Phase 8 — DONE: Website CMS section editor (draft/publish/rollback/history) + public landing page rendered from CMS with footer team-login link
+## Website and product design system — DONE
+- [x] Original SAFAR brand mark, favicon and family-assistance artwork
+- [x] Coral/navy story-led public website with responsive zigzag services
+- [x] Shared website/CRM palette, type, controls and navigation language
+- [x] Appearance controls for brand assets, palette, type scale, control shape, layout and section visibility
+- [x] Shared database-backed appearance settings with local setup fallback
 ## Phase 9 — WhatsApp via Evolution API (QR session, inbox, broadcasts)
 ## Phase 10 — Tools: BI charts, social scheduler
 ## Phase 11 — Legacy data migration + hardening + docs

@@ -269,7 +269,7 @@ function LandingPage() {
       <main>
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border">
-        <div className="mx-auto grid min-h-[640px] max-w-7xl items-center gap-8 px-5 pb-12 pt-16 md:min-h-[calc(100vh-74px)] md:grid-cols-[0.92fr_1.08fr] md:py-16">
+        <div className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-14 md:min-h-[660px] md:grid-cols-[0.92fr_1.08fr] md:py-16">
           <div className="relative z-10">
             <p className="text-xs font-extrabold uppercase text-primary">
               {str(hero, "eyebrow", "Gulf Assistance & Coordination")}

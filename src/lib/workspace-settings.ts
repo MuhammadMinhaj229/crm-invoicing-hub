@@ -8,6 +8,7 @@
  * team shares one configuration. Nothing visual is hardcoded in the
  * pages themselves.
  */
+import { getSupabase } from "./supabase";
 
 export interface ThemeSettings {
   primary: string;
@@ -200,6 +201,35 @@ export function saveWorkspaceSettings(next: WorkspaceSettings): void {
   cache = next;
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   listeners.forEach((listener) => listener());
+}
+
+/** Loads the shared configuration when the connected project has been initialized. */
+export async function loadSharedWorkspaceSettings(): Promise<WorkspaceSettings | null> {
+  const supabase = getSupabase();
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("app_settings")
+    .select("value")
+    .eq("key", "workspace")
+    .maybeSingle();
+  if (error || !data) return null;
+  const next = merge((data as { value?: unknown }).value);
+  cache = next;
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  listeners.forEach((listener) => listener());
+  return next;
+}
+
+/** Publishes configuration for the public website and every signed-in team member. */
+export async function saveSharedWorkspaceSettings(next: WorkspaceSettings): Promise<void> {
+  const supabase = getSupabase();
+  if (!supabase) return;
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) return;
+  const { error } = await supabase
+    .from("app_settings")
+    .upsert({ key: "workspace", value: next, updated_by: userData.user.id }, { onConflict: "key" });
+  if (error) throw new Error(error.message);
 }
 
 export function resetWorkspaceSettings(): void {

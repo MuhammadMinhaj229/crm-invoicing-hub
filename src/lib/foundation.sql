@@ -260,6 +260,15 @@ create table if not exists public.cms_revisions (
   saved_at timestamptz not null default now()
 );
 
+-- Shared presentation and workspace configuration. Public reads only the
+-- non-secret workspace row; only signed-in administrators can change it.
+create table if not exists public.app_settings (
+  key text primary key,
+  value jsonb not null default '{}',
+  updated_by uuid references auth.users(id),
+  updated_at timestamptz not null default now()
+);
+
 -- ---------- Operations ----------
 create table if not exists public.tasks (
   id uuid primary key default gen_random_uuid(),
@@ -298,6 +307,9 @@ create table if not exists public.audit_logs (
 grant select, insert, update, delete on all tables in schema public to authenticated;
 grant all on all tables in schema public to service_role;
 grant select on public.cms_sections to anon;
+grant select on public.app_settings to anon;
+grant select, insert, update, delete on public.app_settings to authenticated;
+grant all on public.app_settings to service_role;
 
 -- ---------- RLS ----------
 alter table public.organizations enable row level security;
@@ -320,6 +332,7 @@ alter table public.cms_revisions enable row level security;
 alter table public.tasks enable row level security;
 alter table public.integrations enable row level security;
 alter table public.audit_logs enable row level security;
+alter table public.app_settings enable row level security;
 
 create policy team_read_organizations on public.organizations for select to authenticated using (true);
 create policy team_read_profiles on public.profiles for select to authenticated using (public.is_team(auth.uid()));
@@ -352,6 +365,13 @@ create policy team_insert_audit on public.audit_logs for insert to authenticated
 -- Public website reads only published CMS sections.
 create policy public_read_published_cms on public.cms_sections for select to anon
   using (status = 'published');
+create policy public_read_workspace_settings on public.app_settings for select to anon
+  using (key = 'workspace');
+create policy team_read_workspace_settings on public.app_settings for select to authenticated
+  using (public.is_team(auth.uid()));
+create policy admin_write_workspace_settings on public.app_settings for all to authenticated
+  using (public.has_role(auth.uid(), 'super_admin') or public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'super_admin') or public.has_role(auth.uid(), 'admin'));
 
 -- Seed the three ventures (identity only, no business data).
 insert into public.organizations (slug, name) values
