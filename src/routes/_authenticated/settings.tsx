@@ -1398,6 +1398,7 @@ function SettingsPage() {
         ))}
       </div>
       {tab === "connections" ? <ConnectionsTab /> : null}
+      {tab === "account" ? <AccountTab /> : null}
       {tab === "team" ? <TeamTab /> : null}
       {tab === "appearance" ? <AppearanceTab /> : null}
       {tab === "workspace" ? <WorkspaceTab /> : null}
