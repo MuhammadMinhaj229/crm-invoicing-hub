@@ -9,7 +9,7 @@ export function Breadcrumbs({ trail }: { trail: { label: string; href: string }[
     <nav aria-label="Breadcrumb" className="mb-6">
       <ol className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
         {trail.map((item, index) => (
-          <li key={item.href} className="flex items-center gap-1">
+          <li key={`${item.href}-${index}`} className="flex items-center gap-1">
             {index > 0 ? <ChevronRight className="h-4 w-4" aria-hidden="true" /> : null}
             {index === trail.length - 1 ? (
               <span aria-current="page" className="text-foreground">
