@@ -103,3 +103,7 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 - [x] Block model, shared renderer, every page + header menu editable, drag & drop sections and items
 - [x] Inline text editing, settings panel, phone/tablet/desktop preview, undo/redo, autosave, publish/take down, version history
 - [ ] Publishing live needs the database connected in Settings → Connections (waiting on the user)
+
+## Homepage presentation header (done)
+- [x] Framed top presentation, rotating promise bar, responsive navigation and slide-in mobile drawer
+- [x] WhatsApp actions use the supplied +91 72070 71874 number
