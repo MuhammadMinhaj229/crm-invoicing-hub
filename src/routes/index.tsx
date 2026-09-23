@@ -228,11 +228,11 @@ function ContactForm({ whatsapp, email }: { whatsapp: string; email: string }) {
       </div>
       <button
         type="submit"
-        disabled={!target}
+        disabled={!target || sending}
         className="brand-button mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-md disabled:opacity-50 sm:w-auto"
       >
         <MessageCircle className="h-4 w-4" />
-        Send the request
+        {sending ? "Sending…" : "Send the request"}
       </button>
       {!target ? (
         <p className="mt-3 text-xs text-muted-foreground">
