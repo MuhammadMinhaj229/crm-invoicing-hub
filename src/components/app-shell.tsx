@@ -63,7 +63,7 @@ function Brand() {
   const { branding } = settings;
   return (
     <div className="px-3">
-      <BrandMark name={branding.name} logoUrl={branding.logoUrl} />
+      <BrandMark name={branding.name} logoUrl={branding.logoUrl} style={branding.logoStyle} />
     </div>
   );
 }

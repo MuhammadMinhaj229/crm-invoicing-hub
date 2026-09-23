@@ -13,10 +13,12 @@ export function SiteFooter({
   footer,
   contact,
   brandName,
+  logoStyle = "lockup",
 }: {
   footer: SectionContent;
   contact: SectionContent;
   brandName: string;
+  logoStyle?: "lockup" | "image";
 }) {
   const links = Array.isArray(footer['links'])
     ? (footer['links'] as { label?: string; href?: string }[])
@@ -29,7 +31,7 @@ export function SiteFooter({
     <footer className="border-t border-foreground/10 bg-foreground text-background">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
-          <BrandMark name={brandName} inverse />
+          <BrandMark name={brandName} style={logoStyle} inverse />
           <p className="mt-4 max-w-sm text-sm text-background/70">
             {str(footer, "tagline", "We help Gulf families take care of their people back home in India.")}
           </p>
