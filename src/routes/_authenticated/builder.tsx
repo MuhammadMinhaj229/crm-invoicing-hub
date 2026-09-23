@@ -122,6 +122,8 @@ function BuilderPage() {
   const [preview, setPreview] = useState(false);
   const [meta, setMeta] = useState<{ id: string | null; status: string; version: number }>({ id: null, status: "none", version: 0 });
   const [saveState, setSaveState] = useState<"saved" | "saving" | "unsaved" | "local" | "error">("saved");
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
+  const [publishedAt, setPublishedAt] = useState<Date | null>(null);
   const [insertAt, setInsertAt] = useState<number | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const loaded = useRef(false);
