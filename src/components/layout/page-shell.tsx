@@ -14,6 +14,19 @@ import { BrandMark } from "../brand-mark";
 import { SiteFooter } from "../site/site-footer";
 import { AmbientBackground } from "../motion/primitives";
 import { FloatingActions } from "./floating-actions";
+import { fetchPublishedDocument } from "../../lib/page-builder/store";
+
+interface MenuLink { label: string; href: string }
+
+function useMenuLinks(): MenuLink[] | null {
+  const { data } = useQuery({
+    queryKey: ["published-document", "global"],
+    queryFn: () => fetchPublishedDocument("global"),
+    staleTime: 60 * 1000,
+  });
+  const nav = data?.blocks.find((b) => b.type === "navigation");
+  return nav && nav.type === "navigation" && nav.props.links.length ? nav.props.links : null;
+}
 
 function SiteHeader({
   brandName,
@@ -27,6 +40,7 @@ function SiteHeader({
   const [open, setOpen] = useState(false);
   const contact = useSiteContact();
   const whatsappUrl = buildWhatsAppUrl(contact.whatsapp, generalEnquiryMessage());
+  const custom = useMenuLinks();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur">
@@ -36,7 +50,11 @@ function SiteHeader({
         </Link>
 
         <nav className="ml-auto hidden items-center gap-7 md:flex" aria-label="Main">
-          {site.navigation.map((item) => (
+          {custom ? custom.map((item) => (
+            <a key={item.href + item.label} href={item.href} className="text-sm font-semibold text-foreground/80 transition-colors hover:text-primary">
+              {item.label}
+            </a>
+          )) : site.navigation.map((item) => (
             <Link
               key={item.href}
               to={item.href}
@@ -83,7 +101,13 @@ function SiteHeader({
       {open ? (
         <nav className="border-t border-border bg-background px-5 py-3 md:hidden" aria-label="Mobile">
           <ul className="space-y-1">
-            {site.navigation.map((item) => (
+            {custom ? custom.map((item) => (
+              <li key={item.href + item.label}>
+                <a href={item.href} onClick={() => setOpen(false)} className="block rounded-xl px-3 py-3 text-base font-semibold text-foreground hover:bg-muted">
+                  {item.label}
+                </a>
+              </li>
+            )) : site.navigation.map((item) => (
               <li key={item.href}>
                 <Link
                   to={item.href}

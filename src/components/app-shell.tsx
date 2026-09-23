@@ -17,6 +17,7 @@ import {
   Wrench,
   X,
   type LucideIcon,
+  LayoutTemplate,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
@@ -27,6 +28,7 @@ import { BrandMark } from "./brand-mark";
 const NAV_ICONS: Record<string, LucideIcon> = {
   "/dashboard": LayoutDashboard,
   "/website": Globe,
+  "/builder": LayoutTemplate,
   "/customers": Users,
   "/inbox": MessageSquare,
   "/knowledge": BookOpen,

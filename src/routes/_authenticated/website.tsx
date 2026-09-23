@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, Globe, History, RotateCcw, Save, Upload } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -410,6 +410,17 @@ function WebsitePage() {
         title="Website"
         description="Every section of the public site, edited as structured content. Save a draft, publish when ready, roll back any time."
       />
+
+      <Link
+        to="/builder"
+        className="mb-5 flex items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 p-4 text-sm"
+      >
+        <span>
+          <span className="block font-semibold text-foreground">Open the visual page builder</span>
+          <span className="text-muted-foreground">Edit every page on screen, drag sections and buttons, preview on phone, then publish.</span>
+        </span>
+        <span className="rounded-full bg-primary px-4 py-2 font-semibold text-primary-foreground">Open builder</span>
+      </Link>
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
         {SECTION_DEFS.map((def) => {

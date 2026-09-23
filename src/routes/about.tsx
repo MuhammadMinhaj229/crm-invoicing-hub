@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PublishedOr } from "../components/page-builder/published-page";
 
 import { PageShell } from "../components/layout/page-shell";
 import { PageIntro } from "../components/layout/page-intro";
@@ -67,7 +68,7 @@ export const Route = createFileRoute("/about")({
       },
     ],
   }),
-  component: AboutPage,
+  component: AboutPageRoute,
 });
 
 function AboutPage() {
@@ -142,5 +143,13 @@ function AboutPage() {
         </Reveal>
       </section>
     </PageShell>
+  );
+}
+
+function AboutPageRoute() {
+  return (
+    <PublishedOr page="about" pageName="about">
+      <AboutPage />
+    </PublishedOr>
   );
 }

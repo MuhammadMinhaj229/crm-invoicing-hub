@@ -95,6 +95,7 @@ export const DEFAULT_SETTINGS: WorkspaceSettings = {
   nav: [
     { id: "/dashboard", label: "Dashboard", enabled: true },
     { id: "/website", label: "Website", enabled: true },
+    { id: "/builder", label: "Page builder", enabled: true },
     { id: "/customers", label: "Customers", enabled: true },
     { id: "/inbox", label: "Inbox", enabled: true },
     { id: "/operations", label: "Service Requests", enabled: true },

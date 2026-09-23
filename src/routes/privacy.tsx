@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PublishedOr } from "../components/page-builder/published-page";
 
 import { PageShell } from "../components/layout/page-shell";
 import { PageIntro } from "../components/layout/page-intro";
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/privacy")({
     ],
     links: [{ rel: "canonical", href: "/privacy" }],
   }),
-  component: PrivacyPage,
+  component: PrivacyPageRoute,
 });
 
 function PrivacyPage() {
@@ -66,5 +67,13 @@ function PrivacyPage() {
         </section>
       </article>
     </PageShell>
+  );
+}
+
+function PrivacyPageRoute() {
+  return (
+    <PublishedOr page="privacy" pageName="privacy">
+      <PrivacyPage />
+    </PublishedOr>
   );
 }
