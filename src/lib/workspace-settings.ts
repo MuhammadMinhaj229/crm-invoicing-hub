@@ -77,10 +77,12 @@ export const DEFAULT_SETTINGS: WorkspaceSettings = {
     { id: "/dashboard", label: "Dashboard", enabled: true },
     { id: "/website", label: "Website", enabled: true },
     { id: "/customers", label: "Customers", enabled: true },
+    { id: "/operations", label: "Service Requests", enabled: true },
     { id: "/vendors", label: "Vendors & Partners", enabled: true },
     { id: "/tools", label: "Tools", enabled: true },
     { id: "/settings", label: "Settings", enabled: true },
   ],
+
   currency: "INR",
   locale: "en-IN",
   leadSources: [
