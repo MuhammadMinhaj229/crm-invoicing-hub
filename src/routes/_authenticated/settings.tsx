@@ -342,11 +342,21 @@ function IntegrationCard({ definition }: { definition: IntegrationDefinition }) 
         </form>
       ) : (
         <div className="mt-4 flex flex-wrap gap-2">
+          {getToolUrl(definition.id) && definition.id !== "supabase" ? (
+            <a
+              href={getToolUrl(definition.id)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              Open tool <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          ) : null}
           <button
             onClick={() => setOpen(true)}
             className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            {configured ? "Edit keys" : "Add keys"}
+            {configured ? "Edit link" : "Add link"}
           </button>
           {configured ? (
             <>
