@@ -276,6 +276,8 @@ function LandingPage() {
   const faq = sections['faq'] ?? {};
   const contact = sections['contact'] ?? {};
   const footer = sections['footer'] ?? {};
+  const cast = sections['cast'] ?? {};
+  const updates = sections['updates'] ?? {};
 
   const brandName = settings.branding.name || "SAFAR N MANZIL";
   const testimonialItems = list<{ quote?: string; author?: string; location?: string }>(
