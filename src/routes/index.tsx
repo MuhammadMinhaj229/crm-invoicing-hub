@@ -247,6 +247,11 @@ function LandingPage() {
   const { settings } = useWorkspaceSettings();
   useThemeSync(settings);
 
+  useEffect(() => {
+    trackPageView({ page: "home" });
+  }, []);
+
+
   const fallback = useMemo(() => defaultSections(), []);
   const { data: sections = fallback } = useQuery({
     queryKey: ["cms-published"],
