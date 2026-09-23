@@ -28,26 +28,26 @@ export function SiteFooter({
   const phone = str(contact, "phone");
 
   return (
-    <footer className="border-t border-legacy-light/10 bg-legacy-deep text-legacy-light">
-      <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
+    <footer className="bg-legacy-deep text-legacy-light">
+      <div className="mx-auto grid max-w-[1280px] gap-12 px-6 py-16 sm:px-10 md:grid-cols-[1.5fr_1fr_1fr]">
         <div>
           <BrandMark name={brandName} style={logoStyle} inverse />
-          <p className="mt-4 max-w-sm text-sm text-background/70">
+          <p className="mt-5 max-w-sm text-sm leading-relaxed text-legacy-light/60">
             {str(footer, "tagline", "We help Gulf families take care of their people back home in India.")}
           </p>
-          <p className="mt-4 text-sm font-bold uppercase text-primary">
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-primary">
             We do. We assist. We connect.
           </p>
         </div>
 
         <nav aria-label="Footer">
-          <p className="font-display text-sm font-semibold uppercase text-background/60">
+          <p className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-legacy-light/40">
             Explore
           </p>
-          <ul className="mt-3 space-y-2 text-sm">
+          <ul className="mt-4 space-y-3 text-sm">
             {links.map((link) => (
               <li key={`${link.label}-${link.href}`}>
-                <a href={link.href ?? "#"} className="text-background hover:text-primary">
+                <a href={link.href ?? "#"} className="text-legacy-light/80 transition-colors hover:text-primary">
                   {link.label}
                 </a>
               </li>
@@ -56,17 +56,17 @@ export function SiteFooter({
         </nav>
 
         <div>
-          <p className="font-display text-sm font-semibold uppercase text-background/60">
+          <p className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-legacy-light/40">
             Reach us
           </p>
-          <ul className="mt-3 space-y-2 text-sm text-background">
+          <ul className="mt-4 space-y-3 text-sm text-legacy-light/80">
             {whatsapp ? (
               <li>
                 <a
                   href={`https://wa.me/${whatsapp.replace(/[^\d]/g, "")}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="hover:text-primary"
+                  className="transition-colors hover:text-primary"
                 >
                   WhatsApp
                 </a>
@@ -74,20 +74,20 @@ export function SiteFooter({
             ) : null}
             {phone ? (
               <li>
-                <a href={`tel:${phone}`} className="hover:text-primary">
+                <a href={`tel:${phone}`} className="transition-colors hover:text-primary">
                   {phone}
                 </a>
               </li>
             ) : null}
             {email ? (
               <li>
-                <a href={`mailto:${email}`} className="hover:text-primary">
+                <a href={`mailto:${email}`} className="transition-colors hover:text-primary">
                   {email}
                 </a>
               </li>
             ) : null}
             {!whatsapp && !phone && !email ? (
-               <li className="text-background/60">
+               <li className="text-legacy-light/45">
                 Add your contact details in the CRM under Website.
               </li>
             ) : null}
@@ -95,12 +95,12 @@ export function SiteFooter({
         </div>
       </div>
 
-       <div className="border-t border-background/15">
-         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-5 text-sm text-background/60 sm:flex-row sm:items-center sm:justify-between">
+       <div className="border-t border-legacy-light/10">
+         <div className="mx-auto flex max-w-[1280px] flex-col gap-3 px-6 py-6 text-sm text-legacy-light/45 sm:flex-row sm:items-center sm:justify-between sm:px-10">
           <p>{str(footer, "legal", "© SAFAR N MANZIL. All rights reserved.")}</p>
           <Link
             to="/auth"
-             className="inline-flex items-center gap-2 border border-background/25 px-3 py-2 font-medium text-background transition hover:border-primary hover:text-primary"
+             className="inline-flex items-center gap-2 rounded-full border border-legacy-light/15 px-4 py-2 font-medium text-legacy-light/75 transition hover:border-primary hover:text-primary"
           >
             <Lock className="h-3.5 w-3.5" />
             {str(footer, "crmLabel", "Team login")}
