@@ -99,6 +99,7 @@ function SiteHeader({
 
         <a
           href="#contact"
+          onClick={() => track("cta.clicked", { place: "header", label: "Ask for help" })}
           className="brand-button ml-auto hidden rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-md md:ml-0 md:inline-block"
         >
           Ask for help
