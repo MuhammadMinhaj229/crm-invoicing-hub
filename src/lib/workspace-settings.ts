@@ -78,6 +78,7 @@ export const DEFAULT_SETTINGS: WorkspaceSettings = {
     initial: "S",
     logoUrl: "",
     faviconUrl: "",
+    logoStyle: "lockup",
   },
   theme: {
     primary: "#FF9B70",
