@@ -47,7 +47,7 @@ export function BrandMark({
         <img
           src={brandLogo.url}
           alt={name}
-          className={`${compact ? "h-10" : "h-12"} w-auto shrink-0 rounded-xl object-contain`}
+          className={`${compact ? "h-10" : "h-12"} w-auto shrink-0 object-contain`}
         />
       </span>
     );

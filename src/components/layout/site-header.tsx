@@ -53,7 +53,7 @@ export function SiteHeader({
 
       <div className="flex min-h-20 items-center gap-4 border-b border-border px-5 sm:px-8 lg:px-10">
         <Link to="/" className="min-w-0" aria-label={`${brandName} home`}>
-          <BrandMark name={brandName} logoUrl={logoUrl} style={logoStyle} compact />
+          <BrandMark name={brandName} logoUrl={logoUrl} style={logoUrl ? logoStyle : "image"} compact />
         </Link>
 
         <nav className="ml-auto hidden items-center gap-7 lg:flex" aria-label="Main navigation">
@@ -94,7 +94,7 @@ export function SiteHeader({
           <button type="button" aria-label="Close navigation menu" className="absolute inset-0 bg-foreground/35 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <div className="absolute inset-y-0 right-0 flex w-[min(88vw,22rem)] animate-slide-in-right flex-col bg-background p-6 shadow-2xl">
             <div className="flex items-center justify-between border-b border-border pb-5">
-              <BrandMark name={brandName} logoUrl={logoUrl} style={logoStyle} compact />
+              <BrandMark name={brandName} logoUrl={logoUrl} style={logoUrl ? logoStyle : "image"} compact />
               <button type="button" onClick={() => setOpen(false)} aria-label="Close navigation menu" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border text-foreground hover:bg-muted">
                 <X className="h-5 w-5" />
               </button>

@@ -29,10 +29,10 @@ export function PageShell({ children, pageName }: { children: ReactNode; pageNam
   }, [pageName]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-legacy-warm text-legacy-ink">
       <AmbientBackground />
       <SiteHeader
-        brandName={settings.branding.name}
+        brandName="Safar N manzil"
         logoUrl={settings.branding.logoUrl}
         logoStyle={settings.branding.logoStyle}
       />
@@ -40,7 +40,7 @@ export function PageShell({ children, pageName }: { children: ReactNode; pageNam
       <SiteFooter
         footer={sections["footer"] ?? {}}
         contact={sections["contact"] ?? {}}
-        brandName={settings.branding.name}
+        brandName="Safar N manzil"
         logoStyle={settings.branding.logoStyle}
       />
       <FloatingActions context={pageName} />
