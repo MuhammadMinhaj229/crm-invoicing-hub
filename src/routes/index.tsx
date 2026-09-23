@@ -59,7 +59,15 @@ function list<T>(content: SectionContent, key: string): T[] {
   return Array.isArray(value) ? (value as T[]) : [];
 }
 
-function SiteHeader({ brandName, logoUrl }: { brandName: string; logoUrl?: string }) {
+function SiteHeader({
+  brandName,
+  logoUrl,
+  logoStyle,
+}: {
+  brandName: string;
+  logoUrl?: string;
+  logoStyle: "lockup" | "image";
+}) {
   const [open, setOpen] = useState(false);
   const links = [
     { label: "Services", href: "#services" },
@@ -71,7 +79,7 @@ function SiteHeader({ brandName, logoUrl }: { brandName: string; logoUrl?: strin
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-4">
         <a href="#top" className="min-w-0">
-          <BrandMark name={brandName} logoUrl={logoUrl} compact />
+          <BrandMark name={brandName} logoUrl={logoUrl} style={logoStyle} compact />
         </a>
 
         <nav className="ml-auto hidden items-center gap-7 md:flex" aria-label="Main">
@@ -264,7 +272,11 @@ function LandingPage() {
 
   return (
     <div id="top" className="min-h-screen bg-background text-foreground">
-      <SiteHeader brandName={brandName} logoUrl={settings.branding.logoUrl} />
+      <SiteHeader
+        brandName={brandName}
+        logoUrl={settings.branding.logoUrl}
+        logoStyle={settings.branding.logoStyle}
+      />
 
       <main>
       {/* Hero */}
@@ -523,7 +535,12 @@ function LandingPage() {
       </section>
       </main>
 
-      <SiteFooter footer={footer} contact={contact} brandName={brandName} />
+      <SiteFooter
+        footer={footer}
+        contact={contact}
+        brandName={brandName}
+        logoStyle={settings.branding.logoStyle}
+      />
     </div>
   );
 }

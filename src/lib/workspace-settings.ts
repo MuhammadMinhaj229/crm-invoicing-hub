@@ -29,6 +29,8 @@ export interface BrandingSettings {
   initial: string;
   logoUrl: string;
   faviconUrl: string;
+  /** "lockup" draws the SAFAR mark in code; "image" uses the logo picture. */
+  logoStyle: "lockup" | "image";
 }
 
 export interface WebsiteAppearanceSettings {
@@ -76,6 +78,7 @@ export const DEFAULT_SETTINGS: WorkspaceSettings = {
     initial: "S",
     logoUrl: "",
     faviconUrl: "",
+    logoStyle: "lockup",
   },
   theme: {
     primary: "#FF9B70",

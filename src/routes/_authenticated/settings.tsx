@@ -532,7 +532,28 @@ function AppearanceTab() {
           />
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            label="Logo style"
+            hint="Drawn mark stays sharp at any size and animates on hover."
+          >
+            <select
+              value={branding.logoStyle}
+              onChange={(e) =>
+                update({
+                  branding: {
+                    ...branding,
+                    logoStyle: e.target.value as "lockup" | "image",
+                  },
+                })
+              }
+              className={fieldClass}
+            >
+              <option value="lockup">Drawn mark (plane + script name + circled N)</option>
+              <option value="image">Logo picture</option>
+            </select>
+          </Field>
           <Field label="Monogram letter" hint="Used when no logo image is set.">
+
             <input
               value={branding.initial}
               maxLength={2}
