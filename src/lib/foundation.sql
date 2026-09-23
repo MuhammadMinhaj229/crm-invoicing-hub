@@ -245,6 +245,12 @@ create table if not exists public.cms_sections (
   unique (page, section_key)
 );
 
+-- safe to re-run on an existing install
+alter table public.cms_sections add column if not exists draft_content jsonb;
+alter table public.service_requests add column if not exists description text;
+
+
+
 create table if not exists public.cms_revisions (
   id uuid primary key default gen_random_uuid(),
   section_id uuid not null references public.cms_sections(id) on delete cascade,
