@@ -6,17 +6,17 @@ import { Reveal } from "../motion/primitives";
 
 export function Breadcrumbs({ trail }: { trail: { label: string; href: string }[] }) {
   return (
-    <nav aria-label="Breadcrumb" className="mb-6">
-      <ol className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
+    <nav aria-label="Breadcrumb" className="mb-7">
+      <ol className="flex flex-wrap items-center gap-1.5 text-sm text-legacy-light/50">
         {trail.map((item, index) => (
-          <li key={`${item.href}-${index}`} className="flex items-center gap-1">
-            {index > 0 ? <ChevronRight className="h-4 w-4" aria-hidden="true" /> : null}
+          <li key={`${item.href}-${index}`} className="flex items-center gap-1.5">
+            {index > 0 ? <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" /> : null}
             {index === trail.length - 1 ? (
-              <span aria-current="page" className="text-foreground">
+              <span aria-current="page" className="text-legacy-light/85">
                 {item.label}
               </span>
             ) : (
-              <Link to={item.href} className="hover:text-primary">
+              <Link to={item.href} className="transition-colors hover:text-primary">
                 {item.label}
               </Link>
             )}
