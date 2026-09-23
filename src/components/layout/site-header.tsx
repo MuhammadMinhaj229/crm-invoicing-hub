@@ -40,20 +40,6 @@ export function SiteHeader({
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
       <div className="mx-auto w-full max-w-[1280px] px-4 pt-3 sm:px-6 sm:pt-4">
-        <div className="pointer-events-none mb-2 hidden h-5 justify-center lg:flex">
-          <div className="utility-carousel relative w-64 text-center text-legacy-light/70">
-            {messages.map((message, index) => (
-              <span
-                key={message}
-                className="utility-message !text-[0.7rem] !font-semibold uppercase tracking-[0.18em]"
-                style={{ "--message-index": index } as CSSProperties}
-              >
-                {message}
-              </span>
-            ))}
-          </div>
-        </div>
-
         <div
           className={`glass-nav pointer-events-auto flex min-h-16 items-center gap-4 rounded-full px-3 pr-3 transition-all duration-300 sm:px-4 ${
             scrolled ? "shadow-lift" : ""
