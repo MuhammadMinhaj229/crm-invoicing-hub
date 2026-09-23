@@ -1,32 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  CheckCircle2,
-  ChevronRight,
-  FileText,
-  HeartHandshake,
-  Image as ImageIcon,
-  Lock,
-  MessageCircle,
-  ReceiptText,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowRight, ChevronRight, HeartHandshake, Lock, MessageCircle, ShieldCheck } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import heroFamily from "../assets/safar-hero-family.png";
 import groceriesStory from "../assets/safar-story-groceries.png";
 import healthcareStory from "../assets/safar-story-health.png";
 import repairsStory from "../assets/safar-story-repairs.png";
-import updatesArt from "../assets/safar-updates.png";
 import campaignDreams from "../assets/safar-campaign-dreams.png.asset.json";
 import campaignWorries from "../assets/safar-campaign-family-worries.png.asset.json";
 import campaignJourney from "../assets/safar-campaign-how-it-works.png.asset.json";
+import serviceFilm from "../assets/safar-services-cinematic.mp4.asset.json";
 import { SiteHeader } from "../components/layout/site-header";
 import { PublishedOr } from "../components/page-builder/published-page";
 import { SiteFooter } from "../components/site/site-footer";
 import { StoryCarousel, type StorySlide } from "../components/site/story-carousel";
 import { InvoiceExample } from "../components/site/invoice-example";
+import { ServiceFilm } from "../components/site/service-film";
 import { useThemeSync, useWorkspaceSettings } from "../hooks/use-workspace-settings";
 import { track, trackPageView } from "../lib/analytics";
 import { defaultSections, fetchPublishedContent, type SectionContent } from "../lib/cms";
@@ -168,11 +158,9 @@ function LandingPage() {
   ];
 
   const journeySteps = [
-    { title: journey[0]?.title || "You tell us", text: journey[0]?.description || "Send the need in your own words." },
-    { title: "We understand it", text: "We confirm the place, timing and exact task." },
-    { title: journey[1]?.title || "You approve", text: journey[1]?.description || "See the plan and cost before work." },
-    { title: journey[2]?.title || "We coordinate", text: journey[2]?.description || "One person stays responsible." },
-    { title: journey[3]?.title || "Proof returns", text: journey[3]?.description || "Receive the update and bill." },
+    { title: journey[0]?.title || "You message us", text: journey[0]?.description || "Tell us the need in your own words." },
+    { title: journey[1]?.title || "You approve", text: journey[1]?.description || "See the plan and the cost before work." },
+    { title: journey[2]?.title || "Proof returns", text: journey[2]?.description || "Photos and a clear bill come back to you." },
   ];
 
   return (
@@ -241,34 +229,29 @@ function LandingPage() {
         </section>
 
         {/* Recognition */}
-        <section id="recognition" className="bg-legacy-warm py-20 md:py-28">
-          <div className="mx-auto grid max-w-[1280px] gap-12 px-6 sm:px-10 md:grid-cols-[0.85fr_1.15fr] lg:gap-20">
-            <div className="md:sticky md:top-32 md:self-start">
+        <section id="recognition" className="bg-legacy-warm py-16 md:py-24">
+          <div className="mx-auto max-w-[1280px] px-6 sm:px-10">
+            <div className="max-w-3xl">
               <Eyebrow>{str(promise, "eyebrow", "A moment you know")}</Eyebrow>
-              <h2 className="mt-6 max-w-md font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] md:text-5xl">
+              <h2 className="mt-6 font-display text-3xl font-semibold leading-[1.08] tracking-[-0.02em] md:text-5xl">
                 They call you first. <span className="text-primary">Even when you are far away.</span>
               </h2>
-              <p className="mt-6 max-w-md text-base leading-relaxed text-legacy-ink/60">{str(promise, "body")}</p>
             </div>
-            <div className="grid gap-5">
+            <div className="mt-10 grid gap-4 md:grid-cols-3">
               {[
-                ["The need", "A repair, a hospital visit, groceries or paperwork cannot wait for your next trip."],
-                ["The worry", "You need somebody who will treat your family’s time, home and money with care."],
-                ["The relief", "Safar N manzil becomes the accountable person between your message and the result."],
-              ].map(([title, text], index) => (
-                <article key={title} className="soft-card flex gap-5 p-6 transition hover:shadow-lift md:p-8">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/10 font-display text-xs font-bold text-primary">
-                    0{index + 1}
-                  </span>
-                  <div>
-                    <h3 className="font-display text-xl font-semibold tracking-[-0.01em]">{title}</h3>
-                    <p className="mt-2 max-w-lg leading-relaxed text-legacy-ink/60">{text}</p>
-                  </div>
+                ["The need", "Repairs, hospital visits, groceries, paperwork."],
+                ["The worry", "Someone must treat their time and money with care."],
+                ["The relief", "We become that person, and you stay informed."],
+              ].map(([title, text]) => (
+                <article key={title} className="soft-card p-6">
+                  <h3 className="font-display text-xl font-semibold tracking-[-0.01em]">{title}</h3>
+                  <p className="mt-2 text-base leading-relaxed text-legacy-ink/60">{text}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
+
 
         <section className="bg-legacy-warm pb-20 md:pb-28">
           <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-10">
@@ -397,47 +380,18 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* Proof returns */}
-        <section className="bg-legacy-light py-20 md:py-28">
-          <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-6 sm:px-10 md:grid-cols-2 lg:gap-20">
-            <div className="relative order-2 md:order-1">
-              <div className="overflow-hidden rounded-[1.5rem] bg-legacy-warm">
-                <img
-                  src={str(updates, "imageUrl") || updatesArt}
-                  alt="A completed task update returning to a family member in the Gulf"
-                  className="h-full w-full object-contain"
-                />
-              </div>
-              <div className="soft-card absolute bottom-5 right-5 flex items-center gap-3 p-4 shadow-lift">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
-                  <CheckCircle2 className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-[0.7rem] uppercase tracking-wide text-legacy-ink/45">Request update</p>
-                  <p className="text-sm font-semibold">Work completed</p>
-                </div>
-              </div>
-            </div>
-            <div className="order-1 md:order-2">
-              <Eyebrow>{str(updates, "eyebrow", "Proof returns home")}</Eyebrow>
-              <h2 className="mt-6 font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] md:text-5xl">
-                {str(updates, "title", "You see how it ended.")}
-              </h2>
-              <p className="mt-5 text-base leading-relaxed text-legacy-ink/60 md:text-lg">{str(updates, "subtitle")}</p>
-              <div className="mt-8 grid gap-3">
-                {proofPoints.map((point, index) => {
-                  const Icon = index === 0 ? ImageIcon : index === 1 ? ReceiptText : FileText;
-                  return (
-                    <div key={point} className="soft-card flex items-center gap-4 px-5 py-4">
-                      <Icon className="h-5 w-5 shrink-0 text-primary" />
-                      <span className="text-sm font-medium">{point}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+        {/* Service film */}
+        <section id="film" className="bg-legacy-light py-20 md:py-28">
+          <div className="mx-auto max-w-[1280px] px-6 sm:px-10">
+            <ServiceFilm
+              src={serviceFilm.url}
+              title={str(updates, "title", "See the care, not just the promise.")}
+              text={str(updates, "subtitle", "Watch how a single message turns into real help at home — and the photo proof that comes back to you.")}
+              {...(proofPoints.length ? { points: proofPoints } : {})}
+            />
           </div>
         </section>
+
 
         {/* FAQ */}
         {settings.websiteAppearance.showFaqSection ? (
