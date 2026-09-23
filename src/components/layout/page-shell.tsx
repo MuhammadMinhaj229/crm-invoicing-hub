@@ -1,21 +1,13 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { useEffect, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Menu, X } from "lucide-react";
 
-import { site } from "../../content/site";
-import { track, trackPageView } from "../../lib/analytics";
+import { trackPageView } from "../../lib/analytics";
 import { defaultSections, fetchPublishedContent } from "../../lib/cms";
-import { buildWhatsAppUrl } from "../../lib/whatsapp/url-builder";
-import { generalEnquiryMessage } from "../../lib/whatsapp/templates";
-import { useSiteContact } from "../../hooks/use-site-contact";
 import { useThemeSync, useWorkspaceSettings } from "../../hooks/use-workspace-settings";
-import { BrandMark } from "../brand-mark";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "../site/site-footer";
 import { AmbientBackground } from "../motion/primitives";
 import { FloatingActions } from "./floating-actions";
-import { fetchPublishedDocument } from "../../lib/page-builder/store";
 
 /**
  * Shared frame for every public page: brand header, ambient background,
