@@ -659,8 +659,6 @@ const LABELS: Record<string, string> = {
   style: "Style",
   question: "Question",
   answer: "Answer",
-  accent: "Highlighted line",
-  imageAlt: "Picture description (for blind visitors)",
 };
 const LONG = new Set(["text", "subtitle", "answer"]);
 const IMAGE = new Set(["image", "src"]);

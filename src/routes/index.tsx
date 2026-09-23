@@ -2,10 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
-  Check,
   CheckCircle2,
   ChevronRight,
-  CircleDollarSign,
   FileText,
   HeartHandshake,
   Image as ImageIcon,

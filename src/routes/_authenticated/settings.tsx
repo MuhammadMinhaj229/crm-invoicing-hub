@@ -45,6 +45,7 @@ import {
 import { DEFAULT_SCORING, loadScoring, saveScoring, type ScoringConfig } from "../../lib/scoring";
 import { toast } from "sonner";
 import foundationSql from "../../lib/foundation.sql?raw";
+import type { SocialLinkSetting } from "../../lib/workspace-settings";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -1361,11 +1362,62 @@ function AccountTab() {
   );
 }
 
+const SOCIAL_OPTIONS: { value: SocialLinkSetting["platform"]; label: string }[] = [
+  { value: "instagram", label: "Instagram" },
+  { value: "facebook", label: "Facebook" },
+  { value: "linkedin", label: "LinkedIn" },
+  { value: "youtube", label: "YouTube" },
+  { value: "x", label: "X" },
+  { value: "google", label: "Google Business Profile" },
+  { value: "custom", label: "Other website" },
+];
+
+function PublicWebsiteTab() {
+  const { settings, update } = useWorkspaceSettings();
+  const contact = settings.publicContact;
+  const links = settings.socialLinks;
+  const patchContact = (key: keyof typeof contact, value: string) => update({ publicContact: { ...contact, [key]: value } });
+  const patchLink = (id: string, patch: Partial<SocialLinkSetting>) => update({ socialLinks: links.map((item) => item.id === id ? { ...item, ...patch } : item) });
+
+  return (
+    <div className="space-y-4">
+      <Panel title="Website contact buttons" description="These details power the website header, floating buttons, request form and footer. Blank fields stay hidden from visitors.">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="WhatsApp number" hint="Use the international number. Example: +91 00000 00000."><input value={contact.whatsapp} onChange={(event) => patchContact("whatsapp", event.target.value)} placeholder="+91 00000 00000" className={fieldClass} /></Field>
+          <Field label="Calling number" hint="This can be different from WhatsApp."><input value={contact.phone} onChange={(event) => patchContact("phone", event.target.value)} placeholder="+91 00000 00000" className={fieldClass} /></Field>
+          <Field label="Public email"><input type="email" value={contact.email} onChange={(event) => patchContact("email", event.target.value)} placeholder="help@example.com" className={fieldClass} /></Field>
+          <Field label="Location or service area"><input value={contact.location} onChange={(event) => patchContact("location", event.target.value)} placeholder="Add only a real service area" className={fieldClass} /></Field>
+          <Field label="Availability message" hint="Optional public note; leave blank if timing is not confirmed."><input value={contact.availability} onChange={(event) => patchContact("availability", event.target.value)} placeholder="Add a confirmed availability note" className={fieldClass} /></Field>
+        </div>
+        <p className="mt-4 text-sm text-muted-foreground">Changes are saved for the team when the database is connected. Placeholder text is never published.</p>
+      </Panel>
+
+      <Panel title="Social profile links" description="Add public profile pages here. This is separate from the API connections used for scheduling posts.">
+        <div className="space-y-3">
+          {links.map((item) => (
+            <div key={item.id} className="grid gap-2 rounded-xl border border-border p-3 sm:grid-cols-[10rem_1fr_auto_auto] sm:items-center">
+              <select value={item.platform} onChange={(event) => patchLink(item.id, { platform: event.target.value as SocialLinkSetting["platform"], label: SOCIAL_OPTIONS.find((option) => option.value === event.target.value)?.label ?? item.label })} className={fieldClass}>
+                {SOCIAL_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+              </select>
+              <input value={item.url} onChange={(event) => patchLink(item.id, { url: event.target.value })} placeholder="https://…" className={fieldClass} />
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={item.enabled} onChange={(event) => patchLink(item.id, { enabled: event.target.checked })} /> Show</label>
+              <button type="button" aria-label={`Remove ${item.label}`} onClick={() => update({ socialLinks: links.filter((link) => link.id !== item.id) })} className="grid h-10 w-10 place-items-center rounded-lg border border-border text-destructive"><Trash2 className="h-4 w-4" /></button>
+            </div>
+          ))}
+        </div>
+        <button type="button" onClick={() => update({ socialLinks: [...links, { id: crypto.randomUUID(), platform: "instagram", label: "Instagram", url: "", enabled: true }] })} className="mt-4 rounded-lg border border-border px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-accent">Add social profile</button>
+        <p className="mt-3 text-sm text-muted-foreground">Only enabled links beginning with https:// appear on the public website.</p>
+      </Panel>
+    </div>
+  );
+}
+
 const SETTINGS_TABS = [
   { id: "connections", label: "Connections" },
   { id: "account", label: "Account" },
   { id: "team", label: "Team & access" },
   { id: "appearance", label: "Appearance" },
+  { id: "public", label: "Website details" },
   { id: "workspace", label: "Workspace" },
   { id: "rules", label: "Business rules" },
   { id: "scoring", label: "Lead scoring" },
@@ -1401,6 +1453,7 @@ function SettingsPage() {
       {tab === "account" ? <AccountTab /> : null}
       {tab === "team" ? <TeamTab /> : null}
       {tab === "appearance" ? <AppearanceTab /> : null}
+      {tab === "public" ? <PublicWebsiteTab /> : null}
       {tab === "workspace" ? <WorkspaceTab /> : null}
       {tab === "rules" ? <BusinessRulesTab /> : null}
       {tab === "scoring" ? <ScoringTab /> : null}

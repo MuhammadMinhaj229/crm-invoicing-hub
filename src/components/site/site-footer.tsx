@@ -4,6 +4,7 @@ import { Facebook, Instagram, Linkedin, Lock, Youtube, Globe2 } from "lucide-rea
 import type { SectionContent } from "../../lib/cms";
 import { BrandMark } from "../brand-mark";
 import { useWorkspaceSettings } from "../../hooks/use-workspace-settings";
+import { useSiteContact } from "../../hooks/use-site-contact";
 
 function str(content: SectionContent, key: string, fallback = ""): string {
   const value = content[key];
@@ -22,13 +23,14 @@ export function SiteFooter({
   logoStyle?: "lockup" | "image";
 }) {
   const { settings } = useWorkspaceSettings();
+  const configuredContact = useSiteContact();
   const SocialIcon = ({ platform }: { platform: string }) => platform === "instagram" ? <Instagram className="h-4 w-4" /> : platform === "facebook" ? <Facebook className="h-4 w-4" /> : platform === "linkedin" ? <Linkedin className="h-4 w-4" /> : platform === "youtube" ? <Youtube className="h-4 w-4" /> : <Globe2 className="h-4 w-4" />;
   const links = Array.isArray(footer['links'])
     ? (footer['links'] as { label?: string; href?: string }[])
     : [];
-  const whatsapp = str(contact, "whatsapp");
-  const email = str(contact, "email");
-  const phone = str(contact, "phone");
+  const whatsapp = str(contact, "whatsapp", configuredContact.whatsapp);
+  const email = str(contact, "email", configuredContact.email);
+  const phone = str(contact, "phone", configuredContact.phone);
 
   return (
     <footer className="bg-legacy-deep text-legacy-light">
