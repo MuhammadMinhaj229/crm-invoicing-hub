@@ -198,7 +198,7 @@ export function defaultDocument(page: string): PageDocument {
     return b([
       { id: uid(), type: "hero", layout: defaultLayout({ spaceTop: 4, spaceBottom: 4 }), props: { eyebrow: s(hero["eyebrow"]), title: s(hero["title"]), text: s(hero["subtitle"]), image: heroFamily, imageAlt: s(hero["imageAlt"]), imageSide: "right", buttons: [btn(s(hero["primaryCtaLabel"], site.cta.primary), "/contact"), btn(s(hero["secondaryCtaLabel"], "See how it works"), "/about", "outline")] } },
       { id: uid(), type: "imageText", layout: defaultLayout({ background: "muted" }), props: { eyebrow: s(promise["eyebrow"]), title: s(promise["title"]), text: s(promise["body"]), image: updatesArt, imageAlt: "Photo updates sent on WhatsApp", imageSide: "left", buttons: [] } },
-      { id: uid(), type: "cards", layout: defaultLayout(), anchor: "services", props: { title: s(svc["title"], "What we do"), subtitle: s(svc["subtitle"]), columns: 3, items: items.slice(0, 6).map((it, i) => ({ id: uid(), title: s(it.title), text: s(it.description), image: art[i], href: "/services" })) } },
+      { id: uid(), type: "cards", layout: defaultLayout(), anchor: "services", props: { title: s(svc["title"], "What we do"), subtitle: s(svc["subtitle"]), columns: 3, items: items.slice(0, 6).map((it, i) => ({ id: uid(), title: s(it.title), text: s(it.description), image: art[i] ?? "", href: "/services" })) } },
       { id: uid(), type: "faq", layout: defaultLayout({ width: "narrow" }), props: { title: "Questions families ask", items: faqs.slice(0, 5).map((f) => ({ id: uid(), question: f.question, answer: f.answer })) } },
       createBlock("contactStrip"),
     ]);
