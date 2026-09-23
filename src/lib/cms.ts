@@ -122,6 +122,65 @@ export const SECTION_DEFS: SectionDef[] = [
     },
   },
   {
+    key: "cast",
+    label: "Who we help",
+    description: "The three kinds of people in every SAFAR story, shown with our own characters.",
+    fields: [
+      { key: "eyebrow", label: "Small line above the title", type: "text" },
+      { key: "title", label: "Section title", type: "text" },
+      { key: "subtitle", label: "Section subtitle", type: "textarea" },
+      {
+        key: "items",
+        label: "People",
+        type: "list",
+        itemLabel: "Person",
+        itemFields: [
+          { key: "name", label: "Who they are", type: "text" },
+          { key: "description", label: "What we do for them", type: "textarea" },
+        ],
+      },
+    ],
+    defaults: {
+      eyebrow: "Who we help",
+      title: "One family, two countries",
+      subtitle: "You are far away. They are at home. We stand in the middle and do the running around.",
+      items: [
+        {
+          name: "The son working in the Gulf",
+          description: "You send one message. We handle it and send you photos when it is done.",
+        },
+        {
+          name: "The daughter abroad",
+          description: "You can check what happened any time, without calling ten people.",
+        },
+        {
+          name: "Parents at home in India",
+          description: "The same known person comes to the door, with an ID card and a fixed price.",
+        },
+      ],
+    },
+  },
+  {
+    key: "updates",
+    label: "Photo updates",
+    description: "Shows families that every job comes back with proof.",
+    fields: [
+      { key: "eyebrow", label: "Small line above the title", type: "text" },
+      { key: "title", label: "Section title", type: "text" },
+      { key: "subtitle", label: "Section subtitle", type: "textarea" },
+      { key: "imageUrl", label: "Picture URL", type: "text" },
+      { key: "points", label: "What you get back", type: "tags" },
+    ],
+    defaults: {
+      eyebrow: "You always know",
+      title: "Every job comes back with proof",
+      subtitle:
+        "When the work is finished, our person sends a photo, the bill and a short message. You see it on your phone, wherever you are.",
+      imageUrl: "",
+      points: ["A photo of the work", "The shop or worker bill", "Our fee shown separately", "A short message on WhatsApp"],
+    },
+  },
+  {
     key: "trust",
     label: "Trust strip",
     description: "Why a family far away should hand this to you.",
