@@ -724,6 +724,36 @@ create table if not exists public.social_posts (
 alter table public.leads add column if not exists score_reasons jsonb not null default '[]';
 alter table public.leads add column if not exists last_scored_at timestamptz;
 
+-- Upgrade older installs that already had simpler conversation tables.
+alter table public.conversations add column if not exists account_id text;
+alter table public.conversations add column if not exists external_id text;
+alter table public.conversations add column if not exists lead_id uuid references public.leads(id) on delete set null;
+alter table public.conversations add column if not exists display_name text;
+alter table public.conversations add column if not exists phone text;
+alter table public.conversations add column if not exists status text not null default 'open';
+alter table public.conversations add column if not exists assigned_to uuid;
+alter table public.conversations add column if not exists tags text[] not null default '{}';
+alter table public.conversations add column if not exists service_interest text;
+alter table public.conversations add column if not exists unread_count integer not null default 0;
+alter table public.conversations add column if not exists last_message_at timestamptz;
+alter table public.conversations add column if not exists updated_at timestamptz not null default now();
+create unique index if not exists conversations_channel_external_key
+  on public.conversations (channel, external_id) where external_id is not null;
+
+alter table public.messages add column if not exists channel text not null default 'whatsapp';
+alter table public.messages add column if not exists media_type text;
+alter table public.messages add column if not exists status text not null default 'sent';
+alter table public.messages add column if not exists error text;
+alter table public.messages add column if not exists author text;
+alter table public.messages add column if not exists created_at timestamptz not null default now();
+update public.messages set direction = 'in' where direction = 'inbound';
+update public.messages set direction = 'out' where direction = 'outbound';
+
+alter table public.integrations add column if not exists label text;
+alter table public.integrations add column if not exists last_checked_at timestamptz;
+alter table public.integrations add column if not exists last_error text;
+update public.integrations set label = coalesce(label, key);
+
 do $$
 declare t text;
 begin
