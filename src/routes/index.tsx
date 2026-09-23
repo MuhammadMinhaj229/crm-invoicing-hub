@@ -19,7 +19,7 @@ import {
   Stethoscope,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 
 import { track, trackPageView } from "../lib/analytics";
 import { submitWebsiteEnquiry } from "../lib/website-capture";
@@ -88,7 +88,7 @@ function SiteHeader({
     { label: "Our Process", href: "/about" },
     { label: "Going to Gulf", href: "/services" },
     { label: "Living in Gulf", href: "/services" },
-    { label: "Questions", href: "/faq" },
+    { label: "Reviews", href: "/faq" },
   ];
   const whatsappNumber = "917207071874";
   const whatsappUrl = buildWhatsAppUrl(whatsappNumber, generalEnquiryMessage());
@@ -98,7 +98,7 @@ function SiteHeader({
       <div className="relative h-9 overflow-hidden bg-foreground text-background" aria-label="SAFAR promises">
         <div className="utility-carousel">
           {["We do...", "We assist...", "We provide...", "We are always here...", "We are always with you..."].map((message, index) => (
-            <span key={message} className="utility-message" style={{ "--message-index": index } as React.CSSProperties}>
+            <span key={message} className="utility-message" style={{ "--message-index": index } as CSSProperties}>
               {message}
             </span>
           ))}
@@ -108,7 +108,7 @@ function SiteHeader({
               target="_blank"
               rel="noopener noreferrer"
               className="utility-message inline-flex items-center justify-center gap-2 font-bold text-background"
-              style={{ "--message-index": 5 } as React.CSSProperties}
+              style={{ "--message-index": 5 } as CSSProperties}
               onClick={() => track("whatsapp.clicked", { placement: "utility_bar" })}
             >
               <MessageCircle className="h-4 w-4" /> WhatsApp Us: +91 72070 71874

@@ -210,3 +210,15 @@ html {
   animation: utility-message-cycle 18s ease-in-out infinite;
   animation-delay: calc(var(--message-index) * 3s - 3s);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .utility-message {
+    display: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .utility-message:first-child {
+    display: flex;
+  }
+}
