@@ -153,6 +153,26 @@ function AuthPage() {
           </button>
         </form>
 
+        {mode === "sign-in" ? (
+          <button
+            type="button"
+            onClick={() => {
+              setMode("sign-in");
+              setEmail(OWNER_EMAIL);
+              setPassword(OWNER_STARTER_PASSWORD);
+              setError(null);
+              setNotice(
+                isOwnerEmail(email)
+                  ? "Owner details filled in. Press Sign in."
+                  : "Owner details filled in. Press Sign in, then change the password in Settings → Account.",
+              );
+            }}
+            className="mt-4 w-full rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+          >
+            Use the owner account
+          </button>
+        ) : null}
+
         <button
           onClick={() => {
             setMode(mode === "sign-in" ? "sign-up" : "sign-in");
