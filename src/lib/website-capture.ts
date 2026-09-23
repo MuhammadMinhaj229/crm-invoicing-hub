@@ -55,28 +55,27 @@ export async function submitWebsiteEnquiry(input: EnquiryInput): Promise<Enquiry
   if (error || !data) return { saved: false, reason: error?.message };
 
   // Record where this lead came from, first touch and the converting touch.
-  const touches = [
-    firstTouch
-      ? {
-          visitor_key: visitorKey,
-          lead_id: data.id as string,
-          touch_type: "first",
-          source: firstTouch.utm_source ?? referrerSource(firstTouch.referrer),
-          medium: firstTouch.utm_medium,
-          campaign: firstTouch.utm_campaign,
-          landing_page: firstTouch.landing_page,
-        }
-      : null,
-    {
+  const touches: Array<Record<string, unknown>> = [];
+  if (firstTouch) {
+    touches.push({
       visitor_key: visitorKey,
       lead_id: data.id as string,
-      touch_type: "conversion",
-      source: "website",
-      medium: "form",
-      campaign: firstTouch?.utm_campaign ?? null,
-      landing_page: typeof window !== "undefined" ? window.location.pathname : null,
-    },
-  ].filter(Boolean);
+      touch_type: "first",
+      source: firstTouch.utm_source ?? referrerSource(firstTouch.referrer),
+      medium: firstTouch.utm_medium,
+      campaign: firstTouch.utm_campaign,
+      landing_page: firstTouch.landing_page,
+    });
+  }
+  touches.push({
+    visitor_key: visitorKey,
+    lead_id: data.id as string,
+    touch_type: "conversion",
+    source: "website",
+    medium: "form",
+    campaign: firstTouch?.utm_campaign ?? null,
+    landing_page: typeof window !== "undefined" ? window.location.pathname : null,
+  });
 
   void supabase.from("attribution_touches").insert(touches);
   void supabase
