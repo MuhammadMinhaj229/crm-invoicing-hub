@@ -471,8 +471,41 @@ function ContactsTab() {
 
 function ChurnTab() {
   const { settings } = useWorkspaceSettings();
+  const queryClient = useQueryClient();
   const { data: contacts = [] } = useQuery({ queryKey: ["contacts"], queryFn: fetchContacts });
   const { data: requests = [] } = useQuery({ queryKey: ["requests"], queryFn: fetchRequests });
+  const { data: tasks = [] } = useQuery({ queryKey: ["tasks"], queryFn: fetchTasks });
+
+  const openFollowUps = useMemo(
+    () => new Set(tasks.filter((task) => task.status === "open" && task.contact_id).map((task) => task.contact_id!)),
+    [tasks],
+  );
+
+  const followUp = useMutation({
+    mutationFn: ({ contactId, title }: { contactId: string; title: string }) =>
+      createFollowUpTask(contactId, title),
+    onSuccess: async () => {
+      toast.success("Follow-up task created");
+      await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Could not create task"),
+  });
+
+  const reactivate = useMutation({
+    mutationFn: (contactId: string) => markReactivated(contactId),
+    onSuccess: async () => {
+      toast.success("Marked as reactivated");
+      await queryClient.invalidateQueries({ queryKey: ["contacts"] });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Could not update"),
+  });
+
+  const closeTask = useMutation({
+    mutationFn: (id: string) => completeTask(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
 
   const rows = useMemo(
     () => buildRetention(contacts, requests, settings),
@@ -481,6 +514,7 @@ function ChurnTab() {
   const needsAttention = rows.filter(
     (row) => row.state === "at_risk" || row.state === "churned",
   );
+
 
   if (contacts.length === 0) {
     return (
