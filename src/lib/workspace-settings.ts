@@ -18,6 +18,8 @@ export interface ThemeSettings {
   radius: number;
   density: "comfortable" | "compact";
   sidebarStyle: "warm" | "plain";
+  headingScale: number;
+  buttonStyle: "soft" | "square";
 }
 
 export interface BrandingSettings {
@@ -25,6 +27,15 @@ export interface BrandingSettings {
   tagline: string;
   initial: string;
   logoUrl: string;
+  faviconUrl: string;
+}
+
+export interface WebsiteAppearanceSettings {
+  sectionStyle: "zigzag" | "grid";
+  showHeroHighlights: boolean;
+  showTrustSection: boolean;
+  showProcessSection: boolean;
+  showFaqSection: boolean;
 }
 
 export interface NavItemSetting {
@@ -54,6 +65,7 @@ export interface WorkspaceSettings {
   leadStatuses: string[];
   serviceCategories: string[];
   retention: RetentionSettings;
+  websiteAppearance: WebsiteAppearanceSettings;
 }
 
 export const DEFAULT_SETTINGS: WorkspaceSettings = {
@@ -62,16 +74,19 @@ export const DEFAULT_SETTINGS: WorkspaceSettings = {
     tagline: "We do. We assist. We connect.",
     initial: "S",
     logoUrl: "",
+    faviconUrl: "",
   },
   theme: {
-    primary: "#FFA170",
-    secondary: "#FEAB7C",
-    accent: "#FEBD95",
-    background: "#FFFAF5",
-    foreground: "#1B2A4A",
-    radius: 12,
+    primary: "#FF9B70",
+    secondary: "#FFC2A3",
+    accent: "#FFDCCB",
+    background: "#FFF8F3",
+    foreground: "#18294A",
+    radius: 8,
     density: "comfortable",
     sidebarStyle: "warm",
+    headingScale: 100,
+    buttonStyle: "soft",
   },
   nav: [
     { id: "/dashboard", label: "Dashboard", enabled: true },
@@ -122,6 +137,13 @@ export const DEFAULT_SETTINGS: WorkspaceSettings = {
     churnedAfterDays: 30,
     autoFollowUpTask: true,
   },
+  websiteAppearance: {
+    sectionStyle: "zigzag",
+    showHeroHighlights: true,
+    showTrustSection: true,
+    showProcessSection: true,
+    showFaqSection: true,
+  },
 };
 
 const STORAGE_KEY = "safar.workspace.settings";
@@ -154,6 +176,10 @@ function merge(stored: unknown): WorkspaceSettings {
       ? value.serviceCategories
       : DEFAULT_SETTINGS.serviceCategories,
     retention: { ...DEFAULT_SETTINGS.retention, ...(value.retention ?? {}) },
+    websiteAppearance: {
+      ...DEFAULT_SETTINGS.websiteAppearance,
+      ...(value.websiteAppearance ?? {}),
+    },
   };
 }
 
@@ -222,6 +248,8 @@ export function applyTheme(settings: WorkspaceSettings): void {
   root.style.setProperty("--muted", mix(theme.background, "#FFFFFF", 0.4));
   root.style.setProperty("--muted-foreground", mix(theme.foreground, theme.background, 0.45));
   root.style.setProperty("--radius", `${theme.radius}px`);
+  root.style.setProperty("--heading-scale", `${theme.headingScale / 100}`);
+  root.dataset["buttonStyle"] = theme.buttonStyle;
   root.dataset["density"] = theme.density;
 }
 

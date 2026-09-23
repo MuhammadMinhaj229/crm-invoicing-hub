@@ -16,6 +16,7 @@ import { useState, type ReactNode } from "react";
 
 import { useThemeSync, useWorkspaceSettings } from "../hooks/use-workspace-settings";
 import { isSupabaseConfigured, getSupabase } from "../lib/supabase";
+import { BrandMark } from "./brand-mark";
 
 const NAV_ICONS: Record<string, LucideIcon> = {
   "/dashboard": LayoutDashboard,
@@ -61,22 +62,8 @@ function Brand() {
   const { settings } = useWorkspaceSettings();
   const { branding } = settings;
   return (
-    <div className="flex items-center gap-2.5 px-3">
-      {branding.logoUrl ? (
-        <img
-          src={branding.logoUrl}
-          alt={branding.name}
-          className="h-8 w-8 rounded-lg object-cover"
-        />
-      ) : (
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary font-display text-sm font-bold text-primary-foreground">
-          {branding.initial || branding.name.charAt(0)}
-        </div>
-      )}
-      <div className="leading-tight">
-        <p className="font-display text-sm font-bold text-foreground">{branding.name}</p>
-        <p className="text-[11px] text-muted-foreground">{branding.tagline}</p>
-      </div>
+    <div className="px-3">
+      <BrandMark name={branding.name} logoUrl={branding.logoUrl} />
     </div>
   );
 }
@@ -126,7 +113,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen bg-background">
       {/* Desktop sidebar */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
+       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
         <div className="py-5">
           <Brand />
         </div>
@@ -178,7 +165,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         ) : null}
 
         <SetupBanner />
-        <main className={`min-w-0 flex-1 ${pad}`}>{children}</main>
+         <main className={`min-w-0 flex-1 ${pad}`}><div className="mx-auto w-full max-w-[1500px]">{children}</div></main>
       </div>
     </div>
   );
