@@ -87,3 +87,14 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 1. Churn threshold: fixed 7 days or per service type?
 2. Finance: specific investment heads / provider payout schemes?
 3. GitHub: ready-to-push folders vs connecting GitHub sync in the editor?
+
+## Public website architecture (done)
+- `src/content/` — single source of truth: `site.ts` (brand, navigation, CTA labels), `services.ts` (catalogue), `faqs.ts`.
+- `src/types/` — typed models for site, services and content.
+- `src/lib/whatsapp/` — `url-builder.ts` (E.164 + encoding, null when unconfigured) and `templates.ts` (message builders).
+- `src/lib/seo/json-ld.ts` — Organization, Service, ItemList, FAQPage and BreadcrumbList schemas generated from the content layer.
+- `src/components/motion/primitives.tsx` — Reveal + AmbientBackground, CSS-only, reduced-motion aware.
+- `src/components/layout/` — `page-shell.tsx` (header, footer, floating actions) and `page-intro.tsx` (breadcrumbs + page header).
+- Routes: `/services`, `/services/$slug`, `/about`, `/faq`, `/contact`, `/privacy`, `/terms`, `/sitemap.xml`.
+- Contact form: React Hook Form + Zod, honeypot field, lead recorded before WhatsApp handover.
+- Contact channels stay empty until entered in the console; unconfigured channels are not rendered.

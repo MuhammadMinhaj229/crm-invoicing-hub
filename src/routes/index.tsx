@@ -79,12 +79,14 @@ function SiteHeader({
   logoStyle: "lockup" | "image";
 }) {
   const [open, setOpen] = useState(false);
+  // Real pages, not hash anchors: each one is indexable and shareable.
   const links = [
-    { label: "Services", href: "#services" },
-    { label: "How it works", href: "#how-it-works" },
-    { label: "FAQ", href: "#faq" },
-    { label: "Contact", href: "#contact" },
+    { label: "Services", href: "/services" },
+    { label: "How it works", href: "/about" },
+    { label: "Questions", href: "/faq" },
+    { label: "Talk to us", href: "/contact" },
   ];
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-4">
