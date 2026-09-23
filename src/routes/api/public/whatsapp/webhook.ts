@@ -115,6 +115,46 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
           return new Response("Bad payload", { status: 400 });
         }
 
+        const incoming = [...parseMeta(payload), ...parseEvolution(payload)];
+        let stored = 0;
+
+        // Fast path: direct Postgres through the transaction pooler.
+        const { getSql } = await import("@/lib/db.server");
+        const sql = await getSql();
+        if (sql) {
+          for (const item of incoming) {
+            const phone = `+${digitsOnly(item.from)}`;
+            const done = await sql.begin(async (tx) => {
+              const seen = await tx`
+                insert into public.webhook_events (provider, external_id, event_type, payload, processing_status)
+                values (${item.provider}, ${item.eventId}, 'message.received', ${tx.json(payload as never)}, 'processing')
+                on conflict (provider, external_id) do nothing
+                returning id`;
+              if (seen.length === 0) return false;
+              const [conv] = await tx`
+                insert into public.conversations
+                  (channel, external_id, phone, display_name, contact_id, status, last_message_at, unread_count, updated_at)
+                values ('whatsapp', ${phone}, ${phone}, ${item.name ?? phone},
+                  (select id from public.contacts where phone = ${phone} limit 1),
+                  'open', ${item.sentAt}, 1, now())
+                on conflict (channel, external_id) do update set
+                  display_name = excluded.display_name, status = 'open',
+                  last_message_at = excluded.last_message_at,
+                  unread_count = public.conversations.unread_count + 1, updated_at = now()
+                returning id`;
+              await tx`
+                insert into public.messages (conversation_id, direction, channel, external_id, body, status, sent_at)
+                values (${conv!["id"]}, 'in', 'whatsapp', ${item.eventId}, ${item.body}, 'delivered', ${item.sentAt})`;
+              await tx`
+                update public.webhook_events set processing_status = 'processed'
+                where provider = ${item.provider} and external_id = ${item.eventId}`;
+              return true;
+            });
+            if (done) stored += 1;
+          }
+          return Response.json({ ok: true, stored, via: "direct" });
+        }
+
         const url = process.env["SUPABASE_URL"] ?? "";
         const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"] ?? "";
         if (!url || !serviceKey) {
@@ -124,14 +164,11 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
         const { createClient } = await import("@supabase/supabase-js");
         const supabase = createClient(url, serviceKey, { auth: { persistSession: false } });
 
-        const incoming = [...parseMeta(payload), ...parseEvolution(payload)];
-        let stored = 0;
-
         for (const item of incoming) {
           // Idempotency: one row per provider event id.
           const { error: seen } = await supabase.from("webhook_events").insert({
             provider: item.provider,
-            event_id: item.eventId,
+            external_id: item.eventId,
             event_type: "message.received",
             payload: payload as Record<string, unknown>,
             processing_status: "processing",
@@ -182,9 +219,9 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
 
           await supabase
             .from("webhook_events")
-            .update({ processing_status: "done" })
+            .update({ processing_status: "processed" })
             .eq("provider", item.provider)
-            .eq("event_id", item.eventId);
+            .eq("external_id", item.eventId);
 
           stored += 1;
         }

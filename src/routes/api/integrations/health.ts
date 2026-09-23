@@ -5,8 +5,11 @@ export const Route = createFileRoute("/api/integrations/health")({
   server: {
     handlers: {
       GET: async () => {
+        const { probeDirectDatabase } = await import("@/lib/db.server");
+        const direct = await probeDirectDatabase();
         const has = (name: string) => Boolean(process.env[name]);
         const checks = [
+          { key: "database_direct", label: "Database direct link (Transaction pooler)", ok: direct.ok, detail: direct.detail },
           {
             key: "whatsapp_meta",
             label: "WhatsApp (official Meta Cloud API)",
@@ -22,8 +25,8 @@ export const Route = createFileRoute("/api/integrations/health")({
           {
             key: "whatsapp_webhook",
             label: "WhatsApp incoming messages",
-            ok: has("SUPABASE_URL") && has("SUPABASE_SERVICE_ROLE_KEY") && has("WHATSAPP_WEBHOOK_SECRET"),
-            detail: "Needs SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and WHATSAPP_WEBHOOK_SECRET",
+            ok: (has("DATABASE_URL") || (has("SUPABASE_URL") && has("SUPABASE_SERVICE_ROLE_KEY"))) && has("WHATSAPP_WEBHOOK_SECRET"),
+            detail: "Needs WHATSAPP_WEBHOOK_SECRET plus DATABASE_URL (or SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY)",
           },
           {
             key: "instagram",

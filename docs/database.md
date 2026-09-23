@@ -12,6 +12,16 @@ Your own Supabase project holds everything. Nothing is stored anywhere else.
 
 The script is `src/lib/foundation.sql`.
 
+5. Sign up at `/auth`, then make yourself the owner:
+   `insert into public.user_roles (user_id, role) select id, 'super_admin' from auth.users where email = 'YOUR@EMAIL.COM' on conflict do nothing;`
+
+## Faster direct link
+
+Server jobs can use the Supabase **Transaction pooler** string (Connect →
+Transaction pooler, port 6543) set as `DATABASE_URL` in the hosting
+environment. It skips row security, so it is server-only and never pasted in
+the browser. The browser keeps using the project URL and public key.
+
 ## Main tables
 
 - People and access: `profiles`, `user_roles`, `organizations`
