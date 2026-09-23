@@ -235,13 +235,21 @@ create table if not exists public.cms_sections (
   id uuid primary key default gen_random_uuid(),
   page text not null default 'home',
   section_key text not null, -- hero | services | trust | how_it_works | testimonials | cta | faq | contact | footer
-  content jsonb not null default '{}',
+  content jsonb not null default '{}',        -- published content
+  draft_content jsonb,                        -- work in progress, not public
+
   status text not null default 'draft', -- draft | published
   version int not null default 1,
   updated_by uuid references auth.users(id),
   updated_at timestamptz not null default now(),
   unique (page, section_key)
 );
+
+-- safe to re-run on an existing install
+alter table public.cms_sections add column if not exists draft_content jsonb;
+alter table public.service_requests add column if not exists description text;
+
+
 
 create table if not exists public.cms_revisions (
   id uuid primary key default gen_random_uuid(),
