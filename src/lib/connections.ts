@@ -127,10 +127,9 @@ export const INTEGRATIONS: IntegrationDefinition[] = [
     fields: [
       {
         key: "baseUrl",
-        label: "Finance URL (optional external ledger)",
+        label: "Finance URL",
         placeholder: "https://finance.yourdomain.com",
         secret: false,
-        optional: true,
       },
       {
         key: "apiKey",
