@@ -98,6 +98,7 @@ export const DEFAULT_SETTINGS: WorkspaceSettings = {
     { id: "/customers", label: "Customers", enabled: true },
     { id: "/operations", label: "Service Requests", enabled: true },
     { id: "/intelligence", label: "Website Intelligence", enabled: true },
+    { id: "/finance", label: "Finance", enabled: true },
     { id: "/vendors", label: "Vendors & Partners", enabled: true },
     { id: "/tools", label: "Tools", enabled: true },
     { id: "/settings", label: "Settings", enabled: true },
