@@ -9,38 +9,44 @@ import {
   Users,
   Wrench,
   X,
+  type LucideIcon,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
+import { useThemeSync, useWorkspaceSettings } from "../hooks/use-workspace-settings";
 import { isSupabaseConfigured, getSupabase } from "../lib/supabase";
 
-const NAV_ITEMS = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/website", label: "Website", icon: Globe },
-  { to: "/customers", label: "Customers", icon: Users },
-  { to: "/vendors", label: "Vendors & Partners", icon: Handshake },
-  { to: "/tools", label: "Tools", icon: Wrench },
-  { to: "/settings", label: "Settings", icon: Settings },
-] as const;
+const NAV_ICONS: Record<string, LucideIcon> = {
+  "/dashboard": LayoutDashboard,
+  "/website": Globe,
+  "/customers": Users,
+  "/vendors": Handshake,
+  "/tools": Wrench,
+  "/settings": Settings,
+};
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const { settings } = useWorkspaceSettings();
+  const items = settings.nav.filter((item) => item.enabled || item.id === "/settings");
+
   return (
     <nav className="flex flex-col gap-1">
-      {NAV_ITEMS.map((item) => {
-        const active = pathname.startsWith(item.to);
+      {items.map((item) => {
+        const Icon = NAV_ICONS[item.id] ?? LayoutDashboard;
+        const active = pathname.startsWith(item.id);
         return (
           <Link
-            key={item.to}
-            to={item.to}
+            key={item.id}
+            to={item.id}
             onClick={onNavigate}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+            className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
               active
-                ? "bg-primary text-primary-foreground"
-                : "text-sidebar-foreground hover:bg-sidebar-accent"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             }`}
           >
-            <item.icon className="h-4 w-4 shrink-0" />
+            <Icon className="h-4 w-4 shrink-0" />
             {item.label}
           </Link>
         );
@@ -50,14 +56,24 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 function Brand() {
+  const { settings } = useWorkspaceSettings();
+  const { branding } = settings;
   return (
     <div className="flex items-center gap-2.5 px-3">
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary font-display text-sm font-bold text-primary-foreground">
-        S
-      </div>
+      {branding.logoUrl ? (
+        <img
+          src={branding.logoUrl}
+          alt={branding.name}
+          className="h-8 w-8 rounded-lg object-cover"
+        />
+      ) : (
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary font-display text-sm font-bold text-primary-foreground">
+          {branding.initial || branding.name.charAt(0)}
+        </div>
+      )}
       <div className="leading-tight">
-        <p className="font-display text-sm font-bold text-foreground">SAFAR N MANZIL</p>
-        <p className="text-[11px] text-muted-foreground">We do. We assist. We connect.</p>
+        <p className="font-display text-sm font-bold text-foreground">{branding.name}</p>
+        <p className="text-[11px] text-muted-foreground">{branding.tagline}</p>
       </div>
     </div>
   );
@@ -101,6 +117,9 @@ function SetupBanner() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { settings } = useWorkspaceSettings();
+  useThemeSync(settings);
+  const pad = settings.theme.density === "compact" ? "px-4 py-4 sm:px-5" : "px-4 py-6 sm:px-6 lg:px-8";
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -157,7 +176,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         ) : null}
 
         <SetupBanner />
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <main className={`min-w-0 flex-1 ${pad}`}>{children}</main>
       </div>
     </div>
   );

@@ -13,9 +13,17 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 - [x] Settings → Connections hub: Supabase card (save/test/disconnect + copy setup SQL) + WhatsApp/Invoify/Social/Finance integration cards
 - [ ] User pastes Supabase keys in Settings → Connections, runs setup SQL in their Supabase SQL editor
 
-## Phase 3 — Customers: Leads / Contacts / 360 profile (next)
-## Phase 3 — Customers: Leads / Contacts / 360 profile
-## Phase 4 — Churn & Retention intelligence (threshold: open question, default 7 days)
+## Phase 2 — Workspace settings core (done)
+- [x] Settings model: branding, theme, nav, currency/locale, lead sources, lifecycle stages, service categories, retention rules
+- [x] Live theme application + settings-driven sidebar and page chrome
+
+## Phase 3 — Customers: Leads / Contacts / 360 profile (done)
+- [x] Leads tab: add lead, source attribution + detail, search/filter, status change, one-click convert (dedup by normalised phone/email)
+- [x] Contacts tab: searchable list, click-through 360° profile (residence, requests, invoices, payments, notes, lifetime value)
+- [x] Churn & Retention tab: days quiet, repeat-demand profile, per-category thresholds from Settings
+
+## Phase 4 — Churn automation: follow-up tasks + reactivation logging
+
 ## Phase 5 — Vendors & Partners directory wired to work orders
 ## Phase 6 — Service Requests desk
 ## Phase 7 — Finance: invoices, payments, expenses, payables, profit; Invoify entry point

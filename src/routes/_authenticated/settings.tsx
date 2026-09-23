@@ -12,6 +12,7 @@ import {
 import { useEffect, useState, type FormEvent } from "react";
 
 import { PageHeader } from "../../components/app-shell";
+import { useWorkspaceSettings } from "../../hooks/use-workspace-settings";
 import {
   INTEGRATIONS,
   getIntegrationValues,
@@ -356,23 +357,538 @@ function IntegrationCard({ definition }: { definition: IntegrationDefinition }) 
   );
 }
 
-function SettingsPage() {
+/* ---------------------------------------------------------------- */
+/* Shared little editors                                             */
+/* ---------------------------------------------------------------- */
+
+const fieldClass =
+  "w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30";
+
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="mb-1.5 block text-sm font-medium text-foreground">{label}</label>
+      {children}
+      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+function Panel({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <h2 className="font-display text-lg font-semibold text-foreground">{title}</h2>
+      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+      <div className="mt-5 space-y-4">{children}</div>
+    </section>
+  );
+}
+
+function ColorField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <Field label={label}>
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-10 w-12 cursor-pointer rounded-lg border border-input bg-background p-1"
+          aria-label={label}
+        />
+        <input value={value} onChange={(e) => onChange(e.target.value)} className={fieldClass} />
+      </div>
+    </Field>
+  );
+}
+
+function ListEditor({
+  label,
+  hint,
+  items,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  items: string[];
+  onChange: (items: string[]) => void;
+}) {
+  const [draft, setDraft] = useState("");
+  return (
+    <Field label={label} hint={hint}>
+      <div className="flex flex-wrap gap-2">
+        {items.map((item) => (
+          <span
+            key={item}
+            className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-xs font-medium text-accent-foreground"
+          >
+            {item}
+            <button
+              type="button"
+              aria-label={`Remove ${item}`}
+              onClick={() => onChange(items.filter((value) => value !== item))}
+              className="opacity-60 hover:opacity-100"
+            >
+              <XCircle className="h-3.5 w-3.5" />
+            </button>
+          </span>
+        ))}
+      </div>
+      <div className="mt-2 flex gap-2">
+        <input
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="Add an option…"
+          className={fieldClass}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              const value = draft.trim();
+              if (value && !items.includes(value)) onChange([...items, value]);
+              setDraft("");
+            }
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => {
+            const value = draft.trim();
+            if (value && !items.includes(value)) onChange([...items, value]);
+            setDraft("");
+          }}
+          className="shrink-0 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-accent"
+        >
+          Add
+        </button>
+      </div>
+    </Field>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* Tabs                                                              */
+/* ---------------------------------------------------------------- */
+
+function ConnectionsTab() {
   const otherIntegrations = INTEGRATIONS.filter((i) => i.id !== "supabase");
+  return (
+    <div className="space-y-4">
+      <DatabaseCard />
+      <h2 className="pt-4 font-display text-lg font-semibold text-foreground">
+        Tools & integrations
+      </h2>
+      {otherIntegrations.map((definition) => (
+        <IntegrationCard key={definition.id} definition={definition} />
+      ))}
+    </div>
+  );
+}
+
+function AppearanceTab() {
+  const { settings, update, reset } = useWorkspaceSettings();
+  const { theme, branding } = settings;
+
+  return (
+    <div className="space-y-4">
+      <Panel
+        title="Brand identity"
+        description="Shown in the sidebar, sign-in screen and every page header."
+      >
+        <Field label="Business name">
+          <input
+            value={branding.name}
+            onChange={(e) => update({ branding: { ...branding, name: e.target.value } })}
+            className={fieldClass}
+          />
+        </Field>
+        <Field label="Tagline">
+          <input
+            value={branding.tagline}
+            onChange={(e) => update({ branding: { ...branding, tagline: e.target.value } })}
+            className={fieldClass}
+          />
+        </Field>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Monogram letter" hint="Used when no logo image is set.">
+            <input
+              value={branding.initial}
+              maxLength={2}
+              onChange={(e) => update({ branding: { ...branding, initial: e.target.value } })}
+              className={fieldClass}
+            />
+          </Field>
+          <Field label="Logo image URL" hint="Optional — overrides the monogram.">
+            <input
+              value={branding.logoUrl}
+              placeholder="https://…"
+              onChange={(e) => update({ branding: { ...branding, logoUrl: e.target.value } })}
+              className={fieldClass}
+            />
+          </Field>
+        </div>
+      </Panel>
+
+      <Panel
+        title="Colour palette"
+        description="Every colour in the console updates live as you change these."
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <ColorField
+            label="Primary"
+            value={theme.primary}
+            onChange={(primary) => update({ theme: { ...theme, primary } })}
+          />
+          <ColorField
+            label="Secondary"
+            value={theme.secondary}
+            onChange={(secondary) => update({ theme: { ...theme, secondary } })}
+          />
+          <ColorField
+            label="Accent"
+            value={theme.accent}
+            onChange={(accent) => update({ theme: { ...theme, accent } })}
+          />
+          <ColorField
+            label="Canvas background"
+            value={theme.background}
+            onChange={(background) => update({ theme: { ...theme, background } })}
+          />
+          <ColorField
+            label="Text colour"
+            value={theme.foreground}
+            onChange={(foreground) => update({ theme: { ...theme, foreground } })}
+          />
+        </div>
+      </Panel>
+
+      <Panel title="Layout feel" description="Corner softness, spacing and sidebar tone.">
+        <Field label={`Corner radius — ${theme.radius}px`}>
+          <input
+            type="range"
+            min={0}
+            max={24}
+            value={theme.radius}
+            onChange={(e) => update({ theme: { ...theme, radius: Number(e.target.value) } })}
+            className="w-full accent-[var(--primary)]"
+          />
+        </Field>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Density">
+            <select
+              value={theme.density}
+              onChange={(e) =>
+                update({ theme: { ...theme, density: e.target.value as "comfortable" | "compact" } })
+              }
+              className={fieldClass}
+            >
+              <option value="comfortable">Comfortable</option>
+              <option value="compact">Compact</option>
+            </select>
+          </Field>
+          <Field label="Sidebar tone">
+            <select
+              value={theme.sidebarStyle}
+              onChange={(e) =>
+                update({ theme: { ...theme, sidebarStyle: e.target.value as "warm" | "plain" } })
+              }
+              className={fieldClass}
+            >
+              <option value="warm">Warm</option>
+              <option value="plain">Plain white</option>
+            </select>
+          </Field>
+        </div>
+        <button
+          type="button"
+          onClick={reset}
+          className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent"
+        >
+          Restore SAFAR defaults
+        </button>
+      </Panel>
+    </div>
+  );
+}
+
+function WorkspaceTab() {
+  const { settings, update } = useWorkspaceSettings();
+  return (
+    <div className="space-y-4">
+      <Panel
+        title="Menu"
+        description="Rename any section or hide the ones you do not use. Settings always stays visible."
+      >
+        {settings.nav.map((item, index) => (
+          <div key={item.id} className="flex items-center gap-3">
+            <input
+              value={item.label}
+              onChange={(e) => {
+                const nav = [...settings.nav];
+                nav[index] = { ...item, label: e.target.value };
+                update({ nav });
+              }}
+              className={fieldClass}
+            />
+            <label className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground">
+              <input
+                type="checkbox"
+                checked={item.enabled}
+                disabled={item.id === "/settings"}
+                onChange={(e) => {
+                  const nav = [...settings.nav];
+                  nav[index] = { ...item, enabled: e.target.checked };
+                  update({ nav });
+                }}
+                className="h-4 w-4 accent-[var(--primary)]"
+              />
+              Show
+            </label>
+          </div>
+        ))}
+      </Panel>
+
+      <Panel title="Money & language" description="Used for every amount shown in the console.">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Currency code" hint="INR, AED, SAR, QAR, KWD, OMR, BHD, USD…">
+            <input
+              value={settings.currency}
+              onChange={(e) => update({ currency: e.target.value.toUpperCase() })}
+              className={fieldClass}
+            />
+          </Field>
+          <Field label="Number & date format" hint="e.g. en-IN, en-AE, ar-SA">
+            <input
+              value={settings.locale}
+              onChange={(e) => update({ locale: e.target.value })}
+              className={fieldClass}
+            />
+          </Field>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+function BusinessRulesTab() {
+  const { settings, update } = useWorkspaceSettings();
+  const { retention } = settings;
+
+  return (
+    <div className="space-y-4">
+      <Panel
+        title="Lead & customer vocabulary"
+        description="These options drive the dropdowns across Customers, Vendors and Requests."
+      >
+        <ListEditor
+          label="Where leads come from"
+          hint="Each lead records exactly one of these as its origin."
+          items={settings.leadSources}
+          onChange={(leadSources) => update({ leadSources })}
+        />
+        <ListEditor
+          label="Lead statuses"
+          hint="The pipeline a lead moves through before conversion."
+          items={settings.leadStatuses}
+          onChange={(leadStatuses) => update({ leadStatuses })}
+        />
+        <ListEditor
+          label="Customer lifecycle stages"
+          hint="Stage shown on every customer profile."
+          items={settings.lifecycleStages}
+          onChange={(lifecycleStages) => update({ lifecycleStages })}
+        />
+        <ListEditor
+          label="Service categories"
+          hint="Used for service interest, provider trades and demand reporting."
+          items={settings.serviceCategories}
+          onChange={(serviceCategories) => update({ serviceCategories })}
+        />
+      </Panel>
+
+      <Panel
+        title="Retention & churn rules"
+        description="How long a customer can stay quiet before the team is prompted to reach out."
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="At risk after (days of silence)">
+            <input
+              type="number"
+              min={1}
+              value={retention.defaultInactivityDays}
+              onChange={(e) =>
+                update({
+                  retention: { ...retention, defaultInactivityDays: Number(e.target.value) },
+                })
+              }
+              className={fieldClass}
+            />
+          </Field>
+          <Field label="Treat as churned after (days)">
+            <input
+              type="number"
+              min={1}
+              value={retention.churnedAfterDays}
+              onChange={(e) =>
+                update({ retention: { ...retention, churnedAfterDays: Number(e.target.value) } })
+              }
+              className={fieldClass}
+            />
+          </Field>
+        </div>
+        <label className="flex items-center gap-2 text-sm text-foreground">
+          <input
+            type="checkbox"
+            checked={retention.autoFollowUpTask}
+            onChange={(e) =>
+              update({ retention: { ...retention, autoFollowUpTask: e.target.checked } })
+            }
+            className="h-4 w-4 accent-[var(--primary)]"
+          />
+          Create a follow-up task automatically when a customer goes quiet
+        </label>
+
+        <div>
+          <p className="mb-2 text-sm font-medium text-foreground">
+            Per-category exceptions
+            <span className="ml-1 font-normal text-muted-foreground">
+              (groceries go quiet faster than legal work)
+            </span>
+          </p>
+          <div className="space-y-2">
+            {retention.categoryOverrides.map((override, index) => (
+              <div key={`${override.category}-${index}`} className="flex gap-2">
+                <select
+                  value={override.category}
+                  onChange={(e) => {
+                    const categoryOverrides = [...retention.categoryOverrides];
+                    categoryOverrides[index] = { ...override, category: e.target.value };
+                    update({ retention: { ...retention, categoryOverrides } });
+                  }}
+                  className={fieldClass}
+                >
+                  {settings.serviceCategories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  min={1}
+                  value={override.days}
+                  onChange={(e) => {
+                    const categoryOverrides = [...retention.categoryOverrides];
+                    categoryOverrides[index] = { ...override, days: Number(e.target.value) };
+                    update({ retention: { ...retention, categoryOverrides } });
+                  }}
+                  className="w-28 rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
+                />
+                <button
+                  type="button"
+                  aria-label="Remove exception"
+                  onClick={() =>
+                    update({
+                      retention: {
+                        ...retention,
+                        categoryOverrides: retention.categoryOverrides.filter(
+                          (_, i) => i !== index,
+                        ),
+                      },
+                    })
+                  }
+                  className="shrink-0 rounded-lg border border-border px-3 text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              update({
+                retention: {
+                  ...retention,
+                  categoryOverrides: [
+                    ...retention.categoryOverrides,
+                    {
+                      category: settings.serviceCategories[0] ?? "",
+                      days: retention.defaultInactivityDays,
+                    },
+                  ],
+                },
+              })
+            }
+            className="mt-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-accent"
+          >
+            Add exception
+          </button>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+const SETTINGS_TABS = [
+  { id: "connections", label: "Connections" },
+  { id: "appearance", label: "Appearance" },
+  { id: "workspace", label: "Workspace" },
+  { id: "rules", label: "Business rules" },
+] as const;
+
+type SettingsTab = (typeof SETTINGS_TABS)[number]["id"];
+
+function SettingsPage() {
+  const [tab, setTab] = useState<SettingsTab>("connections");
+
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader
         title="Settings"
-        description="Connect the database and every tool from one place. Keys you paste here stay on your devices — never in the code, never in the repos."
+        description="Connect the database and every tool, and shape how the whole console looks and behaves. Keys you paste here stay on your devices — never in the code, never in the repos."
       />
-      <DatabaseCard />
-      <h2 className="mb-4 mt-10 font-display text-lg font-semibold text-foreground">
-        Tools & integrations
-      </h2>
-      <div className="space-y-4">
-        {otherIntegrations.map((definition) => (
-          <IntegrationCard key={definition.id} definition={definition} />
+      <div className="mb-5 flex flex-wrap gap-1 rounded-lg border border-border bg-card p-1">
+        {SETTINGS_TABS.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setTab(item.id)}
+            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              tab === item.id
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:bg-accent"
+            }`}
+          >
+            {item.label}
+          </button>
         ))}
       </div>
+      {tab === "connections" ? <ConnectionsTab /> : null}
+      {tab === "appearance" ? <AppearanceTab /> : null}
+      {tab === "workspace" ? <WorkspaceTab /> : null}
+      {tab === "rules" ? <BusinessRulesTab /> : null}
     </div>
   );
 }
