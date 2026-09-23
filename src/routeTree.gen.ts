@@ -25,6 +25,8 @@ import { Route as AuthenticatedSocialRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedToolsRouteImport } from './routes/_authenticated/tools'
 import { Route as AuthenticatedVendorsRouteImport } from './routes/_authenticated/vendors'
 import { Route as AuthenticatedWebsiteRouteImport } from './routes/_authenticated/website'
+import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as ApiIntegrationsHealthRouteImport } from './routes/api/integrations/health'
 import { Route as ApiMessagingSendRouteImport } from './routes/api/messaging/send'
 import { Route as ApiPublicWhatsappWebhookRouteImport } from './routes/api/public/whatsapp/webhook'
@@ -110,6 +112,16 @@ const AuthenticatedWebsiteRoute = AuthenticatedWebsiteRouteImport.update({
   path: '/website',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ServicesIndexRoute = ServicesIndexRouteImport.update({
+  id: '/services/',
+  path: '/services/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesSlugRoute = ServicesSlugRouteImport.update({
+  id: '/services/$slug',
+  path: '/services/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiIntegrationsHealthRoute = ApiIntegrationsHealthRouteImport.update({
   id: '/api/integrations/health',
   path: '/api/integrations/health',
@@ -143,6 +155,8 @@ export interface FileRoutesByFullPath {
   '/tools': typeof AuthenticatedToolsRoute
   '/vendors': typeof AuthenticatedVendorsRoute
   '/website': typeof AuthenticatedWebsiteRoute
+  '/services/$slug': typeof ServicesSlugRoute
+  '/services/': typeof ServicesIndexRoute
   '/api/integrations/health': typeof ApiIntegrationsHealthRoute
   '/api/messaging/send': typeof ApiMessagingSendRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
@@ -163,6 +177,8 @@ export interface FileRoutesByTo {
   '/tools': typeof AuthenticatedToolsRoute
   '/vendors': typeof AuthenticatedVendorsRoute
   '/website': typeof AuthenticatedWebsiteRoute
+  '/services/$slug': typeof ServicesSlugRoute
+  '/services': typeof ServicesIndexRoute
   '/api/integrations/health': typeof ApiIntegrationsHealthRoute
   '/api/messaging/send': typeof ApiMessagingSendRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
@@ -185,6 +201,8 @@ export interface FileRoutesById {
   '/_authenticated/tools': typeof AuthenticatedToolsRoute
   '/_authenticated/vendors': typeof AuthenticatedVendorsRoute
   '/_authenticated/website': typeof AuthenticatedWebsiteRoute
+  '/services/$slug': typeof ServicesSlugRoute
+  '/services/': typeof ServicesIndexRoute
   '/api/integrations/health': typeof ApiIntegrationsHealthRoute
   '/api/messaging/send': typeof ApiMessagingSendRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
@@ -207,6 +225,8 @@ export interface FileRouteTypes {
     | '/tools'
     | '/vendors'
     | '/website'
+    | '/services/$slug'
+    | '/services/'
     | '/api/integrations/health'
     | '/api/messaging/send'
     | '/api/public/whatsapp/webhook'
@@ -227,6 +247,8 @@ export interface FileRouteTypes {
     | '/tools'
     | '/vendors'
     | '/website'
+    | '/services/$slug'
+    | '/services'
     | '/api/integrations/health'
     | '/api/messaging/send'
     | '/api/public/whatsapp/webhook'
@@ -248,6 +270,8 @@ export interface FileRouteTypes {
     | '/_authenticated/tools'
     | '/_authenticated/vendors'
     | '/_authenticated/website'
+    | '/services/$slug'
+    | '/services/'
     | '/api/integrations/health'
     | '/api/messaging/send'
     | '/api/public/whatsapp/webhook'
@@ -257,6 +281,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ServicesSlugRoute: typeof ServicesSlugRoute
+  ServicesIndexRoute: typeof ServicesIndexRoute
   ApiIntegrationsHealthRoute: typeof ApiIntegrationsHealthRoute
   ApiMessagingSendRoute: typeof ApiMessagingSendRoute
   ApiPublicWhatsappWebhookRoute: typeof ApiPublicWhatsappWebhookRoute
@@ -376,6 +402,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWebsiteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/services/': {
+      id: '/services/'
+      path: '/services'
+      fullPath: '/services/'
+      preLoaderRoute: typeof ServicesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/$slug': {
+      id: '/services/$slug'
+      path: '/services/$slug'
+      fullPath: '/services/$slug'
+      preLoaderRoute: typeof ServicesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/integrations/health': {
       id: '/api/integrations/health'
       path: '/api/integrations/health'
@@ -439,6 +479,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ServicesSlugRoute: ServicesSlugRoute,
+  ServicesIndexRoute: ServicesIndexRoute,
   ApiIntegrationsHealthRoute: ApiIntegrationsHealthRoute,
   ApiMessagingSendRoute: ApiMessagingSendRoute,
   ApiPublicWhatsappWebhookRoute: ApiPublicWhatsappWebhookRoute,
