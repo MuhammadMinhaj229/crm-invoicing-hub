@@ -60,10 +60,28 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 - [x] Shared website/CRM palette, type, controls and navigation language
 - [x] Appearance controls for brand assets, palette, type scale, control shape, layout and section visibility
 - [x] Shared database-backed appearance settings with local setup fallback
-## Phase 9 — WhatsApp via Evolution API (QR session, inbox, broadcasts)
-## Phase 10 — Tools: BI charts, social scheduler
-## Phase 11 — Legacy data migration + hardening + docs
+## Phase 9 — Messaging (done)
+- [x] Adapter layer: own server (Evolution) and official Meta Cloud behind one interface
+- [x] Send endpoint with clear failure states; messages never shown as sent when they are not
+- [x] Incoming webhook with shared secret, idempotency and webhook_events log
+- [x] Unified Inbox page: channels, search, thread, reply, link to a customer
+
+## Phase 10 — Knowledge, automations, social, scoring (done)
+- [x] Business Knowledge page (services, prices, areas, hours, questions, policies)
+- [x] Automation engine and page: trigger, condition, action, run log
+- [x] Social page: honest per-platform capabilities, connection state, post planner
+- [x] Editable lead scoring in Settings, with warm/hot thresholds
+- [x] Dashboard: visits, unread messages, hot leads, connection warnings
+
+## Phase 11 — Docs and hardening (done)
+- [x] README, architecture, database, integrations, security, deployment, operations, troubleshooting
+- [x] .env.example with every server setting
+- [x] Setup script upgrades older installs (additive only)
+- [ ] Legacy data migration from the old invofy records (waiting on an export)
+
 ## Phase 12 — Package & push to GitHub repos (safar, safar-crm, invofy), go-live
+- [ ] Waiting on the user: push method (GitHub sync in the editor, or ready-to-push folders)
+- [ ] Waiting on the user: rotate the leaked service-role key in the invofy repository
 
 ## Open questions for user
 1. Churn threshold: fixed 7 days or per service type?
