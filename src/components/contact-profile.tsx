@@ -112,6 +112,10 @@ export function ContactProfile({
             )}
           </Section>
 
+          <Section title="Full story">
+            <Timeline contactId={contact.id} />
+          </Section>
+
           {contact.notes ? (
             <Section title="Notes">
               <p className="whitespace-pre-wrap text-sm text-muted-foreground">{contact.notes}</p>
