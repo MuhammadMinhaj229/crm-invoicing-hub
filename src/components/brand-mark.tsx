@@ -6,7 +6,7 @@ export function BrandMark({
   compact = false,
 }: {
   name: string;
-  logoUrl?: string;
+  logoUrl?: string | undefined;
   compact?: boolean;
 }) {
   const source = logoUrl || brandMark;
