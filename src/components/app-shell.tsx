@@ -224,7 +224,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         ) : null}
 
         <SetupBanner />
-         <main className={`min-w-0 flex-1 ${pad}`}><div className="mx-auto w-full max-w-[1500px]">{children}</div></main>
+         <main className={`min-w-0 flex-1 ${pad}`}><div className="mx-auto w-full max-w-[1500px]">{permitted ? children : <NoAccess />}</div></main>
       </div>
     </div>
   );
