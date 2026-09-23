@@ -25,9 +25,12 @@ import {
 import {
   clearStoredSupabaseConfig,
   getStoredSupabaseConfig,
+  isSupabaseConfigured,
   saveStoredSupabaseConfig,
   testSupabaseConnection,
 } from "../../lib/supabase";
+import { DEFAULT_SCORING, loadScoring, saveScoring, type ScoringConfig } from "../../lib/scoring";
+import { toast } from "sonner";
 import foundationSql from "../../lib/foundation.sql?raw";
 
 export const Route = createFileRoute("/_authenticated/settings")({
