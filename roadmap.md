@@ -119,10 +119,10 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 - [x] Supporting pages aligned to the new public visual system
 - [x] Desktop, mobile, keyboard and reduced-motion verification
 
-## Brand story and public controls (in progress)
+## Brand story and public controls (done)
 - [x] CRM-managed WhatsApp, call, email, service-area and availability fields with non-publishing placeholders
 - [x] CRM-managed public social profile links, separate from scheduling connections
 - [x] Shape-led campaign story slider between recognition and the request journey
 - [x] Privacy-safe example cost breakdown based on the invoice structure, with no customer or payment data
 - [x] Matching story and invoice blocks in the visual page builder
-- [ ] Final desktop/mobile, keyboard, reduced-motion and supporting-page verification
+- [x] Final desktop/mobile, keyboard, reduced-motion and supporting-page verification
