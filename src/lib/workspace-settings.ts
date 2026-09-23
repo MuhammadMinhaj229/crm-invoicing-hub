@@ -133,7 +133,16 @@ function merge(stored: unknown): WorkspaceSettings {
   return {
     branding: { ...DEFAULT_SETTINGS.branding, ...(value.branding ?? {}) },
     theme: { ...DEFAULT_SETTINGS.theme, ...(value.theme ?? {}) },
-    nav: value.nav?.length ? value.nav : DEFAULT_SETTINGS.nav,
+    // Keep saved menu order/labels, but surface any newly shipped sections.
+    nav: value.nav?.length
+      ? [
+          ...value.nav,
+          ...DEFAULT_SETTINGS.nav.filter(
+            (item) => !value.nav!.some((saved) => saved.id === item.id),
+          ),
+        ]
+      : DEFAULT_SETTINGS.nav,
+
     currency: value.currency ?? DEFAULT_SETTINGS.currency,
     locale: value.locale ?? DEFAULT_SETTINGS.locale,
     leadSources: value.leadSources?.length ? value.leadSources : DEFAULT_SETTINGS.leadSources,
