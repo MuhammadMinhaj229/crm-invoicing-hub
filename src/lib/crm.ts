@@ -287,3 +287,63 @@ export function buildRetention(
     })
     .sort((a, b) => (b.daysQuiet ?? -1) - (a.daysQuiet ?? -1));
 }
+
+/* ---------------- Follow-up tasks ---------------- */
+
+export interface TaskRow {
+  id: string;
+  title: string;
+  kind: string;
+  status: string;
+  priority: string;
+  contact_id: string | null;
+  due_at: string | null;
+  created_at: string;
+}
+
+export async function fetchTasks(): Promise<TaskRow[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("tasks")
+    .select("id, title, kind, status, priority, contact_id, due_at, created_at")
+    .order("created_at", { ascending: false })
+    .limit(500);
+  if (error) throw new Error(error.message);
+  return (data ?? []) as TaskRow[];
+}
+
+export async function createFollowUpTask(
+  contactId: string,
+  title: string,
+  dueInDays = 1,
+): Promise<void> {
+  const supabase = await must();
+  const dueAt = new Date(Date.now() + dueInDays * 86_400_000).toISOString();
+  const { error } = await supabase.from("tasks").insert({
+    title,
+    kind: "follow_up",
+    priority: "high",
+    status: "open",
+    contact_id: contactId,
+    due_at: dueAt,
+  });
+  if (error) throw new Error(error.message);
+}
+
+export async function completeTask(id: string): Promise<void> {
+  const supabase = await must();
+  const { error } = await supabase.from("tasks").update({ status: "done" }).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/** Records a reactivation / re-engagement outcome against the customer. */
+export async function markReactivated(contactId: string): Promise<void> {
+  const supabase = await must();
+  const { error } = await supabase
+    .from("contacts")
+    .update({ lifecycle_status: "reactivated", updated_at: new Date().toISOString() })
+    .eq("id", contactId);
+  if (error) throw new Error(error.message);
+}
+

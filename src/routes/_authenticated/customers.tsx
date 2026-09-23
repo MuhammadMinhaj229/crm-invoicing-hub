@@ -10,12 +10,16 @@ import { EmptyState } from "../../components/empty-state";
 import { useWorkspaceSettings } from "../../hooks/use-workspace-settings";
 import {
   buildRetention,
+  completeTask,
   convertLeadToContact,
+  createFollowUpTask,
   createLead,
   fetchContacts,
   fetchInvoices,
   fetchLeads,
   fetchRequests,
+  fetchTasks,
+  markReactivated,
   updateLeadStatus,
   type ContactRow,
   type LeadRow,
@@ -467,8 +471,41 @@ function ContactsTab() {
 
 function ChurnTab() {
   const { settings } = useWorkspaceSettings();
+  const queryClient = useQueryClient();
   const { data: contacts = [] } = useQuery({ queryKey: ["contacts"], queryFn: fetchContacts });
   const { data: requests = [] } = useQuery({ queryKey: ["requests"], queryFn: fetchRequests });
+  const { data: tasks = [] } = useQuery({ queryKey: ["tasks"], queryFn: fetchTasks });
+
+  const openFollowUps = useMemo(
+    () => new Set(tasks.filter((task) => task.status === "open" && task.contact_id).map((task) => task.contact_id!)),
+    [tasks],
+  );
+
+  const followUp = useMutation({
+    mutationFn: ({ contactId, title }: { contactId: string; title: string }) =>
+      createFollowUpTask(contactId, title),
+    onSuccess: async () => {
+      toast.success("Follow-up task created");
+      await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Could not create task"),
+  });
+
+  const reactivate = useMutation({
+    mutationFn: (contactId: string) => markReactivated(contactId),
+    onSuccess: async () => {
+      toast.success("Marked as reactivated");
+      await queryClient.invalidateQueries({ queryKey: ["contacts"] });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Could not update"),
+  });
+
+  const closeTask = useMutation({
+    mutationFn: (id: string) => completeTask(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
 
   const rows = useMemo(
     () => buildRetention(contacts, requests, settings),
@@ -477,6 +514,7 @@ function ChurnTab() {
   const needsAttention = rows.filter(
     (row) => row.state === "at_risk" || row.state === "churned",
   );
+
 
   if (contacts.length === 0) {
     return (
@@ -508,7 +546,41 @@ function ChurnTab() {
         </div>
       ) : null}
 
+      {tasks.filter((task) => task.status === "open" && task.kind === "follow_up").length > 0 ? (
+        <section className="rounded-xl border border-border bg-card p-4">
+          <h3 className="mb-2 font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Open follow-ups
+          </h3>
+          <ul className="space-y-2">
+            {tasks
+              .filter((task) => task.status === "open" && task.kind === "follow_up")
+              .map((task) => (
+                <li
+                  key={task.id}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2"
+                >
+                  <div>
+                    <p className="text-sm text-foreground">{task.title}</p>
+                    {task.due_at ? (
+                      <p className="text-xs text-muted-foreground">
+                        Due {new Date(task.due_at).toLocaleDateString(settings.locale)}
+                      </p>
+                    ) : null}
+                  </div>
+                  <button
+                    onClick={() => closeTask.mutate(task.id)}
+                    className="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-accent"
+                  >
+                    Done
+                  </button>
+                </li>
+              ))}
+          </ul>
+        </section>
+      ) : null}
+
       <div className="grid gap-3 md:grid-cols-2">
+
         {rows.map((row) => (
           <article key={row.contact.id} className="rounded-xl border border-border bg-card p-4">
             <div className="flex items-start justify-between gap-3">
@@ -544,7 +616,49 @@ function ChurnTab() {
               {row.orderCount} order{row.orderCount === 1 ? "" : "s"} · usually needs{" "}
               {row.topCategory ?? "—"} · threshold {row.thresholdDays} days
             </p>
+            {row.state === "at_risk" || row.state === "churned" ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {openFollowUps.has(row.contact.id) ? (
+                  <span className="rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground">
+                    Follow-up already open
+                  </span>
+                ) : (
+                  <button
+                    onClick={() =>
+                      followUp.mutate({
+                        contactId: row.contact.id,
+                        title: `Re-engage ${row.contact.name} — quiet ${row.daysQuiet} days${
+                          row.topCategory ? `, usually orders ${row.topCategory}` : ""
+                        }`,
+                      })
+                    }
+                    disabled={followUp.isPending}
+                    className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-50"
+                  >
+                    Create follow-up
+                  </button>
+                )}
+                <button
+                  onClick={() => reactivate.mutate(row.contact.id)}
+                  disabled={reactivate.isPending}
+                  className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-accent disabled:opacity-50"
+                >
+                  Mark reactivated
+                </button>
+                {row.contact.phone ? (
+                  <a
+                    href={`https://wa.me/${row.contact.phone.replace(/[^\d]/g, "")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-accent"
+                  >
+                    WhatsApp
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
           </article>
+
         ))}
       </div>
     </div>

@@ -77,10 +77,12 @@ export const DEFAULT_SETTINGS: WorkspaceSettings = {
     { id: "/dashboard", label: "Dashboard", enabled: true },
     { id: "/website", label: "Website", enabled: true },
     { id: "/customers", label: "Customers", enabled: true },
+    { id: "/operations", label: "Service Requests", enabled: true },
     { id: "/vendors", label: "Vendors & Partners", enabled: true },
     { id: "/tools", label: "Tools", enabled: true },
     { id: "/settings", label: "Settings", enabled: true },
   ],
+
   currency: "INR",
   locale: "en-IN",
   leadSources: [
@@ -131,7 +133,16 @@ function merge(stored: unknown): WorkspaceSettings {
   return {
     branding: { ...DEFAULT_SETTINGS.branding, ...(value.branding ?? {}) },
     theme: { ...DEFAULT_SETTINGS.theme, ...(value.theme ?? {}) },
-    nav: value.nav?.length ? value.nav : DEFAULT_SETTINGS.nav,
+    // Keep saved menu order/labels, but surface any newly shipped sections.
+    nav: value.nav?.length
+      ? [
+          ...value.nav,
+          ...DEFAULT_SETTINGS.nav.filter(
+            (item) => !value.nav!.some((saved) => saved.id === item.id),
+          ),
+        ]
+      : DEFAULT_SETTINGS.nav,
+
     currency: value.currency ?? DEFAULT_SETTINGS.currency,
     locale: value.locale ?? DEFAULT_SETTINGS.locale,
     leadSources: value.leadSources?.length ? value.leadSources : DEFAULT_SETTINGS.leadSources,
