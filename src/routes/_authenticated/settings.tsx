@@ -657,7 +657,10 @@ function AppearanceTab() {
           <p className="mt-2 text-sm text-muted-foreground">Sora headings, Manrope body copy, and your approved palette.</p>
           <button type="button" className="brand-button mt-4 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Primary action</button>
         </div>
-        <Panel title="Website presentation" description="Choose how published website sections are presented.">
+        <div className="border-t border-border pt-5">
+          <h3 className="font-display text-base font-semibold text-foreground">Website presentation</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Choose how published website sections are presented.</p>
+          <div className="mt-4 space-y-3">
           <Field label="Service section layout">
             <select
               value={settings.websiteAppearance.sectionStyle}
@@ -684,7 +687,8 @@ function AppearanceTab() {
               />
             </label>
           ))}
-        </Panel>
+          </div>
+        </div>
         <button
           type="button"
           onClick={reset}

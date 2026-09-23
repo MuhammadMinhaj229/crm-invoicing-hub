@@ -160,7 +160,7 @@ function merge(stored: unknown): WorkspaceSettings {
       ? [
           ...value.nav,
           ...DEFAULT_SETTINGS.nav.filter(
-            (item) => !value.nav!.some((saved) => saved.id === item.id),
+            (item) => !value.nav?.some((saved) => saved.id === item.id),
           ),
         ]
       : DEFAULT_SETTINGS.nav,
