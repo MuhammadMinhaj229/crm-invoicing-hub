@@ -41,21 +41,31 @@ export function PageIntro({
   children?: ReactNode;
 }) {
   return (
-    <section className="legacy-grid relative overflow-hidden border-b border-legacy-light/10 bg-legacy-deep text-legacy-light">
-      <div className="mx-auto max-w-6xl px-5 py-16 sm:py-24">
-        {trail ? <Breadcrumbs trail={trail} /> : null}
-        <Reveal>
-          {eyebrow ? (
-            <p className="text-xs font-bold uppercase tracking-widest text-legacy-peach">{eyebrow}</p>
-          ) : null}
-          <h1 className="mt-4 max-w-4xl font-display text-4xl font-semibold leading-tight sm:text-6xl">
-            {title}
-          </h1>
-          {lead ? (
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-legacy-light/65">{lead}</p>
-          ) : null}
-          {children ? <div className="mt-6">{children}</div> : null}
-        </Reveal>
+    <section className="bg-legacy-warm px-3 pt-3 sm:px-4 sm:pt-4">
+      <div className="legacy-grid relative overflow-hidden rounded-[1.75rem] bg-legacy-deep text-legacy-light sm:rounded-[2.5rem]">
+        <div
+          className="absolute -right-24 top-0 h-[28rem] w-[28rem] rounded-full opacity-35 blur-3xl"
+          style={{ background: "radial-gradient(circle, color-mix(in oklab, var(--legacy-coral) 40%, transparent), transparent 70%)" }}
+          aria-hidden
+        />
+        <div className="relative mx-auto max-w-[1280px] px-6 pb-14 pt-28 sm:px-10 sm:pb-20 sm:pt-36">
+          {trail ? <Breadcrumbs trail={trail} /> : null}
+          <Reveal>
+            {eyebrow ? (
+              <p className="inline-flex items-center gap-2.5 rounded-full bg-legacy-light/10 px-3.5 py-1.5 text-[0.7rem] font-bold uppercase tracking-[0.16em] text-legacy-light/80">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                {eyebrow}
+              </p>
+            ) : null}
+            <h1 className="mt-6 max-w-3xl font-display text-[2.5rem] font-semibold leading-[1.05] tracking-[-0.02em] sm:text-6xl">
+              {title}
+            </h1>
+            {lead ? (
+              <p className="mt-5 max-w-2xl text-base leading-relaxed text-legacy-light/65 sm:text-lg">{lead}</p>
+            ) : null}
+            {children ? <div className="mt-7">{children}</div> : null}
+          </Reveal>
+        </div>
       </div>
     </section>
   );
