@@ -582,7 +582,49 @@ function ChurnTab() {
               {row.orderCount} order{row.orderCount === 1 ? "" : "s"} · usually needs{" "}
               {row.topCategory ?? "—"} · threshold {row.thresholdDays} days
             </p>
+            {row.state === "at_risk" || row.state === "churned" ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {openFollowUps.has(row.contact.id) ? (
+                  <span className="rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground">
+                    Follow-up already open
+                  </span>
+                ) : (
+                  <button
+                    onClick={() =>
+                      followUp.mutate({
+                        contactId: row.contact.id,
+                        title: `Re-engage ${row.contact.name} — quiet ${row.daysQuiet} days${
+                          row.topCategory ? `, usually orders ${row.topCategory}` : ""
+                        }`,
+                      })
+                    }
+                    disabled={followUp.isPending}
+                    className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-50"
+                  >
+                    Create follow-up
+                  </button>
+                )}
+                <button
+                  onClick={() => reactivate.mutate(row.contact.id)}
+                  disabled={reactivate.isPending}
+                  className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-accent disabled:opacity-50"
+                >
+                  Mark reactivated
+                </button>
+                {row.contact.phone ? (
+                  <a
+                    href={`https://wa.me/${row.contact.phone.replace(/[^\d]/g, "")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-accent"
+                  >
+                    WhatsApp
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
           </article>
+
         ))}
       </div>
     </div>
