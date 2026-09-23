@@ -25,11 +25,12 @@ export function getStoredSupabaseConfig(): SupabaseConnectionConfig | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<SupabaseConnectionConfig>;
     if (!parsed.url || !parsed.anonKey) return null;
-    return {
+    const config: SupabaseConnectionConfig = {
       url: parsed.url.replace(/\/+$/, ""),
       anonKey: parsed.anonKey,
-      serviceRoleKey: parsed.serviceRoleKey || undefined,
     };
+    if (parsed.serviceRoleKey) config.serviceRoleKey = parsed.serviceRoleKey;
+    return config;
   } catch {
     return null;
   }
