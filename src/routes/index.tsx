@@ -323,6 +323,7 @@ function LandingPage() {
             <div className="mt-8 flex flex-wrap gap-3">
             <a
               href={str(hero, "primaryCtaHref", "#contact")}
+              onClick={() => track("cta.clicked", { place: "hero", label: str(hero, "primaryCtaLabel", "Ask for help") })}
               className="brand-button inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
             >
               {str(hero, "primaryCtaLabel", "Ask for help")}
