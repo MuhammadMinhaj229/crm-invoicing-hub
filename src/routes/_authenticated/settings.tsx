@@ -4,9 +4,11 @@ import {
   CheckCircle2,
   ClipboardCopy,
   Database,
+  ExternalLink,
   Loader2,
   PlugZap,
   Trash2,
+  UserPlus,
   XCircle,
 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
@@ -16,12 +18,20 @@ import { useWorkspaceSettings } from "../../hooks/use-workspace-settings";
 import {
   INTEGRATIONS,
   getIntegrationValues,
+  getToolUrl,
   isIntegrationConfigured,
   removeIntegrationValues,
   saveIntegrationValues,
   testHttpEndpoint,
   type IntegrationDefinition,
 } from "../../lib/connections";
+import {
+  ACCESS_SECTIONS,
+  getTeam,
+  loadSharedTeam,
+  saveSharedTeam,
+  type TeamMember,
+} from "../../lib/team";
 import {
   clearStoredSupabaseConfig,
   getStoredSupabaseConfig,
