@@ -12,6 +12,7 @@ import {
 import { useEffect, useState, type FormEvent } from "react";
 
 import { PageHeader } from "../../components/app-shell";
+import { useWorkspaceSettings } from "../../hooks/use-workspace-settings";
 import {
   INTEGRATIONS,
   getIntegrationValues,
