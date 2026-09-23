@@ -100,6 +100,7 @@ function IntelligencePage() {
       {!isLoading && (data?.sessions ?? 0) === 0 ? (
         <div className="mt-6">
           <EmptyState
+            icon={Activity}
             title="No website visits recorded yet"
             description="Once the website is live with the database details in place, every visit, click and enquiry will show here."
           />
