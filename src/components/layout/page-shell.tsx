@@ -135,16 +135,16 @@ export function PageShell({
     <div className="min-h-screen bg-background text-foreground">
       <AmbientBackground />
       <SiteHeader
-        brandName={settings.name}
-        logoUrl={settings.logoUrl}
-        logoStyle={settings.logoStyle}
+        brandName={settings.branding.name}
+        logoUrl={settings.branding.logoUrl}
+        logoStyle={settings.branding.logoStyle}
       />
       <main id="main">{children}</main>
       <SiteFooter
         footer={sections['footer'] ?? {}}
         contact={sections['contact'] ?? {}}
-        brandName={settings.name}
-        logoStyle={settings.logoStyle}
+        brandName={settings.branding.name}
+        logoStyle={settings.branding.logoStyle}
       />
       <FloatingActions context={pageName} />
     </div>

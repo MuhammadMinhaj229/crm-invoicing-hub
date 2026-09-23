@@ -7,9 +7,12 @@
  * touching presentation code.
  */
 
+import type { LinkProps } from "@tanstack/react-router";
+
 export interface NavigationItem {
   label: string;
-  href: string;
+  /** Typed against the generated route tree so dead links fail at build time. */
+  href: NonNullable<LinkProps["to"]>;
   /** Short line used in the mobile drawer. */
   hint?: string;
 }
