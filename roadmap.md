@@ -98,3 +98,8 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 - Routes: `/services`, `/services/$slug`, `/about`, `/faq`, `/contact`, `/privacy`, `/terms`, `/sitemap.xml`.
 - Contact form: React Hook Form + Zod, honeypot field, lead recorded before WhatsApp handover.
 - Contact channels stay empty until entered in the console; unconfigured channels are not rendered.
+
+## Visual page builder (done)
+- [x] Block model, shared renderer, every page + header menu editable, drag & drop sections and items
+- [x] Inline text editing, settings panel, phone/tablet/desktop preview, undo/redo, autosave, publish/take down, version history
+- [ ] Publishing live needs the database connected in Settings → Connections (waiting on the user)
