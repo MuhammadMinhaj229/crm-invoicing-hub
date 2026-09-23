@@ -26,9 +26,16 @@ import { BrandMark } from "../components/brand-mark";
 import { useThemeSync, useWorkspaceSettings } from "../hooks/use-workspace-settings";
 import { defaultSections, fetchPublishedContent, type SectionContent } from "../lib/cms";
 import heroFamily from "../assets/safar-hero-family.png";
-import groceriesStory from "../assets/safar-groceries-story.png";
-import repairsStory from "../assets/safar-home-repair-story.png";
-import healthcareStory from "../assets/safar-healthcare-story.png";
+import groceriesStory from "../assets/safar-story-groceries.png";
+import repairsStory from "../assets/safar-story-repairs.png";
+import healthcareStory from "../assets/safar-story-health.png";
+import castArt from "../assets/safar-cast.png";
+import updatesArt from "../assets/safar-updates.png";
+import faceSon from "../assets/safar-face-son.png";
+import faceDaughter from "../assets/safar-face-daughter.png";
+import faceParents from "../assets/safar-face-parents.png";
+
+const CAST_FACES = [faceSon, faceDaughter, faceParents];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -269,6 +276,8 @@ function LandingPage() {
   const faq = sections['faq'] ?? {};
   const contact = sections['contact'] ?? {};
   const footer = sections['footer'] ?? {};
+  const cast = sections['cast'] ?? {};
+  const updates = sections['updates'] ?? {};
 
   const brandName = settings.branding.name || "SAFAR N MANZIL";
   const testimonialItems = list<{ quote?: string; author?: string; location?: string }>(
@@ -308,58 +317,108 @@ function LandingPage() {
       <main>
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-border">
-        <div className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-14 md:min-h-[660px] md:grid-cols-[0.92fr_1.08fr] md:py-16">
-          <div className="relative z-10">
-            <p className="text-xs font-extrabold uppercase text-primary">
+        <div className="mx-auto grid max-w-7xl items-center gap-6 px-5 py-10 sm:py-14 md:min-h-[660px] md:grid-cols-[0.92fr_1.08fr] md:gap-8 md:py-16">
+          <div className="relative z-10 order-1 md:col-start-1 md:row-start-1 md:self-end">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-primary">
               {str(hero, "eyebrow", "Help for your family back home")}
             </p>
-            <h1 className="site-display mt-5 max-w-2xl font-display text-4xl font-extrabold leading-[1.08] text-foreground sm:text-5xl md:text-6xl">
+            <h1 className="site-display mt-4 max-w-2xl font-display text-[2.1rem] font-extrabold leading-[1.08] text-foreground sm:text-5xl md:text-6xl">
               {str(hero, "title", "We do. We assist. We connect.")}
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground md:text-lg">
-              {str(hero, "subtitle")}
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-            <a
-              href={str(hero, "primaryCtaHref", "#contact")}
-              onClick={() => track("cta.clicked", { place: "hero", label: str(hero, "primaryCtaLabel", "Ask for help") })}
-              className="brand-button inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-            >
-              {str(hero, "primaryCtaLabel", "Ask for help")}
-              <ArrowRight className="h-4 w-4" />
-            </a>
-            <a
-              href={str(hero, "secondaryCtaHref", "#how-it-works")}
-              className="brand-button inline-flex items-center gap-2 rounded-lg border border-foreground/20 bg-background px-6 py-3.5 text-sm font-bold text-foreground transition hover:border-primary hover:text-primary"
-            >
-              {str(hero, "secondaryCtaLabel", "See how it works")}
-            </a>
           </div>
 
-            {settings.websiteAppearance.showHeroHighlights ? <ul className="mt-10 grid gap-3 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
-            {list<string>(hero, "highlights").map((item) => (
-              <li key={item} className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <CheckCircle2 className="h-4 w-4 text-primary" />
-                {item}
-              </li>
-            ))}
-            </ul> : null}
-          </div>
-          <div className="relative md:-mr-16">
+          <div className="relative order-2 md:order-none md:col-start-2 md:row-span-2 md:row-start-1 md:-mr-16 md:self-center">
+            <div
+              aria-hidden
+              className="absolute inset-x-4 top-6 bottom-6 -z-10 rounded-[2.5rem] bg-accent/60 blur-2xl"
+            />
             <img
               src={str(hero, "imageUrl") || heroFamily}
               alt={str(hero, "imageAlt", "A Gulf-based family member coordinating trusted help for parents in India")}
               width={1600}
               height={1008}
               fetchPriority="high"
-              className="aspect-[8/5] w-full object-cover object-center"
+              className="w-full rounded-2xl object-cover object-center md:rounded-none"
             />
+          </div>
+
+          <div className="relative z-10 order-3 md:col-start-1 md:row-start-2 md:self-start">
+            <p className="max-w-xl text-base leading-7 text-muted-foreground md:text-lg">
+              {str(hero, "subtitle")}
+            </p>
+
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <a
+                href={str(hero, "primaryCtaHref", "#contact")}
+                onClick={() => track("cta.clicked", { place: "hero", label: str(hero, "primaryCtaLabel", "Ask for help") })}
+                className="brand-button inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-4 text-base font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:py-3.5 sm:text-sm"
+              >
+                {str(hero, "primaryCtaLabel", "Ask for help")}
+                <ArrowRight className="h-4 w-4" />
+              </a>
+              <a
+                href={str(hero, "secondaryCtaHref", "#how-it-works")}
+                className="brand-button inline-flex items-center justify-center gap-2 rounded-lg border border-foreground/20 bg-background px-6 py-4 text-base font-bold text-foreground transition hover:border-primary hover:text-primary sm:py-3.5 sm:text-sm"
+              >
+                {str(hero, "secondaryCtaLabel", "See how it works")}
+              </a>
+            </div>
+
+            {settings.websiteAppearance.showHeroHighlights ? <ul className="mt-8 grid gap-3 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
+            {list<string>(hero, "highlights").map((item) => (
+              <li key={item} className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                {item}
+              </li>
+            ))}
+            </ul> : null}
           </div>
         </div>
         <a href="#services" aria-label="Explore services" className="absolute bottom-5 left-1/2 hidden -translate-x-1/2 text-muted-foreground md:block">
           <ChevronDown className="h-6 w-6 animate-bounce" />
         </a>
+      </section>
+
+      {/* Who we help */}
+      <section className="border-b border-border bg-card py-14 md:py-24">
+        <div className="mx-auto max-w-6xl px-5">
+          <div className="max-w-2xl">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-primary">
+              {str(cast, "eyebrow", "Who we help")}
+            </p>
+            <h2 className="site-display mt-3 font-display text-3xl font-extrabold md:text-4xl">
+              {str(cast, "title", "One family, two countries")}
+            </h2>
+            <p className="mt-4 leading-7 text-muted-foreground">{str(cast, "subtitle")}</p>
+          </div>
+
+          <img
+            src={castArt}
+            alt="A son and daughter in the Gulf, our helper in the middle, and parents at home in India"
+            loading="lazy"
+            width={1600}
+            height={912}
+            className="mt-8 aspect-[16/9] w-full rounded-2xl object-cover shadow-sm"
+          />
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            {list<{ name?: string; description?: string }>(cast, "items").map((item, index) => (
+              <article key={item.name ?? index} className="rounded-xl border border-border bg-background p-5">
+                <img
+                  src={CAST_FACES[index % CAST_FACES.length]}
+                  alt=""
+                  aria-hidden
+                  loading="lazy"
+                  width={816}
+                  height={816}
+                  className="h-16 w-16 shrink-0 rounded-full object-cover"
+                />
+                <h3 className="mt-4 font-display text-lg font-semibold">{item.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* Services */}
@@ -431,6 +490,38 @@ function LandingPage() {
           </div>
         </div>
       </section> : null}
+
+      {/* Photo updates */}
+      <section className="py-14 md:py-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-8 px-5 md:grid-cols-2 md:gap-14">
+          <img
+            src={str(updates, "imageUrl") || updatesArt}
+            alt="A family member in the Gulf seeing a photo update of work finished at home in India"
+            loading="lazy"
+            width={1200}
+            height={912}
+            className="w-full rounded-2xl object-cover shadow-sm"
+          />
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-wide text-primary">
+              {str(updates, "eyebrow", "You always know")}
+            </p>
+            <h2 className="site-display mt-3 font-display text-3xl font-extrabold md:text-4xl">
+              {str(updates, "title", "Every job comes back with proof")}
+            </h2>
+            <p className="mt-4 leading-7 text-muted-foreground">{str(updates, "subtitle")}</p>
+            <ul className="mt-6 space-y-3">
+              {list<string>(updates, "points").map((point) => (
+                <li key={point} className="flex items-start gap-3 text-base text-foreground">
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
 
       {/* How it works */}
       {settings.websiteAppearance.showProcessSection ? <section id="how-it-works" className="py-20 md:py-28">
@@ -578,6 +669,19 @@ function LandingPage() {
         brandName={brandName}
         logoStyle={settings.branding.logoStyle}
       />
+
+      {str(contact, "whatsapp") ? (
+        <a
+          href={`https://wa.me/${str(contact, "whatsapp").replace(/[^\d]/g, "")}`}
+          target="_blank"
+          rel="noopener"
+          onClick={() => track("cta.clicked", { place: "sticky", label: "WhatsApp" })}
+          className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-4 text-sm font-bold text-primary-foreground shadow-lg md:hidden"
+        >
+          <MessageCircle className="h-5 w-5" />
+          WhatsApp us
+        </a>
+      ) : null}
     </div>
   );
 }
