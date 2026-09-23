@@ -142,6 +142,8 @@ function SiteHeader({
 
 function ContactForm({ whatsapp, email }: { whatsapp: string; email: string }) {
   const [form, setForm] = useState({ name: "", phone: "", city: "", need: "" });
+  const [started, setStarted] = useState(false);
+  const [sending, setSending] = useState(false);
   const digits = whatsapp.replace(/[^\d]/g, "");
 
   const message = `Hello SAFAR N MANZIL,%0A%0AName: ${encodeURIComponent(form.name)}%0APhone: ${encodeURIComponent(
@@ -157,11 +159,27 @@ function ContactForm({ whatsapp, email }: { whatsapp: string; email: string }) {
   const fieldClass =
     "w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/25";
 
+  function noteStart() {
+    if (started) return;
+    setStarted(true);
+    track("form.started");
+  }
+
   return (
     <form
+      onFocus={noteStart}
       onSubmit={(event) => {
         event.preventDefault();
-        if (target) window.open(target, "_blank", "noopener");
+        setSending(true);
+        void submitWebsiteEnquiry({
+          name: form.name,
+          phone: form.phone,
+          city: form.city,
+          need: form.need,
+        }).finally(() => {
+          setSending(false);
+          if (target) window.open(target, "_blank", "noopener");
+        });
       }}
       className="rounded-lg border border-border bg-card p-6 shadow-sm"
     >
