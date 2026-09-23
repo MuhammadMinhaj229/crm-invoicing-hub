@@ -107,3 +107,4 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 ## Homepage presentation header (done)
 - [x] Framed top presentation, rotating promise bar, responsive navigation and slide-in mobile drawer
 - [x] WhatsApp actions use the supplied +91 72070 71874 number
+- Team access checklist, URL-only tool links, builder save button (done)
