@@ -32,6 +32,9 @@ import {
   saveSharedTeam,
   type TeamMember,
 } from "../../lib/team";
+import { buildDeviceLink } from "../../lib/connect-link";
+import { OWNER_EMAIL } from "../../lib/admin";
+import { getSupabase } from "../../lib/supabase";
 import {
   clearStoredSupabaseConfig,
   getStoredSupabaseConfig,
