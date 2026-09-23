@@ -80,7 +80,7 @@ export function useResolveHref() {
       return url ? { url, external: true } : { url: "/contact", external: false };
     }
     if (h === "phone") return { url: buildTelUrl(contact.phone) ?? "/contact", external: false };
-    if (h === "email") return { url: buildMailUrl(contact.email) ?? "/contact", external: false };
+    if (h === "email") return { url: buildMailUrl(contact.email, "Help for my family") ?? "/contact", external: false };
     if (/^https?:\/\//.test(h)) return { url: h, external: true };
     return { url: h || "#", external: false };
   };
