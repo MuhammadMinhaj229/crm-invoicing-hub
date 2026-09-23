@@ -96,17 +96,17 @@ export const SECTION_DEFS: SectionDef[] = [
       },
     ],
     defaults: {
-      title: "What we do for your family",
+      title: "Three ways we help you",
       subtitle:
-        "A short, clear list of jobs we do. We tell you the price before we start.",
+        "Instead of searching for many different people, just ask SAFAR N MANZIL. Here is how we handle your requests — and we tell you the price before we start.",
       groceriesImageUrl: "",
       repairsImageUrl: "",
       healthcareImageUrl: "",
       items: [
         {
-          title: "Groceries & essentials",
+          title: "Groceries & gifts",
           description:
-            "Monthly ration and daily items brought to your family's door. You see the bill.",
+            "Surprise them with gifts or make sure their weekly groceries arrive without them lifting a finger. You see the bill.",
         },
         {
           title: "Parcel & logistics",
@@ -114,14 +114,14 @@ export const SECTION_DEFS: SectionDef[] = [
             "We pick up papers and parcels, send them and tell you where they are.",
         },
         {
-          title: "Home services",
+          title: "Trusted home repairs",
           description:
-            "Electrician, plumber, AC service and repairs. Known workers, price fixed first.",
+            "From plumbing to electrical work, we send verified, honest professionals so your family is never taken advantage of. Price fixed first.",
         },
         {
-          title: "Healthcare assistance",
+          title: "Medical & errands",
           description:
-            "We book the doctor, go with your parents, bring medicines and tell you how it went.",
+            "We arrange safe transport and go with your parents to hospital visits, bring medicines and run their local errands — then tell you how it went.",
         },
         {
           title: "Documentation & legal",
