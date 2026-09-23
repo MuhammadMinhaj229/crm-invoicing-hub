@@ -46,17 +46,32 @@ export const SECTION_DEFS: SectionDef[] = [
       { key: "highlights", label: "Quick highlights", type: "tags" },
     ],
     defaults: {
-      eyebrow: "Help for your family back home",
-      title: "We do. We assist. We connect.",
+      eyebrow: "For families living in the Gulf",
+      title: "Don't let distance become guilt.",
       subtitle:
-        "You live in the Gulf. Your family lives in India. We do the running around for them — shopping, parcels, repairs, hospital visits and paperwork — and we send you photos and updates.",
-      primaryCtaLabel: "Ask for help",
+        "One message to us, and a checked, honest person helps your parents in India — shopping, repairs, hospital visits, paperwork — with photos and updates sent back to you.",
+      primaryCtaLabel: "Ask for help now",
       primaryCtaHref: "#contact",
       secondaryCtaLabel: "See how it works",
       secondaryCtaHref: "#how-it-works",
       imageUrl: "",
       imageAlt: "A son in the Gulf arranging help for his parents in India",
       highlights: ["People we know and check", "One person to talk to", "Updates on WhatsApp"],
+    },
+  },
+  {
+    key: "promise",
+    label: "The promise",
+    description: "The emotional band right after the hero — why families abroad hand this to you.",
+    fields: [
+      { key: "eyebrow", label: "Small line above the title", type: "text" },
+      { key: "title", label: "Title", type: "text" },
+      { key: "body", label: "Paragraph", type: "textarea" },
+    ],
+    defaults: {
+      eyebrow: "We understand",
+      title: "You can't always be there for your parents in India. But we can.",
+      body: "The hardest part of living abroad is the helplessness you feel when your family needs something back home. Stop worrying about untrustworthy vendors or making your parents do the heavy lifting. We act as your trusted local proxy.",
     },
   },
   {
@@ -81,17 +96,17 @@ export const SECTION_DEFS: SectionDef[] = [
       },
     ],
     defaults: {
-      title: "What we do for your family",
+      title: "Three ways we help you",
       subtitle:
-        "A short, clear list of jobs we do. We tell you the price before we start.",
+        "Instead of searching for many different people, just ask SAFAR N MANZIL. Here is how we handle your requests — and we tell you the price before we start.",
       groceriesImageUrl: "",
       repairsImageUrl: "",
       healthcareImageUrl: "",
       items: [
         {
-          title: "Groceries & essentials",
+          title: "Groceries & gifts",
           description:
-            "Monthly ration and daily items brought to your family's door. You see the bill.",
+            "Surprise them with gifts or make sure their weekly groceries arrive without them lifting a finger. You see the bill.",
         },
         {
           title: "Parcel & logistics",
@@ -99,14 +114,14 @@ export const SECTION_DEFS: SectionDef[] = [
             "We pick up papers and parcels, send them and tell you where they are.",
         },
         {
-          title: "Home services",
+          title: "Trusted home repairs",
           description:
-            "Electrician, plumber, AC service and repairs. Known workers, price fixed first.",
+            "From plumbing to electrical work, we send verified, honest professionals so your family is never taken advantage of. Price fixed first.",
         },
         {
-          title: "Healthcare assistance",
+          title: "Medical & errands",
           description:
-            "We book the doctor, go with your parents, bring medicines and tell you how it went.",
+            "We arrange safe transport and go with your parents to hospital visits, bring medicines and run their local errands — then tell you how it went.",
         },
         {
           title: "Documentation & legal",
@@ -266,8 +281,15 @@ export const SECTION_DEFS: SectionDef[] = [
       },
     ],
     defaults: {
-      title: "Families we help",
-      items: [],
+      title: "Priceless peace of mind",
+      items: [
+        {
+          quote:
+            "The guilt of not being there for my parents was killing me. Now, if the AC breaks or they need groceries, I just message SAFAR N MANZIL from Dubai. They handle my parents like their own family. Priceless.",
+          author: "A son like you",
+          location: "Dubai",
+        },
+      ],
     },
   },
   {
