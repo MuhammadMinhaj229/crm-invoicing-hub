@@ -30,17 +30,17 @@ import healthcareStory from "../assets/safar-healthcare-story.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SAFAR N MANZIL — Gulf Assistance & Coordination for your family in India" },
+      { title: "SAFAR N MANZIL — Help for your family in India, while you work in the Gulf" },
       {
         name: "description",
         content:
-          "You are in the Gulf, your family is in India. SAFAR N MANZIL handles groceries, parcels, home repairs, hospital visits and paperwork through verified local partners — with proof and clear pricing.",
+          "You live in the Gulf, your family lives in India. We do the shopping, parcels, home repairs, hospital visits and paperwork for them, with photos and a clear price.",
       },
       { property: "og:title", content: "SAFAR N MANZIL — We do. We assist. We connect." },
       {
         property: "og:description",
         content:
-          "Verified local partners handling groceries, parcels, repairs, healthcare and paperwork for your family back home.",
+          "People you can trust doing the shopping, parcels, repairs, hospital visits and paperwork for your family back home.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -90,7 +90,7 @@ function SiteHeader({ brandName, logoUrl }: { brandName: string; logoUrl?: strin
           href="#contact"
           className="brand-button ml-auto hidden rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-md md:ml-0 md:inline-block"
         >
-          Request assistance
+          Ask for help
         </a>
 
         <button
@@ -122,7 +122,7 @@ function SiteHeader({ brandName, logoUrl }: { brandName: string; logoUrl?: strin
                 onClick={() => setOpen(false)}
                 className="mt-1 block rounded-lg bg-primary px-3 py-2.5 text-center text-sm font-semibold text-primary-foreground"
               >
-                Request assistance
+                Ask for help
               </a>
             </li>
           </ul>
@@ -251,13 +251,13 @@ function LandingPage() {
     {
       items: serviceItems.slice(2, 3).concat(serviceItems.slice(5, 6)),
       image: str(services, "repairsImageUrl") || repairsStory,
-      alt: "A verified technician completing a home repair while a coordinator records proof",
+      alt: "A trusted worker fixing something at home while our man takes photos",
       Icon: Home,
     },
     {
       items: serviceItems.slice(3, 5),
       image: str(services, "healthcareImageUrl") || healthcareStory,
-      alt: "A local coordinator accompanying an elderly parent to a healthcare appointment",
+      alt: "Our man taking an elderly parent to see the doctor",
       Icon: Stethoscope,
     },
   ];
@@ -272,7 +272,7 @@ function LandingPage() {
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-14 md:min-h-[660px] md:grid-cols-[0.92fr_1.08fr] md:py-16">
           <div className="relative z-10">
             <p className="text-xs font-extrabold uppercase text-primary">
-              {str(hero, "eyebrow", "Gulf Assistance & Coordination")}
+              {str(hero, "eyebrow", "Help for your family back home")}
             </p>
             <h1 className="site-display mt-5 max-w-2xl font-display text-4xl font-extrabold leading-[1.08] text-foreground sm:text-5xl md:text-6xl">
               {str(hero, "title", "We do. We assist. We connect.")}
@@ -286,7 +286,7 @@ function LandingPage() {
               href={str(hero, "primaryCtaHref", "#contact")}
               className="brand-button inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
             >
-              {str(hero, "primaryCtaLabel", "Request assistance")}
+              {str(hero, "primaryCtaLabel", "Ask for help")}
               <ArrowRight className="h-4 w-4" />
             </a>
             <a
@@ -489,7 +489,7 @@ function LandingPage() {
         <div className="mx-auto grid max-w-6xl gap-10 px-5 md:grid-cols-2">
           <div>
             <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-              {str(contact, "title", "Talk to a coordinator")}
+              {str(contact, "title", "Talk to us")}
             </h2>
             <p className="mt-3 text-muted-foreground">{str(contact, "subtitle")}</p>
             <ul className="mt-7 space-y-2.5 text-sm">

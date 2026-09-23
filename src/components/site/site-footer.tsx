@@ -31,7 +31,7 @@ export function SiteFooter({
         <div>
           <BrandMark name={brandName} inverse />
           <p className="mt-4 max-w-sm text-sm text-background/70">
-            {str(footer, "tagline", "Gulf Assistance & Coordination.")}
+            {str(footer, "tagline", "We help Gulf families take care of their people back home in India.")}
           </p>
           <p className="mt-4 text-sm font-bold uppercase text-primary">
             We do. We assist. We connect.
