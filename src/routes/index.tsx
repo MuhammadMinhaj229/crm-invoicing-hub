@@ -398,7 +398,7 @@ function LandingPage() {
             loading="lazy"
             width={1600}
             height={912}
-            className="mt-8 w-full rounded-2xl object-cover shadow-sm"
+            className="mt-8 aspect-[16/9] w-full rounded-2xl object-cover shadow-sm"
           />
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
