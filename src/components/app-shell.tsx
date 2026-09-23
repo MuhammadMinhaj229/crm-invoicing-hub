@@ -71,7 +71,10 @@ const NAV_ICONS: Record<string, LucideIcon> = {
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { settings } = useWorkspaceSettings();
-  const items = settings.nav.filter((item) => item.enabled || item.id === "/settings");
+  const allowed = useAllowedSections();
+  const items = settings.nav
+    .filter((item) => item.enabled || item.id === "/settings")
+    .filter((item) => allowed === null || allowed.includes(item.id));
 
   return (
     <nav className="flex flex-col gap-1">
