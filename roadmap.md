@@ -33,7 +33,7 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 - [x] Create request for a customer, assign provider, priority/status tracking, completion timestamps
 
 ## Phase 7 — Finance: invoices, payments, expenses, payables, profit; Invoify entry point
-## Phase 8 — Website CMS: section editor, draft/publish/rollback; public site from CMS
+## Phase 8 — DONE: Website CMS section editor (draft/publish/rollback/history) + public landing page rendered from CMS with footer team-login link
 ## Phase 9 — WhatsApp via Evolution API (QR session, inbox, broadcasts)
 ## Phase 10 — Tools: BI charts, social scheduler
 ## Phase 11 — Legacy data migration + hardening + docs
