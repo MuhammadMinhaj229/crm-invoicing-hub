@@ -283,8 +283,14 @@ export async function fetchCustomerTimeline(contactId: string): Promise<Timeline
       .from("service_requests")
       .select("id, title, status, created_at")
       .eq("contact_id", contactId),
-    supabase.from("invoices").select("id, number, total_amount, status, created_at").eq("contact_id", contactId),
-    supabase.from("payments").select("id, amount, paid_at, invoice_id").eq("contact_id", contactId),
+    supabase
+      .from("invoices")
+      .select("id, invoice_number, total, status, created_at")
+      .eq("contact_id", contactId),
+    supabase
+      .from("payments")
+      .select("id, amount, paid_at, invoices!inner(contact_id)")
+      .eq("invoices.contact_id", contactId),
     supabase.from("tasks").select("id, title, status, created_at").eq("contact_id", contactId),
   ]);
 
