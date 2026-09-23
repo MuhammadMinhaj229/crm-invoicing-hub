@@ -69,6 +69,7 @@ export const INTEGRATIONS: IntegrationDefinition[] = [
         label: "API key",
         placeholder: "Global or instance API key",
         secret: true,
+        optional: true,
       },
       {
         key: "instance",
