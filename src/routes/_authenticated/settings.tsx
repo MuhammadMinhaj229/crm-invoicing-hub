@@ -4,9 +4,11 @@ import {
   CheckCircle2,
   ClipboardCopy,
   Database,
+  ExternalLink,
   Loader2,
   PlugZap,
   Trash2,
+  UserPlus,
   XCircle,
 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
@@ -16,12 +18,20 @@ import { useWorkspaceSettings } from "../../hooks/use-workspace-settings";
 import {
   INTEGRATIONS,
   getIntegrationValues,
+  getToolUrl,
   isIntegrationConfigured,
   removeIntegrationValues,
   saveIntegrationValues,
   testHttpEndpoint,
   type IntegrationDefinition,
 } from "../../lib/connections";
+import {
+  ACCESS_SECTIONS,
+  getTeam,
+  loadSharedTeam,
+  saveSharedTeam,
+  type TeamMember,
+} from "../../lib/team";
 import {
   clearStoredSupabaseConfig,
   getStoredSupabaseConfig,
@@ -342,11 +352,21 @@ function IntegrationCard({ definition }: { definition: IntegrationDefinition }) 
         </form>
       ) : (
         <div className="mt-4 flex flex-wrap gap-2">
+          {getToolUrl(definition.id) && definition.id !== "supabase" ? (
+            <a
+              href={getToolUrl(definition.id)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              Open tool <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          ) : null}
           <button
             onClick={() => setOpen(true)}
             className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            {configured ? "Edit keys" : "Add keys"}
+            {configured ? "Edit link" : "Add link"}
           </button>
           {configured ? (
             <>
@@ -1067,8 +1087,171 @@ function ScoringTab() {
   );
 }
 
+function TeamTab() {
+  const [members, setMembers] = useState<TeamMember[]>(() => getTeam());
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    void loadSharedTeam()
+      .then((shared) => {
+        if (shared) setMembers(shared);
+      })
+      .catch(() => undefined);
+  }, []);
+
+  async function persist(next: TeamMember[]) {
+    setMembers(next);
+    setSaving(true);
+    try {
+      const where = await saveSharedTeam(next);
+      toast.success(where === "cloud" ? "Access saved for the team" : "Saved on this device");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not save");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function addMember(event: FormEvent) {
+    event.preventDefault();
+    const clean = email.trim().toLowerCase();
+    if (!clean) return;
+    if (members.some((member) => member.email === clean)) {
+      toast.error("That email is already on the list");
+      return;
+    }
+    void persist([
+      ...members,
+      {
+        id: crypto.randomUUID(),
+        name: name.trim() || clean,
+        email: clean,
+        role: "member",
+        sections: ["/dashboard"],
+      },
+    ]);
+    setName("");
+    setEmail("");
+  }
+
+  function patch(id: string, change: Partial<TeamMember>) {
+    void persist(members.map((member) => (member.id === id ? { ...member, ...change } : member)));
+  }
+
+  function toggleSection(member: TeamMember, section: string, on: boolean) {
+    const sections = on
+      ? [...new Set([...member.sections, section])]
+      : member.sections.filter((value) => value !== section);
+    patch(member.id, { sections });
+  }
+
+  return (
+    <div className="space-y-4">
+      <Panel
+        title="Team & access"
+        description="Anyone can create a sign-in on the sign-in page, but they see nothing until you add their email here and tick the sections they may open. Owners always see everything."
+      >
+        <form onSubmit={addMember} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Full name"
+            className={fieldClass}
+          />
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            type="email"
+            required
+            placeholder="name@example.com"
+            className={fieldClass}
+          />
+          <button
+            type="submit"
+            disabled={saving}
+            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+          >
+            <UserPlus className="h-4 w-4" /> Add
+          </button>
+        </form>
+
+        {members.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No one added yet. While this list is empty, every signed-in account sees everything.
+          </p>
+        ) : null}
+
+        <div className="space-y-4">
+          {members.map((member) => (
+            <div key={member.id} className="rounded-xl border border-border p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{member.name}</p>
+                  <p className="text-xs text-muted-foreground">{member.email}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={member.role}
+                    onChange={(e) =>
+                      patch(member.id, { role: e.target.value as TeamMember["role"] })
+                    }
+                    className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="member">Team member</option>
+                    <option value="admin">Owner (full access)</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      void persist(members.filter((row) => row.id !== member.id))
+                    }
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" /> Remove
+                  </button>
+                </div>
+              </div>
+
+              {member.role === "admin" ? (
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Owners can open every section, including Settings.
+                </p>
+              ) : (
+                <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                  {ACCESS_SECTIONS.map((section) => (
+                    <label
+                      key={section.id}
+                      className="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5 text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={member.sections.includes(section.id)}
+                        onChange={(e) => toggleSection(member, section.id, e.target.checked)}
+                        className="mt-0.5 h-4 w-4 accent-[var(--primary)]"
+                      />
+                      <span>
+                        <span className="font-medium text-foreground">{section.label}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          {section.description}
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
 const SETTINGS_TABS = [
   { id: "connections", label: "Connections" },
+  { id: "team", label: "Team & access" },
   { id: "appearance", label: "Appearance" },
   { id: "workspace", label: "Workspace" },
   { id: "rules", label: "Business rules" },
@@ -1102,6 +1285,7 @@ function SettingsPage() {
         ))}
       </div>
       {tab === "connections" ? <ConnectionsTab /> : null}
+      {tab === "team" ? <TeamTab /> : null}
       {tab === "appearance" ? <AppearanceTab /> : null}
       {tab === "workspace" ? <WorkspaceTab /> : null}
       {tab === "rules" ? <BusinessRulesTab /> : null}

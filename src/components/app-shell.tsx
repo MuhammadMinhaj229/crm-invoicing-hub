@@ -19,11 +19,37 @@ import {
   type LucideIcon,
   LayoutTemplate,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { useThemeSync, useWorkspaceSettings } from "../hooks/use-workspace-settings";
 import { isSupabaseConfigured, getSupabase } from "../lib/supabase";
+import { allowedSectionsFor, getTeam, loadSharedTeam, onTeamChange } from "../lib/team";
 import { BrandMark } from "./brand-mark";
+
+/**
+ * Sections the signed-in person may open. `null` means everything
+ * (workspace owner, or no access rules have been set up yet).
+ */
+export function useAllowedSections(): string[] | null {
+  const [members, setMembers] = useState(getTeam);
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => onTeamChange(() => setMembers([...getTeam()])), []);
+  useEffect(() => {
+    let alive = true;
+    void getSupabase()
+      ?.auth.getUser()
+      .then(({ data }) => {
+        if (alive) setEmail(data.user?.email ?? null);
+      });
+    void loadSharedTeam().catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return useMemo(() => allowedSectionsFor(email, members), [email, members]);
+}
 
 const NAV_ICONS: Record<string, LucideIcon> = {
   "/dashboard": LayoutDashboard,
@@ -45,7 +71,10 @@ const NAV_ICONS: Record<string, LucideIcon> = {
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { settings } = useWorkspaceSettings();
-  const items = settings.nav.filter((item) => item.enabled || item.id === "/settings");
+  const allowed = useAllowedSections();
+  const items = settings.nav
+    .filter((item) => item.enabled || item.id === "/settings")
+    .filter((item) => allowed === null || allowed.includes(item.id));
 
   return (
     <nav className="flex flex-col gap-1">
@@ -118,9 +147,25 @@ function SetupBanner() {
   );
 }
 
+function NoAccess() {
+  return (
+    <div className="mx-auto max-w-md rounded-xl border border-border bg-card p-8 text-center shadow-sm">
+      <h1 className="font-display text-xl font-bold text-foreground">Not available to you</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
+        The owner has not given your account access to this section yet. Ask them to tick it in
+        Settings → Team &amp; access.
+      </p>
+    </div>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { settings } = useWorkspaceSettings();
+  const allowed = useAllowedSections();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const permitted =
+    allowed === null || allowed.some((section) => pathname.startsWith(section));
   useThemeSync(settings);
   const pad = settings.theme.density === "compact" ? "px-4 py-4 sm:px-5" : "px-4 py-6 sm:px-6 lg:px-8";
 
@@ -179,7 +224,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         ) : null}
 
         <SetupBanner />
-         <main className={`min-w-0 flex-1 ${pad}`}><div className="mx-auto w-full max-w-[1500px]">{children}</div></main>
+         <main className={`min-w-0 flex-1 ${pad}`}><div className="mx-auto w-full max-w-[1500px]">{permitted ? children : <NoAccess />}</div></main>
       </div>
     </div>
   );

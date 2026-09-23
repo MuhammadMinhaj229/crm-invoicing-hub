@@ -69,6 +69,7 @@ export const INTEGRATIONS: IntegrationDefinition[] = [
         label: "API key",
         placeholder: "Global or instance API key",
         secret: true,
+        optional: true,
       },
       {
         key: "instance",
@@ -126,10 +127,9 @@ export const INTEGRATIONS: IntegrationDefinition[] = [
     fields: [
       {
         key: "baseUrl",
-        label: "Finance URL (optional external ledger)",
+        label: "Finance URL",
         placeholder: "https://finance.yourdomain.com",
         secret: false,
-        optional: true,
       },
       {
         key: "apiKey",
@@ -182,6 +182,17 @@ export function isIntegrationConfigured(definition: IntegrationDefinition): bool
   // needs at least one value filled before it counts as configured.
   const anyFilled = definition.fields.some((field) => Boolean(values[field.key]?.trim()));
   return requiredOk && anyFilled;
+}
+
+/**
+ * The web address saved for a tool, ready to open in a new tab.
+ * Returns an empty string when nothing has been saved yet.
+ */
+export function getToolUrl(id: string): string {
+  const values = getIntegrationValues(id);
+  const raw = (values["baseUrl"] ?? values["url"] ?? "").trim();
+  if (!raw) return "";
+  return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
 }
 
 /** Generic reachability probe for non-database integrations. */
