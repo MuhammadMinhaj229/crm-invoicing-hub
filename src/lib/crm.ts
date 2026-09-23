@@ -324,7 +324,7 @@ export async function fetchCustomerTimeline(contactId: string): Promise<Timeline
       kind: "invoice",
     });
   }
-  for (const row of (payments.data ?? []) as Array<Record<string, string | number>>) {
+  for (const row of (payments.data ?? []) as unknown as Array<Record<string, string | number>>) {
     push({
       id: `p-${row["id"]}`,
       at: (row["paid_at"] as string) ?? new Date().toISOString(),
