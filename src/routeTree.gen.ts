@@ -21,6 +21,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedToolsRouteImport } from './routes/_authenticated/tools'
 import { Route as AuthenticatedVendorsRouteImport } from './routes/_authenticated/vendors'
 import { Route as AuthenticatedWebsiteRouteImport } from './routes/_authenticated/website'
+import { Route as ApiIntegrationsHealthRouteImport } from './routes/api/integrations/health'
 import { Route as ApiMessagingSendRouteImport } from './routes/api/messaging/send'
 import { Route as ApiPublicWhatsappWebhookRouteImport } from './routes/api/public/whatsapp/webhook'
 
@@ -84,6 +85,11 @@ const AuthenticatedWebsiteRoute = AuthenticatedWebsiteRouteImport.update({
   path: '/website',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiIntegrationsHealthRoute = ApiIntegrationsHealthRouteImport.update({
+  id: '/api/integrations/health',
+  path: '/api/integrations/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiMessagingSendRoute = ApiMessagingSendRouteImport.update({
   id: '/api/messaging/send',
   path: '/api/messaging/send',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/tools': typeof AuthenticatedToolsRoute
   '/vendors': typeof AuthenticatedVendorsRoute
   '/website': typeof AuthenticatedWebsiteRoute
+  '/api/integrations/health': typeof ApiIntegrationsHealthRoute
   '/api/messaging/send': typeof ApiMessagingSendRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/tools': typeof AuthenticatedToolsRoute
   '/vendors': typeof AuthenticatedVendorsRoute
   '/website': typeof AuthenticatedWebsiteRoute
+  '/api/integrations/health': typeof ApiIntegrationsHealthRoute
   '/api/messaging/send': typeof ApiMessagingSendRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/_authenticated/tools': typeof AuthenticatedToolsRoute
   '/_authenticated/vendors': typeof AuthenticatedVendorsRoute
   '/_authenticated/website': typeof AuthenticatedWebsiteRoute
+  '/api/integrations/health': typeof ApiIntegrationsHealthRoute
   '/api/messaging/send': typeof ApiMessagingSendRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/vendors'
     | '/website'
+    | '/api/integrations/health'
     | '/api/messaging/send'
     | '/api/public/whatsapp/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/vendors'
     | '/website'
+    | '/api/integrations/health'
     | '/api/messaging/send'
     | '/api/public/whatsapp/webhook'
   id:
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tools'
     | '/_authenticated/vendors'
     | '/_authenticated/website'
+    | '/api/integrations/health'
     | '/api/messaging/send'
     | '/api/public/whatsapp/webhook'
   fileRoutesById: FileRoutesById
@@ -196,6 +208,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiIntegrationsHealthRoute: typeof ApiIntegrationsHealthRoute
   ApiMessagingSendRoute: typeof ApiMessagingSendRoute
   ApiPublicWhatsappWebhookRoute: typeof ApiPublicWhatsappWebhookRoute
 }
@@ -286,6 +299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWebsiteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/integrations/health': {
+      id: '/api/integrations/health'
+      path: '/api/integrations/health'
+      fullPath: '/api/integrations/health'
+      preLoaderRoute: typeof ApiIntegrationsHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/messaging/send': {
       id: '/api/messaging/send'
       path: '/api/messaging/send'
@@ -334,6 +354,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiIntegrationsHealthRoute: ApiIntegrationsHealthRoute,
   ApiMessagingSendRoute: ApiMessagingSendRoute,
   ApiPublicWhatsappWebhookRoute: ApiPublicWhatsappWebhookRoute,
 }
