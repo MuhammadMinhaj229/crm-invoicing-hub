@@ -1,8 +1,50 @@
 import { X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 import { useWorkspaceSettings } from "../hooks/use-workspace-settings";
 import { formatMoney } from "../lib/workspace-settings";
-import type { ContactRow, InvoiceRow, RequestRow } from "../lib/crm";
+import { fetchCustomerTimeline, type ContactRow, type InvoiceRow, type RequestRow } from "../lib/crm";
+
+const TIMELINE_TONES: Record<string, string> = {
+  website: "bg-secondary text-secondary-foreground",
+  request: "bg-primary/15 text-primary",
+  invoice: "bg-accent text-accent-foreground",
+  payment: "bg-primary text-primary-foreground",
+  task: "bg-muted text-muted-foreground",
+  lead: "bg-secondary text-secondary-foreground",
+};
+
+/** Everything this person did, newest first — website visits included. */
+function Timeline({ contactId }: { contactId: string }) {
+  const { data = [], isLoading } = useQuery({
+    queryKey: ["customer-timeline", contactId],
+    queryFn: () => fetchCustomerTimeline(contactId),
+  });
+
+  if (isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
+  if (data.length === 0) {
+    return <p className="text-sm text-muted-foreground">Nothing recorded for this customer yet.</p>;
+  }
+
+  return (
+    <ol className="space-y-2.5">
+      {data.map((entry) => (
+        <li key={entry.id} className="flex gap-3">
+          <span
+            className={`mt-1 h-2 w-2 shrink-0 rounded-full ${TIMELINE_TONES[entry.kind] ?? "bg-muted"}`}
+          />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-foreground">{entry.label}</p>
+            <p className="text-xs text-muted-foreground">
+              {new Date(entry.at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
+              {entry.detail ? ` · ${entry.detail}` : ""}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
 
 /** Slide-over 360° view of a single customer. */
 export function ContactProfile({
