@@ -491,6 +491,38 @@ function LandingPage() {
         </div>
       </section> : null}
 
+      {/* Photo updates */}
+      <section className="py-14 md:py-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-8 px-5 md:grid-cols-2 md:gap-14">
+          <img
+            src={str(updates, "imageUrl") || updatesArt}
+            alt="A family member in the Gulf seeing a photo update of work finished at home in India"
+            loading="lazy"
+            width={1200}
+            height={912}
+            className="w-full rounded-2xl object-cover shadow-sm"
+          />
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-wide text-primary">
+              {str(updates, "eyebrow", "You always know")}
+            </p>
+            <h2 className="site-display mt-3 font-display text-3xl font-extrabold md:text-4xl">
+              {str(updates, "title", "Every job comes back with proof")}
+            </h2>
+            <p className="mt-4 leading-7 text-muted-foreground">{str(updates, "subtitle")}</p>
+            <ul className="mt-6 space-y-3">
+              {list<string>(updates, "points").map((point) => (
+                <li key={point} className="flex items-start gap-3 text-base text-foreground">
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+
       {/* How it works */}
       {settings.websiteAppearance.showProcessSection ? <section id="how-it-works" className="py-20 md:py-28">
         <div className="mx-auto max-w-6xl px-5">
