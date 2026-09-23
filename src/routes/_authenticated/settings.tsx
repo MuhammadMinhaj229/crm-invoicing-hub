@@ -218,7 +218,31 @@ function DatabaseCard() {
               <Trash2 className="h-4 w-4" /> Disconnect
             </button>
           ) : null}
+          {stored ? (
+            <button
+              type="button"
+              onClick={async () => {
+                const link = buildDeviceLink(stored, window.location.origin);
+                try {
+                  await navigator.clipboard.writeText(link);
+                  toast.success("Setup link copied — open it once on your phone");
+                } catch {
+                  window.prompt("Copy this link and open it on the other device", link);
+                }
+              }}
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            >
+              <ClipboardCopy className="h-4 w-4" /> Copy setup link for another device
+            </button>
+          ) : null}
         </div>
+        {stored ? (
+          <p className="text-xs text-muted-foreground">
+            These details are kept on this device only. Open that link once on your phone or
+            second computer and it connects there too — no re-typing. Share it only with your
+            own team.
+          </p>
+        ) : null}
       </form>
 
       <div className="mt-6 rounded-lg border border-dashed border-border bg-background p-4">
