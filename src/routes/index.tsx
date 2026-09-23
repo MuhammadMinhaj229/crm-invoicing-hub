@@ -669,6 +669,19 @@ function LandingPage() {
         brandName={brandName}
         logoStyle={settings.branding.logoStyle}
       />
+
+      {str(contact, "whatsapp") ? (
+        <a
+          href={`https://wa.me/${str(contact, "whatsapp").replace(/[^\d]/g, "")}`}
+          target="_blank"
+          rel="noopener"
+          onClick={() => track("cta.clicked", { place: "sticky", label: "WhatsApp" })}
+          className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-4 text-sm font-bold text-primary-foreground shadow-lg md:hidden"
+        >
+          <MessageCircle className="h-5 w-5" />
+          WhatsApp us
+        </a>
+      ) : null}
     </div>
   );
 }
