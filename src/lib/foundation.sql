@@ -135,6 +135,8 @@ create table if not exists public.service_requests (
   organization_id uuid references public.organizations(id),
   contact_id uuid not null references public.contacts(id),
   title text not null,
+  description text,
+
   service_category text,
   status text not null default 'open', -- open | in_progress | waiting | completed | cancelled
   priority text not null default 'normal', -- low | normal | high | urgent
