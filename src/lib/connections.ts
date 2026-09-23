@@ -184,6 +184,17 @@ export function isIntegrationConfigured(definition: IntegrationDefinition): bool
   return requiredOk && anyFilled;
 }
 
+/**
+ * The web address saved for a tool, ready to open in a new tab.
+ * Returns an empty string when nothing has been saved yet.
+ */
+export function getToolUrl(id: string): string {
+  const values = getIntegrationValues(id);
+  const raw = (values["baseUrl"] ?? values["url"] ?? "").trim();
+  if (!raw) return "";
+  return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+}
+
 /** Generic reachability probe for non-database integrations. */
 export async function testHttpEndpoint(
   url: string,
