@@ -26,9 +26,16 @@ import { BrandMark } from "../components/brand-mark";
 import { useThemeSync, useWorkspaceSettings } from "../hooks/use-workspace-settings";
 import { defaultSections, fetchPublishedContent, type SectionContent } from "../lib/cms";
 import heroFamily from "../assets/safar-hero-family.png";
-import groceriesStory from "../assets/safar-groceries-story.png";
-import repairsStory from "../assets/safar-home-repair-story.png";
-import healthcareStory from "../assets/safar-healthcare-story.png";
+import groceriesStory from "../assets/safar-story-groceries.png";
+import repairsStory from "../assets/safar-story-repairs.png";
+import healthcareStory from "../assets/safar-story-health.png";
+import castArt from "../assets/safar-cast.png";
+import updatesArt from "../assets/safar-updates.png";
+import faceSon from "../assets/safar-face-son.png";
+import faceDaughter from "../assets/safar-face-daughter.png";
+import faceParents from "../assets/safar-face-parents.png";
+
+const CAST_FACES = [faceSon, faceDaughter, faceParents];
 
 export const Route = createFileRoute("/")({
   head: () => ({
