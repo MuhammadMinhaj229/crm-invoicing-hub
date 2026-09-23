@@ -157,7 +157,10 @@ function BuilderPage() {
     const t = setTimeout(() => {
       setSaveState("saving");
       saveDocumentDraft(doc)
-        .then((where) => setSaveState(where === "local" ? "local" : "saved"))
+        .then((where) => {
+          setSaveState(where === "local" ? "local" : "saved");
+          setSavedAt(new Date());
+        })
         .catch(() => setSaveState("error"));
     }, 1200);
     return () => clearTimeout(t);
