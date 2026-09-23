@@ -8,6 +8,7 @@
  * Stored in this browser and, once the database is connected, mirrored
  * into `app_settings` under the key "team" so the whole team shares it.
  */
+import { isOwnerEmail } from "./admin";
 import { getSupabase } from "./supabase";
 
 export interface TeamMember {
@@ -120,6 +121,7 @@ export function allowedSectionsFor(
   members: TeamMember[],
 ): string[] | null {
   if (!email) return null;
+  if (isOwnerEmail(email)) return null;
   const member = members.find((row) => row.email === email.trim().toLowerCase());
   if (!member) return members.length ? [] : null;
   if (member.role === "admin") return null;

@@ -1,6 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 
+import {
+  OWNER_EMAIL,
+  OWNER_STARTER_PASSWORD,
+  isOwnerEmail,
+  signInOrCreateOwner,
+} from "../lib/admin";
 import { getSupabase, isSupabaseConfigured } from "../lib/supabase";
 
 export const Route = createFileRoute("/auth")({
@@ -60,11 +66,16 @@ function AuthPage() {
     setNotice(null);
     try {
       if (mode === "sign-in") {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (signInError) throw signInError;
+        if (isOwnerEmail(email)) {
+          // The owner account is created automatically the first time.
+          await signInOrCreateOwner(supabase, password);
+        } else {
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          if (signInError) throw signInError;
+        }
         navigate({ to: "/dashboard", replace: true });
       } else {
         const { error: signUpError } = await supabase.auth.signUp({ email, password });
@@ -141,6 +152,26 @@ function AuthPage() {
             {busy ? "Please wait…" : mode === "sign-in" ? "Sign in" : "Create account"}
           </button>
         </form>
+
+        {mode === "sign-in" ? (
+          <button
+            type="button"
+            onClick={() => {
+              setMode("sign-in");
+              setEmail(OWNER_EMAIL);
+              setPassword(OWNER_STARTER_PASSWORD);
+              setError(null);
+              setNotice(
+                isOwnerEmail(email)
+                  ? "Owner details filled in. Press Sign in."
+                  : "Owner details filled in. Press Sign in, then change the password in Settings → Account.",
+              );
+            }}
+            className="mt-4 w-full rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+          >
+            Use the owner account
+          </button>
+        ) : null}
 
         <button
           onClick={() => {
