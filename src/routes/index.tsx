@@ -16,7 +16,10 @@ import {
   ShoppingBasket,
   Stethoscope,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { track, trackPageView } from "../lib/analytics";
+import { submitWebsiteEnquiry } from "../lib/website-capture";
 
 import { SiteFooter } from "../components/site/site-footer";
 import { BrandMark } from "../components/brand-mark";
