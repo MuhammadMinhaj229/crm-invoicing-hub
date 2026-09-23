@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
+  ClipboardList,
   Globe,
   Handshake,
   LayoutDashboard,
@@ -20,6 +21,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/dashboard": LayoutDashboard,
   "/website": Globe,
   "/customers": Users,
+  "/operations": ClipboardList,
   "/vendors": Handshake,
   "/tools": Wrench,
   "/settings": Settings,
