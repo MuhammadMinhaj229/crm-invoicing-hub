@@ -32,7 +32,27 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 ## Phase 6 — Service Requests desk (done)
 - [x] Create request for a customer, assign provider, priority/status tracking, completion timestamps
 
-## Phase 7 — Finance: invoices, payments, expenses, payables, profit; Invoify entry point
+## Phase 7 — Finance (done)
+- [x] Invoices with line items, exact two-decimal money, SNM-YYYY-#### numbering
+- [x] Payments recorded against invoices, totals and status kept in step
+- [x] Expenses and investments, partner payouts with settle action
+- [x] Billed / received / outstanding / spent / invested / owed / profit summary
+
+## Phase A — Visitor identity and event backbone (done)
+- [x] visitors, visitor_sessions, events, identity_links, identity_review_queue
+- [x] campaigns, attribution_touches, lead_events, feedback, notifications
+- [x] social_accounts, automations, automation_runs, webhook_events, knowledge_entries
+- [x] anon insert-only grants and policies for website tracking and enquiries
+
+## Phase B — Website intelligence (done)
+- [x] First-party tracker: visitor + session keys, UTM capture, queued non-blocking sends
+- [x] Page views, CTA / phone / email clicks, form started and submitted
+- [x] Website enquiry form writes a real lead with attribution touches
+
+## Phase C — Customer 360 timeline (done)
+- [x] Converting a lead attaches the anonymous browsing history to the person
+- [x] Customer profile shows one timeline: website, requests, invoices, payments, tasks
+- [x] CRM Website Intelligence screen: visitors, sources, top actions, visit journeys
 ## Phase 8 — DONE: Website CMS section editor (draft/publish/rollback/history) + public landing page rendered from CMS with footer team-login link
 ## Website and product design system — DONE
 - [x] Original SAFAR brand mark, favicon and family-assistance artwork
