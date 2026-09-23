@@ -28,9 +28,9 @@ export function SiteFooter({
   const links = Array.isArray(footer['links'])
     ? (footer['links'] as { label?: string; href?: string }[])
     : [];
-  const whatsapp = str(contact, "whatsapp", configuredContact.whatsapp);
-  const email = str(contact, "email", configuredContact.email);
-  const phone = str(contact, "phone", configuredContact.phone);
+  const whatsapp = configuredContact.whatsapp || str(contact, "whatsapp");
+  const email = configuredContact.email || str(contact, "email");
+  const phone = configuredContact.phone || str(contact, "phone");
 
   return (
     <footer className="bg-legacy-deep text-legacy-light">

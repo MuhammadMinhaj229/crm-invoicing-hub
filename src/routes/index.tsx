@@ -485,7 +485,7 @@ function LandingPage() {
                 </Link>
               </div>
               <div className="rounded-[1.25rem] bg-legacy-light p-6 text-legacy-ink shadow-lift sm:p-9">
-                <ContactForm whatsapp={str(contact, "whatsapp", publicContact.whatsapp)} email={str(contact, "email", publicContact.email)} />
+                <ContactForm whatsapp={publicContact.whatsapp || str(contact, "whatsapp")} email={publicContact.email || str(contact, "email")} />
               </div>
             </div>
           </div>
