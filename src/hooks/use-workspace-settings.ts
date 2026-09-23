@@ -4,9 +4,11 @@ import {
   DEFAULT_SETTINGS,
   applyTheme,
   getWorkspaceSettings,
+  loadSharedWorkspaceSettings,
   onWorkspaceSettingsChange,
   resetWorkspaceSettings,
   saveWorkspaceSettings,
+  saveSharedWorkspaceSettings,
   type WorkspaceSettings,
 } from "../lib/workspace-settings";
 
@@ -18,8 +20,14 @@ export function useWorkspaceSettings() {
     () => DEFAULT_SETTINGS,
   );
 
+  useEffect(() => {
+    void loadSharedWorkspaceSettings();
+  }, []);
+
   const update = useCallback((patch: Partial<WorkspaceSettings>) => {
-    saveWorkspaceSettings({ ...getWorkspaceSettings(), ...patch });
+    const next = { ...getWorkspaceSettings(), ...patch };
+    saveWorkspaceSettings(next);
+    void saveSharedWorkspaceSettings(next).catch(() => undefined);
   }, []);
 
   return { settings, update, reset: resetWorkspaceSettings };

@@ -41,6 +41,8 @@ export const SECTION_DEFS: SectionDef[] = [
       { key: "primaryCtaHref", label: "Main button link", type: "text" },
       { key: "secondaryCtaLabel", label: "Secondary button label", type: "text" },
       { key: "secondaryCtaHref", label: "Secondary button link", type: "text" },
+      { key: "imageUrl", label: "Hero image URL", type: "text" },
+      { key: "imageAlt", label: "Hero image description", type: "text" },
       { key: "highlights", label: "Quick highlights", type: "tags" },
     ],
     defaults: {
@@ -52,6 +54,8 @@ export const SECTION_DEFS: SectionDef[] = [
       primaryCtaHref: "#contact",
       secondaryCtaLabel: "See how it works",
       secondaryCtaHref: "#how-it-works",
+      imageUrl: "",
+      imageAlt: "A Gulf-based family member coordinating trusted help for parents in India",
       highlights: ["Verified local partners", "One point of contact", "Updates on WhatsApp"],
     },
   },
@@ -62,6 +66,9 @@ export const SECTION_DEFS: SectionDef[] = [
     fields: [
       { key: "title", label: "Section title", type: "text" },
       { key: "subtitle", label: "Section subtitle", type: "textarea" },
+      { key: "groceriesImageUrl", label: "Groceries story image URL", type: "text" },
+      { key: "repairsImageUrl", label: "Home services story image URL", type: "text" },
+      { key: "healthcareImageUrl", label: "Healthcare story image URL", type: "text" },
       {
         key: "items",
         label: "Services",
@@ -77,6 +84,9 @@ export const SECTION_DEFS: SectionDef[] = [
       title: "What we handle for your family",
       subtitle:
         "A deliberate set of services, each with a vetted partner behind it and a clear price before we start.",
+      groceriesImageUrl: "",
+      repairsImageUrl: "",
+      healthcareImageUrl: "",
       items: [
         {
           title: "Groceries & essentials",

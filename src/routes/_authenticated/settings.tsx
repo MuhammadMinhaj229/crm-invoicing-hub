@@ -548,6 +548,14 @@ function AppearanceTab() {
               className={fieldClass}
             />
           </Field>
+          <Field label="Favicon image URL" hint="Optional browser-tab icon for your deployed website.">
+            <input
+              value={branding.faviconUrl}
+              placeholder="https://…"
+              onChange={(e) => update({ branding: { ...branding, faviconUrl: e.target.value } })}
+              className={fieldClass}
+            />
+          </Field>
         </div>
       </Panel>
 
@@ -620,6 +628,66 @@ function AppearanceTab() {
               <option value="plain">Plain white</option>
             </select>
           </Field>
+          <Field label="Button style">
+            <select
+              value={theme.buttonStyle}
+              onChange={(e) =>
+                update({ theme: { ...theme, buttonStyle: e.target.value as "soft" | "square" } })
+              }
+              className={fieldClass}
+            >
+              <option value="soft">Soft corners</option>
+              <option value="square">Crisp corners</option>
+            </select>
+          </Field>
+        </div>
+        <Field label={`Heading scale — ${theme.headingScale}%`}>
+          <input
+            type="range"
+            min={90}
+            max={110}
+            value={theme.headingScale}
+            onChange={(e) => update({ theme: { ...theme, headingScale: Number(e.target.value) } })}
+            className="w-full accent-[var(--primary)]"
+          />
+        </Field>
+        <div className="rounded-lg border border-border bg-background p-5">
+          <p className="text-xs font-bold uppercase text-primary">Live preview</p>
+          <p className="site-display mt-2 font-display text-2xl font-bold text-foreground">We do. We assist. We connect.</p>
+          <p className="mt-2 text-sm text-muted-foreground">Sora headings, Manrope body copy, and your approved palette.</p>
+          <button type="button" className="brand-button mt-4 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Primary action</button>
+        </div>
+        <div className="border-t border-border pt-5">
+          <h3 className="font-display text-base font-semibold text-foreground">Website presentation</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Choose how published website sections are presented.</p>
+          <div className="mt-4 space-y-3">
+          <Field label="Service section layout">
+            <select
+              value={settings.websiteAppearance.sectionStyle}
+              onChange={(e) => update({ websiteAppearance: { ...settings.websiteAppearance, sectionStyle: e.target.value as "zigzag" | "grid" } })}
+              className={fieldClass}
+            >
+              <option value="zigzag">Story-led alternating sections</option>
+              <option value="grid">Compact service grid</option>
+            </select>
+          </Field>
+          {([
+            ["showHeroHighlights", "Hero trust highlights"],
+            ["showTrustSection", "Accountability section"],
+            ["showProcessSection", "How it works"],
+            ["showFaqSection", "Frequently asked questions"],
+          ] as const).map(([key, label]) => (
+            <label key={key} className="flex items-center justify-between gap-4 rounded-lg border border-border px-4 py-3 text-sm font-medium text-foreground">
+              {label}
+              <input
+                type="checkbox"
+                checked={settings.websiteAppearance[key]}
+                onChange={(e) => update({ websiteAppearance: { ...settings.websiteAppearance, [key]: e.target.checked } })}
+                className="h-4 w-4 accent-[var(--primary)]"
+              />
+            </label>
+          ))}
+          </div>
         </div>
         <button
           type="button"

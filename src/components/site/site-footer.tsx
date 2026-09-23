@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Lock } from "lucide-react";
 
 import type { SectionContent } from "../../lib/cms";
+import { BrandMark } from "../brand-mark";
 
 function str(content: SectionContent, key: string, fallback = ""): string {
   const value = content[key];
@@ -25,26 +26,26 @@ export function SiteFooter({
   const phone = str(contact, "phone");
 
   return (
-    <footer className="border-t border-border bg-card">
+    <footer className="border-t border-foreground/10 bg-foreground text-background">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
-          <p className="font-display text-lg font-semibold text-foreground">{brandName}</p>
-          <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+          <BrandMark name={brandName} inverse />
+          <p className="mt-4 max-w-sm text-sm text-background/70">
             {str(footer, "tagline", "Gulf Assistance & Coordination.")}
           </p>
-          <p className="mt-4 text-sm font-medium uppercase tracking-[0.2em] text-primary">
+          <p className="mt-4 text-sm font-bold uppercase text-primary">
             We do. We assist. We connect.
           </p>
         </div>
 
         <nav aria-label="Footer">
-          <p className="font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="font-display text-sm font-semibold uppercase text-background/60">
             Explore
           </p>
           <ul className="mt-3 space-y-2 text-sm">
             {links.map((link) => (
               <li key={`${link.label}-${link.href}`}>
-                <a href={link.href ?? "#"} className="text-foreground hover:text-primary">
+                <a href={link.href ?? "#"} className="text-background hover:text-primary">
                   {link.label}
                 </a>
               </li>
@@ -53,10 +54,10 @@ export function SiteFooter({
         </nav>
 
         <div>
-          <p className="font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="font-display text-sm font-semibold uppercase text-background/60">
             Reach us
           </p>
-          <ul className="mt-3 space-y-2 text-sm text-foreground">
+          <ul className="mt-3 space-y-2 text-sm text-background">
             {whatsapp ? (
               <li>
                 <a
@@ -84,7 +85,7 @@ export function SiteFooter({
               </li>
             ) : null}
             {!whatsapp && !phone && !email ? (
-              <li className="text-muted-foreground">
+               <li className="text-background/60">
                 Add your contact details in the CRM under Website.
               </li>
             ) : null}
@@ -92,12 +93,12 @@ export function SiteFooter({
         </div>
       </div>
 
-      <div className="border-t border-border">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-5 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+       <div className="border-t border-background/15">
+         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-5 text-sm text-background/60 sm:flex-row sm:items-center sm:justify-between">
           <p>{str(footer, "legal", "© SAFAR N MANZIL. All rights reserved.")}</p>
           <Link
             to="/auth"
-            className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 font-medium text-foreground transition hover:border-primary hover:text-primary"
+             className="inline-flex items-center gap-2 rounded-lg border border-background/25 px-3 py-2 font-medium text-background transition hover:border-primary hover:text-primary"
           >
             <Lock className="h-3.5 w-3.5" />
             {str(footer, "crmLabel", "Team login")}
