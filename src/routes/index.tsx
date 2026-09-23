@@ -387,7 +387,7 @@ function LandingPage() {
               src={serviceFilm.url}
               title={str(updates, "title", "See the care, not just the promise.")}
               text={str(updates, "subtitle", "Watch how a single message turns into real help at home — and the photo proof that comes back to you.")}
-              points={proofPoints.length ? proofPoints : undefined}
+              {...(proofPoints.length ? { points: proofPoints } : {})}
             />
           </div>
         </section>
