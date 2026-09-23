@@ -17,6 +17,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedFinanceRouteImport } from './routes/_authenticated/finance'
 import { Route as AuthenticatedInboxRouteImport } from './routes/_authenticated/inbox'
 import { Route as AuthenticatedIntelligenceRouteImport } from './routes/_authenticated/intelligence'
+import { Route as AuthenticatedKnowledgeRouteImport } from './routes/_authenticated/knowledge'
 import { Route as AuthenticatedOperationsRouteImport } from './routes/_authenticated/operations'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedToolsRouteImport } from './routes/_authenticated/tools'
@@ -66,6 +67,11 @@ const AuthenticatedIntelligenceRoute =
     path: '/intelligence',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedKnowledgeRoute = AuthenticatedKnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedOperationsRoute = AuthenticatedOperationsRouteImport.update({
   id: '/operations',
   path: '/operations',
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/finance': typeof AuthenticatedFinanceRoute
   '/inbox': typeof AuthenticatedInboxRoute
   '/intelligence': typeof AuthenticatedIntelligenceRoute
+  '/knowledge': typeof AuthenticatedKnowledgeRoute
   '/operations': typeof AuthenticatedOperationsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/tools': typeof AuthenticatedToolsRoute
@@ -133,6 +140,7 @@ export interface FileRoutesByTo {
   '/finance': typeof AuthenticatedFinanceRoute
   '/inbox': typeof AuthenticatedInboxRoute
   '/intelligence': typeof AuthenticatedIntelligenceRoute
+  '/knowledge': typeof AuthenticatedKnowledgeRoute
   '/operations': typeof AuthenticatedOperationsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/tools': typeof AuthenticatedToolsRoute
@@ -152,6 +160,7 @@ export interface FileRoutesById {
   '/_authenticated/finance': typeof AuthenticatedFinanceRoute
   '/_authenticated/inbox': typeof AuthenticatedInboxRoute
   '/_authenticated/intelligence': typeof AuthenticatedIntelligenceRoute
+  '/_authenticated/knowledge': typeof AuthenticatedKnowledgeRoute
   '/_authenticated/operations': typeof AuthenticatedOperationsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/tools': typeof AuthenticatedToolsRoute
@@ -171,6 +180,7 @@ export interface FileRouteTypes {
     | '/finance'
     | '/inbox'
     | '/intelligence'
+    | '/knowledge'
     | '/operations'
     | '/settings'
     | '/tools'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/finance'
     | '/inbox'
     | '/intelligence'
+    | '/knowledge'
     | '/operations'
     | '/settings'
     | '/tools'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/_authenticated/finance'
     | '/_authenticated/inbox'
     | '/_authenticated/intelligence'
+    | '/_authenticated/knowledge'
     | '/_authenticated/operations'
     | '/_authenticated/settings'
     | '/_authenticated/tools'
@@ -283,6 +295,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIntelligenceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/knowledge': {
+      id: '/_authenticated/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof AuthenticatedKnowledgeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/operations': {
       id: '/_authenticated/operations'
       path: '/operations'
@@ -348,6 +367,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFinanceRoute: typeof AuthenticatedFinanceRoute
   AuthenticatedInboxRoute: typeof AuthenticatedInboxRoute
   AuthenticatedIntelligenceRoute: typeof AuthenticatedIntelligenceRoute
+  AuthenticatedKnowledgeRoute: typeof AuthenticatedKnowledgeRoute
   AuthenticatedOperationsRoute: typeof AuthenticatedOperationsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedToolsRoute: typeof AuthenticatedToolsRoute
@@ -361,6 +381,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFinanceRoute: AuthenticatedFinanceRoute,
   AuthenticatedInboxRoute: AuthenticatedInboxRoute,
   AuthenticatedIntelligenceRoute: AuthenticatedIntelligenceRoute,
+  AuthenticatedKnowledgeRoute: AuthenticatedKnowledgeRoute,
   AuthenticatedOperationsRoute: AuthenticatedOperationsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedToolsRoute: AuthenticatedToolsRoute,

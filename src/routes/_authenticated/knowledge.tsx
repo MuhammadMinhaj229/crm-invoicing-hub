@@ -103,7 +103,7 @@ function KnowledgePage() {
       <PageHeader
         title="Business Knowledge"
         description="Write a service or a price once here. The website and the team always read the same thing."
-        action={
+        actions={
           <button
             type="button"
             onClick={() => setEditing({ form: EMPTY_KNOWLEDGE })}
