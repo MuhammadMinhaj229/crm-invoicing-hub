@@ -533,14 +533,22 @@ function LandingPage() {
             <ul className="mt-7 space-y-2.5 text-sm">
               {str(contact, "phone") ? (
                 <li>
-                  <a href={`tel:${str(contact, "phone")}`} className="font-medium hover:text-primary">
+                  <a
+                    href={`tel:${str(contact, "phone")}`}
+                    onClick={() => track("phone.clicked", { place: "contact" })}
+                    className="font-medium hover:text-primary"
+                  >
                     {str(contact, "phone")}
                   </a>
                 </li>
               ) : null}
               {str(contact, "email") ? (
                 <li>
-                  <a href={`mailto:${str(contact, "email")}`} className="font-medium hover:text-primary">
+                  <a
+                    href={`mailto:${str(contact, "email")}`}
+                    onClick={() => track("email.clicked", { place: "contact" })}
+                    className="font-medium hover:text-primary"
+                  >
                     {str(contact, "email")}
                   </a>
                 </li>
