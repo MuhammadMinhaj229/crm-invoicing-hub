@@ -8,7 +8,6 @@ import { PageHeader } from "../../components/app-shell";
 import { EmptyState } from "../../components/empty-state";
 import {
   CHANNELS,
-  CONVERSATION_STATUSES,
   fetchConversations,
   fetchMessages,
   linkConversationToContact,
@@ -31,6 +30,18 @@ export const Route = createFileRoute("/_authenticated/inbox")({
   }),
   component: InboxPage,
 });
+
+const CHANNEL_LABELS: Record<string, string> = {
+  whatsapp: "WhatsApp",
+  instagram: "Instagram",
+  facebook: "Facebook",
+  email: "Email",
+  web: "Website",
+};
+
+function channelLabel(value: string): string {
+  return CHANNEL_LABELS[value] ?? value;
+}
 
 const inputClass =
   "w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30";
@@ -142,12 +153,12 @@ function InboxPage() {
             </button>
             {CHANNELS.map((item) => (
               <button
-                key={item.id}
+                key={item}
                 type="button"
-                onClick={() => setChannel(item.id)}
-                className={`rounded-full border px-3 py-1 text-xs ${channel === item.id ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"}`}
+                onClick={() => setChannel(item)}
+                className={`rounded-full border px-3 py-1 text-xs ${channel === item ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground"}`}
               >
-                {item.label}
+                {channelLabel(item)}
               </button>
             ))}
           </div>
@@ -178,7 +189,7 @@ function InboxPage() {
                     ) : null}
                   </span>
                   <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                    {CHANNELS.find((item) => item.id === row.channel)?.label ?? row.channel}
+                    {channelLabel(row.channel)}
                     {row.contact_id ? " · linked" : " · not linked"}
                   </span>
                 </button>
@@ -200,8 +211,7 @@ function InboxPage() {
                     {active.display_name || active.phone || "Unknown"}
                   </h2>
                   <p className="text-xs text-muted-foreground">
-                    {CHANNELS.find((item) => item.id === active.channel)?.label ?? active.channel} ·{" "}
-                    {CONVERSATION_STATUSES.find((item) => item.id === active.status)?.label ?? active.status}
+                    {channelLabel(active.channel)} · {active.status}
                   </p>
                 </div>
                 {!active.contact_id && (contacts.data ?? []).length > 0 ? (
@@ -215,7 +225,7 @@ function InboxPage() {
                       <option value="">Link to a customer…</option>
                       {(contacts.data ?? []).map((contact) => (
                         <option key={contact.id} value={contact.id}>
-                          {contact.full_name || contact.phone || contact.email}
+                          {contact.name || contact.phone || contact.email}
                         </option>
                       ))}
                     </select>
@@ -240,7 +250,7 @@ function InboxPage() {
                     >
                       <p className="whitespace-pre-wrap break-words">{message.body}</p>
                       <p className="mt-1 text-[11px] text-muted-foreground">
-                        {new Date(message.created_at).toLocaleString()}
+                        {new Date(message.sent_at).toLocaleString()}
                         {message.direction === "out" ? ` · ${message.status}` : ""}
                       </p>
                     </div>
