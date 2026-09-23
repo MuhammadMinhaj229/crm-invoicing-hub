@@ -147,9 +147,25 @@ function SetupBanner() {
   );
 }
 
+function NoAccess() {
+  return (
+    <div className="mx-auto max-w-md rounded-xl border border-border bg-card p-8 text-center shadow-sm">
+      <h1 className="font-display text-xl font-bold text-foreground">Not available to you</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
+        The owner has not given your account access to this section yet. Ask them to tick it in
+        Settings → Team &amp; access.
+      </p>
+    </div>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { settings } = useWorkspaceSettings();
+  const allowed = useAllowedSections();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const permitted =
+    allowed === null || allowed.some((section) => pathname.startsWith(section));
   useThemeSync(settings);
   const pad = settings.theme.density === "compact" ? "px-4 py-4 sm:px-5" : "px-4 py-6 sm:px-6 lg:px-8";
 
