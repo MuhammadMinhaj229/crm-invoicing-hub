@@ -22,10 +22,16 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 - [x] Contacts tab: searchable list, click-through 360° profile (residence, requests, invoices, payments, notes, lifetime value)
 - [x] Churn & Retention tab: days quiet, repeat-demand profile, per-category thresholds from Settings
 
-## Phase 4 — Churn automation: follow-up tasks + reactivation logging
+## Phase 4 — Churn automation (done)
+- [x] One-click follow-up task per at-risk/churned customer (no duplicate open tasks)
+- [x] Open follow-ups list with complete action; mark-reactivated; WhatsApp shortcut
 
-## Phase 5 — Vendors & Partners directory wired to work orders
-## Phase 6 — Service Requests desk
+## Phase 5 — Vendors & Partners directory (done)
+- [x] Search, category/availability filters, add/edit/remove, rate card, rating, verification, WhatsApp link
+
+## Phase 6 — Service Requests desk (done)
+- [x] Create request for a customer, assign provider, priority/status tracking, completion timestamps
+
 ## Phase 7 — Finance: invoices, payments, expenses, payables, profit; Invoify entry point
 ## Phase 8 — Website CMS: section editor, draft/publish/rollback; public site from CMS
 ## Phase 9 — WhatsApp via Evolution API (QR session, inbox, broadcasts)
