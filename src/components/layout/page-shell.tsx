@@ -11,136 +11,17 @@ import { generalEnquiryMessage } from "../../lib/whatsapp/templates";
 import { useSiteContact } from "../../hooks/use-site-contact";
 import { useThemeSync, useWorkspaceSettings } from "../../hooks/use-workspace-settings";
 import { BrandMark } from "../brand-mark";
+import { SiteHeader } from "./site-header";
 import { SiteFooter } from "../site/site-footer";
 import { AmbientBackground } from "../motion/primitives";
 import { FloatingActions } from "./floating-actions";
 import { fetchPublishedDocument } from "../../lib/page-builder/store";
 
-interface MenuLink { label: string; href: string }
-
-function useMenuLinks(): MenuLink[] | null {
-  const { data } = useQuery({
-    queryKey: ["published-document", "global"],
-    queryFn: () => fetchPublishedDocument("global"),
-    staleTime: 60 * 1000,
-  });
-  const nav = data?.blocks.find((b) => b.type === "navigation");
-  return nav && nav.type === "navigation" && nav.props.links.length ? nav.props.links : null;
-}
-
-function SiteHeader({
-  brandName,
-  logoUrl,
-  logoStyle,
-}: {
-  brandName: string;
-  logoUrl?: string;
-  logoStyle: "lockup" | "image";
-}) {
-  const [open, setOpen] = useState(false);
-  const contact = useSiteContact();
-  const whatsappUrl = buildWhatsAppUrl(contact.whatsapp, generalEnquiryMessage());
-  const custom = useMenuLinks();
-
-  return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-4">
-        <Link to="/" className="min-w-0" aria-label={`${brandName} home`}>
-          <BrandMark name={brandName} logoUrl={logoUrl} style={logoStyle} compact />
-        </Link>
-
-        <nav className="ml-auto hidden items-center gap-7 md:flex" aria-label="Main">
-          {custom ? custom.map((item) => (
-            <a key={item.href + item.label} href={item.href} className="text-sm font-semibold text-foreground/80 transition-colors hover:text-primary">
-              {item.label}
-            </a>
-          )) : site.navigation.map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
-              activeProps={{ className: "text-primary" }}
-              className="text-sm font-semibold text-foreground/80 transition-colors hover:text-primary"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="ml-auto flex items-center gap-2 md:ml-0">
-          {whatsappUrl ? (
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => track("whatsapp.clicked", { placement: "header" })}
-              className="hidden min-h-[44px] items-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground sm:inline-flex"
-            >
-              {site.cta.primary}
-            </a>
-          ) : (
-            <Link
-              to="/contact"
-              className="hidden min-h-[44px] items-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground sm:inline-flex"
-            >
-              {site.cta.primary}
-            </Link>
-          )}
-
-          <button
-            type="button"
-            onClick={() => setOpen((value) => !value)}
-            aria-expanded={open}
-            aria-label={open ? "Close menu" : "Open menu"}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border text-foreground md:hidden"
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </div>
-
-      {open ? (
-        <nav className="border-t border-border bg-background px-5 py-3 md:hidden" aria-label="Mobile">
-          <ul className="space-y-1">
-            {custom ? custom.map((item) => (
-              <li key={item.href + item.label}>
-                <a href={item.href} onClick={() => setOpen(false)} className="block rounded-xl px-3 py-3 text-base font-semibold text-foreground hover:bg-muted">
-                  {item.label}
-                </a>
-              </li>
-            )) : site.navigation.map((item) => (
-              <li key={item.href}>
-                <Link
-                  to={item.href}
-                  onClick={() => setOpen(false)}
-                  className="block rounded-xl px-3 py-3 text-base font-semibold text-foreground hover:bg-muted"
-                >
-                  {item.label}
-                  {item.hint ? (
-                    <span className="block text-sm font-normal text-muted-foreground">
-                      {item.hint}
-                    </span>
-                  ) : null}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      ) : null}
-    </header>
-  );
-}
-
 /**
  * Shared frame for every public page: brand header, ambient background,
  * CMS-driven footer and the persistent contact actions.
  */
-export function PageShell({
-  children,
-  pageName,
-}: {
-  children: ReactNode;
-  pageName: string;
-}) {
+export function PageShell({ children, pageName }: { children: ReactNode; pageName: string }) {
   const { settings } = useWorkspaceSettings();
   useThemeSync(settings);
 
@@ -165,8 +46,8 @@ export function PageShell({
       />
       <main id="main">{children}</main>
       <SiteFooter
-        footer={sections['footer'] ?? {}}
-        contact={sections['contact'] ?? {}}
+        footer={sections["footer"] ?? {}}
+        contact={sections["contact"] ?? {}}
         brandName={settings.branding.name}
         logoStyle={settings.branding.logoStyle}
       />
