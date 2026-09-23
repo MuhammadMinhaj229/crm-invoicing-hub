@@ -397,47 +397,18 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* Proof returns */}
-        <section className="bg-legacy-light py-20 md:py-28">
-          <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-6 sm:px-10 md:grid-cols-2 lg:gap-20">
-            <div className="relative order-2 md:order-1">
-              <div className="overflow-hidden rounded-[1.5rem] bg-legacy-warm">
-                <img
-                  src={str(updates, "imageUrl") || updatesArt}
-                  alt="A completed task update returning to a family member in the Gulf"
-                  className="h-full w-full object-contain"
-                />
-              </div>
-              <div className="soft-card absolute bottom-5 right-5 flex items-center gap-3 p-4 shadow-lift">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
-                  <CheckCircle2 className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-[0.7rem] uppercase tracking-wide text-legacy-ink/45">Request update</p>
-                  <p className="text-sm font-semibold">Work completed</p>
-                </div>
-              </div>
-            </div>
-            <div className="order-1 md:order-2">
-              <Eyebrow>{str(updates, "eyebrow", "Proof returns home")}</Eyebrow>
-              <h2 className="mt-6 font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] md:text-5xl">
-                {str(updates, "title", "You see how it ended.")}
-              </h2>
-              <p className="mt-5 text-base leading-relaxed text-legacy-ink/60 md:text-lg">{str(updates, "subtitle")}</p>
-              <div className="mt-8 grid gap-3">
-                {proofPoints.map((point, index) => {
-                  const Icon = index === 0 ? ImageIcon : index === 1 ? ReceiptText : FileText;
-                  return (
-                    <div key={point} className="soft-card flex items-center gap-4 px-5 py-4">
-                      <Icon className="h-5 w-5 shrink-0 text-primary" />
-                      <span className="text-sm font-medium">{point}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+        {/* Service film */}
+        <section id="film" className="bg-legacy-light py-20 md:py-28">
+          <div className="mx-auto max-w-[1280px] px-6 sm:px-10">
+            <ServiceFilm
+              src={serviceFilm.url}
+              title={str(updates, "title", "See the care, not just the promise.")}
+              text={str(updates, "subtitle", "Watch how a single message turns into real help at home — and the photo proof that comes back to you.")}
+              points={proofPoints.length ? proofPoints : undefined}
+            />
           </div>
         </section>
+
 
         {/* FAQ */}
         {settings.websiteAppearance.showFaqSection ? (
