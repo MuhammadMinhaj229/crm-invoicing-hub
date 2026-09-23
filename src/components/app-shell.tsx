@@ -9,6 +9,7 @@ import {
   Menu,
   Settings,
   Users,
+  Wallet,
   Wrench,
   X,
   type LucideIcon,
