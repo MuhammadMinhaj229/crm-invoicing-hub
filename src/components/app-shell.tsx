@@ -19,11 +19,37 @@ import {
   type LucideIcon,
   LayoutTemplate,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { useThemeSync, useWorkspaceSettings } from "../hooks/use-workspace-settings";
 import { isSupabaseConfigured, getSupabase } from "../lib/supabase";
+import { allowedSectionsFor, getTeam, loadSharedTeam, onTeamChange } from "../lib/team";
 import { BrandMark } from "./brand-mark";
+
+/**
+ * Sections the signed-in person may open. `null` means everything
+ * (workspace owner, or no access rules have been set up yet).
+ */
+export function useAllowedSections(): string[] | null {
+  const [members, setMembers] = useState(getTeam);
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => onTeamChange(() => setMembers([...getTeam()])), []);
+  useEffect(() => {
+    let alive = true;
+    void getSupabase()
+      ?.auth.getUser()
+      .then(({ data }) => {
+        if (alive) setEmail(data.user?.email ?? null);
+      });
+    void loadSharedTeam().catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return useMemo(() => allowedSectionsFor(email, members), [email, members]);
+}
 
 const NAV_ICONS: Record<string, LucideIcon> = {
   "/dashboard": LayoutDashboard,
