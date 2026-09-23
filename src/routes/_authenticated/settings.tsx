@@ -69,11 +69,11 @@ function DatabaseCard() {
 
   const connect = useMutation({
     mutationFn: async () => {
-      const config = {
+      const config: { url: string; anonKey: string; serviceRoleKey?: string } = {
         url: url.trim(),
         anonKey: anonKey.trim(),
-        serviceRoleKey: serviceRoleKey.trim() || undefined,
       };
+      if (serviceRoleKey.trim()) config.serviceRoleKey = serviceRoleKey.trim();
       const test = await testSupabaseConnection(config);
       if (!test.ok) throw new Error(test.message);
       saveStoredSupabaseConfig(config);
