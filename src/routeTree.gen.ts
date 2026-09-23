@@ -12,15 +12,22 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedAutomationsRouteImport } from './routes/_authenticated/automations'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedFinanceRouteImport } from './routes/_authenticated/finance'
+import { Route as AuthenticatedInboxRouteImport } from './routes/_authenticated/inbox'
 import { Route as AuthenticatedIntelligenceRouteImport } from './routes/_authenticated/intelligence'
+import { Route as AuthenticatedKnowledgeRouteImport } from './routes/_authenticated/knowledge'
 import { Route as AuthenticatedOperationsRouteImport } from './routes/_authenticated/operations'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedSocialRouteImport } from './routes/_authenticated/social'
 import { Route as AuthenticatedToolsRouteImport } from './routes/_authenticated/tools'
 import { Route as AuthenticatedVendorsRouteImport } from './routes/_authenticated/vendors'
 import { Route as AuthenticatedWebsiteRouteImport } from './routes/_authenticated/website'
+import { Route as ApiIntegrationsHealthRouteImport } from './routes/api/integrations/health'
+import { Route as ApiMessagingSendRouteImport } from './routes/api/messaging/send'
+import { Route as ApiPublicWhatsappWebhookRouteImport } from './routes/api/public/whatsapp/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -36,6 +43,12 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAutomationsRoute =
+  AuthenticatedAutomationsRouteImport.update({
+    id: '/automations',
+    path: '/automations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
   id: '/customers',
   path: '/customers',
@@ -51,12 +64,22 @@ const AuthenticatedFinanceRoute = AuthenticatedFinanceRouteImport.update({
   path: '/finance',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedInboxRoute = AuthenticatedInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedIntelligenceRoute =
   AuthenticatedIntelligenceRouteImport.update({
     id: '/intelligence',
     path: '/intelligence',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedKnowledgeRoute = AuthenticatedKnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedOperationsRoute = AuthenticatedOperationsRouteImport.update({
   id: '/operations',
   path: '/operations',
@@ -65,6 +88,11 @@ const AuthenticatedOperationsRoute = AuthenticatedOperationsRouteImport.update({
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSocialRoute = AuthenticatedSocialRouteImport.update({
+  id: '/social',
+  path: '/social',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedToolsRoute = AuthenticatedToolsRouteImport.update({
@@ -82,95 +110,156 @@ const AuthenticatedWebsiteRoute = AuthenticatedWebsiteRouteImport.update({
   path: '/website',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiIntegrationsHealthRoute = ApiIntegrationsHealthRouteImport.update({
+  id: '/api/integrations/health',
+  path: '/api/integrations/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMessagingSendRoute = ApiMessagingSendRouteImport.update({
+  id: '/api/messaging/send',
+  path: '/api/messaging/send',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWhatsappWebhookRoute =
+  ApiPublicWhatsappWebhookRouteImport.update({
+    id: '/api/public/whatsapp/webhook',
+    path: '/api/public/whatsapp/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/automations': typeof AuthenticatedAutomationsRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/finance': typeof AuthenticatedFinanceRoute
+  '/inbox': typeof AuthenticatedInboxRoute
   '/intelligence': typeof AuthenticatedIntelligenceRoute
+  '/knowledge': typeof AuthenticatedKnowledgeRoute
   '/operations': typeof AuthenticatedOperationsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/social': typeof AuthenticatedSocialRoute
   '/tools': typeof AuthenticatedToolsRoute
   '/vendors': typeof AuthenticatedVendorsRoute
   '/website': typeof AuthenticatedWebsiteRoute
+  '/api/integrations/health': typeof ApiIntegrationsHealthRoute
+  '/api/messaging/send': typeof ApiMessagingSendRoute
+  '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/automations': typeof AuthenticatedAutomationsRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/finance': typeof AuthenticatedFinanceRoute
+  '/inbox': typeof AuthenticatedInboxRoute
   '/intelligence': typeof AuthenticatedIntelligenceRoute
+  '/knowledge': typeof AuthenticatedKnowledgeRoute
   '/operations': typeof AuthenticatedOperationsRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/social': typeof AuthenticatedSocialRoute
   '/tools': typeof AuthenticatedToolsRoute
   '/vendors': typeof AuthenticatedVendorsRoute
   '/website': typeof AuthenticatedWebsiteRoute
+  '/api/integrations/health': typeof ApiIntegrationsHealthRoute
+  '/api/messaging/send': typeof ApiMessagingSendRoute
+  '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/automations': typeof AuthenticatedAutomationsRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/finance': typeof AuthenticatedFinanceRoute
+  '/_authenticated/inbox': typeof AuthenticatedInboxRoute
   '/_authenticated/intelligence': typeof AuthenticatedIntelligenceRoute
+  '/_authenticated/knowledge': typeof AuthenticatedKnowledgeRoute
   '/_authenticated/operations': typeof AuthenticatedOperationsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/social': typeof AuthenticatedSocialRoute
   '/_authenticated/tools': typeof AuthenticatedToolsRoute
   '/_authenticated/vendors': typeof AuthenticatedVendorsRoute
   '/_authenticated/website': typeof AuthenticatedWebsiteRoute
+  '/api/integrations/health': typeof ApiIntegrationsHealthRoute
+  '/api/messaging/send': typeof ApiMessagingSendRoute
+  '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
+    | '/automations'
     | '/customers'
     | '/dashboard'
     | '/finance'
+    | '/inbox'
     | '/intelligence'
+    | '/knowledge'
     | '/operations'
     | '/settings'
+    | '/social'
     | '/tools'
     | '/vendors'
     | '/website'
+    | '/api/integrations/health'
+    | '/api/messaging/send'
+    | '/api/public/whatsapp/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/automations'
     | '/customers'
     | '/dashboard'
     | '/finance'
+    | '/inbox'
     | '/intelligence'
+    | '/knowledge'
     | '/operations'
     | '/settings'
+    | '/social'
     | '/tools'
     | '/vendors'
     | '/website'
+    | '/api/integrations/health'
+    | '/api/messaging/send'
+    | '/api/public/whatsapp/webhook'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/automations'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
     | '/_authenticated/finance'
+    | '/_authenticated/inbox'
     | '/_authenticated/intelligence'
+    | '/_authenticated/knowledge'
     | '/_authenticated/operations'
     | '/_authenticated/settings'
+    | '/_authenticated/social'
     | '/_authenticated/tools'
     | '/_authenticated/vendors'
     | '/_authenticated/website'
+    | '/api/integrations/health'
+    | '/api/messaging/send'
+    | '/api/public/whatsapp/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiIntegrationsHealthRoute: typeof ApiIntegrationsHealthRoute
+  ApiMessagingSendRoute: typeof ApiMessagingSendRoute
+  ApiPublicWhatsappWebhookRoute: typeof ApiPublicWhatsappWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -196,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/automations': {
+      id: '/_authenticated/automations'
+      path: '/automations'
+      fullPath: '/automations'
+      preLoaderRoute: typeof AuthenticatedAutomationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/customers': {
       id: '/_authenticated/customers'
       path: '/customers'
@@ -217,11 +313,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFinanceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/inbox': {
+      id: '/_authenticated/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof AuthenticatedInboxRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/intelligence': {
       id: '/_authenticated/intelligence'
       path: '/intelligence'
       fullPath: '/intelligence'
       preLoaderRoute: typeof AuthenticatedIntelligenceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/knowledge': {
+      id: '/_authenticated/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof AuthenticatedKnowledgeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/operations': {
@@ -236,6 +346,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/social': {
+      id: '/_authenticated/social'
+      path: '/social'
+      fullPath: '/social'
+      preLoaderRoute: typeof AuthenticatedSocialRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/tools': {
@@ -259,28 +376,57 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWebsiteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/integrations/health': {
+      id: '/api/integrations/health'
+      path: '/api/integrations/health'
+      fullPath: '/api/integrations/health'
+      preLoaderRoute: typeof ApiIntegrationsHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/messaging/send': {
+      id: '/api/messaging/send'
+      path: '/api/messaging/send'
+      fullPath: '/api/messaging/send'
+      preLoaderRoute: typeof ApiMessagingSendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/whatsapp/webhook': {
+      id: '/api/public/whatsapp/webhook'
+      path: '/api/public/whatsapp/webhook'
+      fullPath: '/api/public/whatsapp/webhook'
+      preLoaderRoute: typeof ApiPublicWhatsappWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAutomationsRoute: typeof AuthenticatedAutomationsRoute
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFinanceRoute: typeof AuthenticatedFinanceRoute
+  AuthenticatedInboxRoute: typeof AuthenticatedInboxRoute
   AuthenticatedIntelligenceRoute: typeof AuthenticatedIntelligenceRoute
+  AuthenticatedKnowledgeRoute: typeof AuthenticatedKnowledgeRoute
   AuthenticatedOperationsRoute: typeof AuthenticatedOperationsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSocialRoute: typeof AuthenticatedSocialRoute
   AuthenticatedToolsRoute: typeof AuthenticatedToolsRoute
   AuthenticatedVendorsRoute: typeof AuthenticatedVendorsRoute
   AuthenticatedWebsiteRoute: typeof AuthenticatedWebsiteRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAutomationsRoute: AuthenticatedAutomationsRoute,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFinanceRoute: AuthenticatedFinanceRoute,
+  AuthenticatedInboxRoute: AuthenticatedInboxRoute,
   AuthenticatedIntelligenceRoute: AuthenticatedIntelligenceRoute,
+  AuthenticatedKnowledgeRoute: AuthenticatedKnowledgeRoute,
   AuthenticatedOperationsRoute: AuthenticatedOperationsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSocialRoute: AuthenticatedSocialRoute,
   AuthenticatedToolsRoute: AuthenticatedToolsRoute,
   AuthenticatedVendorsRoute: AuthenticatedVendorsRoute,
   AuthenticatedWebsiteRoute: AuthenticatedWebsiteRoute,
@@ -293,6 +439,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiIntegrationsHealthRoute: ApiIntegrationsHealthRoute,
+  ApiMessagingSendRoute: ApiMessagingSendRoute,
+  ApiPublicWhatsappWebhookRoute: ApiPublicWhatsappWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
