@@ -34,6 +34,8 @@ export interface LeadRow {
   status: string;
   notes: string | null;
   created_at: string;
+  visitor_key?: string | null;
+  score?: number | null;
 }
 
 export interface ContactRow {
