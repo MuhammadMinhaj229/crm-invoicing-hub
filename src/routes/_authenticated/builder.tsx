@@ -448,7 +448,7 @@ function blockTitle(b: Block): string {
 }
 
 function LayerRow({ block, active, onSelect }: { block: Block; active: boolean; onSelect: () => void }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: block.id, disabled: block.locked });
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: block.id, disabled: !!block.locked });
   return (
     <li
       ref={setNodeRef}
@@ -480,7 +480,7 @@ function CanvasBlock(props: {
   onInsertBelow: () => void;
 }) {
   const { block, selected } = props;
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id, disabled: block.locked });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id, disabled: !!block.locked });
   return (
     <div
       ref={setNodeRef}
