@@ -941,11 +941,119 @@ function BusinessRulesTab() {
   );
 }
 
+function ScoringTab() {
+  const connected = isSupabaseConfigured();
+  const [config, setConfig] = useState<ScoringConfig>(DEFAULT_SCORING);
+  const [loaded, setLoaded] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!connected || loaded) return;
+    loadScoring()
+      .then((value) => {
+        setConfig(value);
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
+  }, [connected, loaded]);
+
+  async function save() {
+    setSaving(true);
+    try {
+      await saveScoring(config);
+      toast.success("Scoring saved");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not save");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <Panel
+        title="Lead scoring"
+        description="Points show how much interest someone has shown on the website. They do not say how sure we are about who the person is."
+      >
+        <div className="space-y-2">
+          {config.rules.map((rule, index) => (
+            <div key={rule.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-border p-3">
+              <label className="flex flex-1 items-center gap-2 text-sm text-foreground">
+                <input
+                  type="checkbox"
+                  checked={rule.enabled}
+                  onChange={(event) => {
+                    const rules = [...config.rules];
+                    rules[index] = { ...rule, enabled: event.target.checked };
+                    setConfig({ ...config, rules });
+                  }}
+                />
+                {rule.label}
+              </label>
+              <input
+                type="number"
+                value={rule.points}
+                onChange={(event) => {
+                  const rules = [...config.rules];
+                  rules[index] = { ...rule, points: Number(event.target.value) || 0 };
+                  setConfig({ ...config, rules });
+                }}
+                className="w-24 rounded-lg border border-input bg-background px-3 py-2 text-sm"
+              />
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <Field label="Warm from" hint="Points needed before a lead counts as warm.">
+            <input
+              type="number"
+              value={config.warmFrom}
+              onChange={(event) => setConfig({ ...config, warmFrom: Number(event.target.value) || 0 })}
+              className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm"
+            />
+          </Field>
+          <Field label="Hot from" hint="Points needed before a lead counts as hot.">
+            <input
+              type="number"
+              value={config.hotFrom}
+              onChange={(event) => setConfig({ ...config, hotFrom: Number(event.target.value) || 0 })}
+              className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm"
+            />
+          </Field>
+        </div>
+        <div className="mt-4 flex gap-3">
+          <button
+            type="button"
+            onClick={save}
+            disabled={!connected || saving}
+            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+          >
+            Save scoring
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfig(DEFAULT_SCORING)}
+            className="rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground"
+          >
+            Back to defaults
+          </button>
+        </div>
+        {!connected ? (
+          <p className="mt-3 text-sm text-muted-foreground">
+            Connect your database first to save these points for the whole team.
+          </p>
+        ) : null}
+      </Panel>
+    </div>
+  );
+}
+
 const SETTINGS_TABS = [
   { id: "connections", label: "Connections" },
   { id: "appearance", label: "Appearance" },
   { id: "workspace", label: "Workspace" },
   { id: "rules", label: "Business rules" },
+  { id: "scoring", label: "Lead scoring" },
 ] as const;
 
 type SettingsTab = (typeof SETTINGS_TABS)[number]["id"];
