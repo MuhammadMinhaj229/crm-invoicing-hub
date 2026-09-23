@@ -1,12 +1,12 @@
 import { site } from "../../content/site";
 
 export interface EnquiryFields {
-  name?: string;
-  livingIn?: string;
-  service?: string;
-  familyCity?: string;
-  urgency?: string;
-  message?: string;
+  name?: string | undefined;
+  livingIn?: string | undefined;
+  service?: string | undefined;
+  familyCity?: string | undefined;
+  urgency?: string | undefined;
+  message?: string | undefined;
 }
 
 function lines(parts: (string | false | undefined)[]): string {
