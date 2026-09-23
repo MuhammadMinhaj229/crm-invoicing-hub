@@ -16,7 +16,10 @@ import {
   ShoppingBasket,
   Stethoscope,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { track, trackPageView } from "../lib/analytics";
+import { submitWebsiteEnquiry } from "../lib/website-capture";
 
 import { SiteFooter } from "../components/site/site-footer";
 import { BrandMark } from "../components/brand-mark";
@@ -96,6 +99,7 @@ function SiteHeader({
 
         <a
           href="#contact"
+          onClick={() => track("cta.clicked", { place: "header", label: "Ask for help" })}
           className="brand-button ml-auto hidden rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-md md:ml-0 md:inline-block"
         >
           Ask for help
@@ -142,6 +146,8 @@ function SiteHeader({
 
 function ContactForm({ whatsapp, email }: { whatsapp: string; email: string }) {
   const [form, setForm] = useState({ name: "", phone: "", city: "", need: "" });
+  const [started, setStarted] = useState(false);
+  const [sending, setSending] = useState(false);
   const digits = whatsapp.replace(/[^\d]/g, "");
 
   const message = `Hello SAFAR N MANZIL,%0A%0AName: ${encodeURIComponent(form.name)}%0APhone: ${encodeURIComponent(
@@ -157,11 +163,27 @@ function ContactForm({ whatsapp, email }: { whatsapp: string; email: string }) {
   const fieldClass =
     "w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/25";
 
+  function noteStart() {
+    if (started) return;
+    setStarted(true);
+    track("form.started");
+  }
+
   return (
     <form
+      onFocus={noteStart}
       onSubmit={(event) => {
         event.preventDefault();
-        if (target) window.open(target, "_blank", "noopener");
+        setSending(true);
+        void submitWebsiteEnquiry({
+          name: form.name,
+          phone: form.phone,
+          city: form.city,
+          need: form.need,
+        }).finally(() => {
+          setSending(false);
+          if (target) window.open(target, "_blank", "noopener");
+        });
       }}
       className="rounded-lg border border-border bg-card p-6 shadow-sm"
     >
@@ -207,11 +229,11 @@ function ContactForm({ whatsapp, email }: { whatsapp: string; email: string }) {
       </div>
       <button
         type="submit"
-        disabled={!target}
+        disabled={!target || sending}
         className="brand-button mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-md disabled:opacity-50 sm:w-auto"
       >
         <MessageCircle className="h-4 w-4" />
-        Send the request
+        {sending ? "Sending…" : "Send the request"}
       </button>
       {!target ? (
         <p className="mt-3 text-xs text-muted-foreground">
@@ -225,6 +247,11 @@ function ContactForm({ whatsapp, email }: { whatsapp: string; email: string }) {
 function LandingPage() {
   const { settings } = useWorkspaceSettings();
   useThemeSync(settings);
+
+  useEffect(() => {
+    trackPageView({ page: "home" });
+  }, []);
+
 
   const fallback = useMemo(() => defaultSections(), []);
   const { data: sections = fallback } = useQuery({
@@ -296,6 +323,7 @@ function LandingPage() {
             <div className="mt-8 flex flex-wrap gap-3">
             <a
               href={str(hero, "primaryCtaHref", "#contact")}
+              onClick={() => track("cta.clicked", { place: "hero", label: str(hero, "primaryCtaLabel", "Ask for help") })}
               className="brand-button inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
             >
               {str(hero, "primaryCtaLabel", "Ask for help")}
@@ -464,6 +492,7 @@ function LandingPage() {
             </p>
             <a
               href={str(ctaSection, "buttonHref", "#contact")}
+              onClick={() => track("cta.clicked", { place: "closing", label: str(ctaSection, "buttonLabel", "Talk to us") })}
                className="brand-button mt-7 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5"
             >
               {str(ctaSection, "buttonLabel", "Talk to us")}
@@ -507,14 +536,22 @@ function LandingPage() {
             <ul className="mt-7 space-y-2.5 text-sm">
               {str(contact, "phone") ? (
                 <li>
-                  <a href={`tel:${str(contact, "phone")}`} className="font-medium hover:text-primary">
+                  <a
+                    href={`tel:${str(contact, "phone")}`}
+                    onClick={() => track("phone.clicked", { place: "contact" })}
+                    className="font-medium hover:text-primary"
+                  >
                     {str(contact, "phone")}
                   </a>
                 </li>
               ) : null}
               {str(contact, "email") ? (
                 <li>
-                  <a href={`mailto:${str(contact, "email")}`} className="font-medium hover:text-primary">
+                  <a
+                    href={`mailto:${str(contact, "email")}`}
+                    onClick={() => track("email.clicked", { place: "contact" })}
+                    className="font-medium hover:text-primary"
+                  >
                     {str(contact, "email")}
                   </a>
                 </li>

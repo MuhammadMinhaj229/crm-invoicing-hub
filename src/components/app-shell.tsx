@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
+  Activity,
   ClipboardList,
   Globe,
   Handshake,
@@ -8,6 +9,7 @@ import {
   Menu,
   Settings,
   Users,
+  Wallet,
   Wrench,
   X,
   type LucideIcon,
@@ -23,6 +25,8 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/website": Globe,
   "/customers": Users,
   "/operations": ClipboardList,
+  "/intelligence": Activity,
+  "/finance": Wallet,
   "/vendors": Handshake,
   "/tools": Wrench,
   "/settings": Settings,

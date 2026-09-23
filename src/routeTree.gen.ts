@@ -14,6 +14,8 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedFinanceRouteImport } from './routes/_authenticated/finance'
+import { Route as AuthenticatedIntelligenceRouteImport } from './routes/_authenticated/intelligence'
 import { Route as AuthenticatedOperationsRouteImport } from './routes/_authenticated/operations'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedToolsRouteImport } from './routes/_authenticated/tools'
@@ -44,6 +46,17 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFinanceRoute = AuthenticatedFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedIntelligenceRoute =
+  AuthenticatedIntelligenceRouteImport.update({
+    id: '/intelligence',
+    path: '/intelligence',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOperationsRoute = AuthenticatedOperationsRouteImport.update({
   id: '/operations',
   path: '/operations',
@@ -75,6 +88,8 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/finance': typeof AuthenticatedFinanceRoute
+  '/intelligence': typeof AuthenticatedIntelligenceRoute
   '/operations': typeof AuthenticatedOperationsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/tools': typeof AuthenticatedToolsRoute
@@ -86,6 +101,8 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/finance': typeof AuthenticatedFinanceRoute
+  '/intelligence': typeof AuthenticatedIntelligenceRoute
   '/operations': typeof AuthenticatedOperationsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/tools': typeof AuthenticatedToolsRoute
@@ -99,6 +116,8 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/finance': typeof AuthenticatedFinanceRoute
+  '/_authenticated/intelligence': typeof AuthenticatedIntelligenceRoute
   '/_authenticated/operations': typeof AuthenticatedOperationsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/tools': typeof AuthenticatedToolsRoute
@@ -112,6 +131,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/customers'
     | '/dashboard'
+    | '/finance'
+    | '/intelligence'
     | '/operations'
     | '/settings'
     | '/tools'
@@ -123,6 +144,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/customers'
     | '/dashboard'
+    | '/finance'
+    | '/intelligence'
     | '/operations'
     | '/settings'
     | '/tools'
@@ -135,6 +158,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
+    | '/_authenticated/finance'
+    | '/_authenticated/intelligence'
     | '/_authenticated/operations'
     | '/_authenticated/settings'
     | '/_authenticated/tools'
@@ -185,6 +210,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/finance': {
+      id: '/_authenticated/finance'
+      path: '/finance'
+      fullPath: '/finance'
+      preLoaderRoute: typeof AuthenticatedFinanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/intelligence': {
+      id: '/_authenticated/intelligence'
+      path: '/intelligence'
+      fullPath: '/intelligence'
+      preLoaderRoute: typeof AuthenticatedIntelligenceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/operations': {
       id: '/_authenticated/operations'
       path: '/operations'
@@ -226,6 +265,8 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedFinanceRoute: typeof AuthenticatedFinanceRoute
+  AuthenticatedIntelligenceRoute: typeof AuthenticatedIntelligenceRoute
   AuthenticatedOperationsRoute: typeof AuthenticatedOperationsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedToolsRoute: typeof AuthenticatedToolsRoute
@@ -236,6 +277,8 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedFinanceRoute: AuthenticatedFinanceRoute,
+  AuthenticatedIntelligenceRoute: AuthenticatedIntelligenceRoute,
   AuthenticatedOperationsRoute: AuthenticatedOperationsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedToolsRoute: AuthenticatedToolsRoute,
