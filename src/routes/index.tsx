@@ -278,6 +278,7 @@ function LandingPage() {
   const footer = sections['footer'] ?? {};
   const cast = sections['cast'] ?? {};
   const updates = sections['updates'] ?? {};
+  const promise = sections['promise'] ?? {};
 
   const brandName = settings.branding.name || "SAFAR N MANZIL";
   const testimonialItems = list<{ quote?: string; author?: string; location?: string }>(
@@ -377,6 +378,29 @@ function LandingPage() {
         <a href="#services" aria-label="Explore services" className="absolute bottom-5 left-1/2 hidden -translate-x-1/2 text-muted-foreground md:block">
           <ChevronDown className="h-6 w-6 animate-bounce" />
         </a>
+      </section>
+
+      {/* The promise — the emotional hook for families in the Gulf */}
+      <section className="border-b border-border bg-accent/40 py-14 md:py-20">
+        <div className="mx-auto max-w-3xl px-5 text-center">
+          <p className="text-xs font-extrabold uppercase tracking-wide text-primary">
+            {str(promise, "eyebrow", "We understand")}
+          </p>
+          <h2 className="site-display mt-3 font-display text-3xl font-extrabold leading-tight md:text-4xl">
+            {str(promise, "title", "You can't always be there for your parents in India. But we can.")}
+          </h2>
+          <p className="mt-5 text-base leading-8 text-muted-foreground md:text-lg">
+            {str(promise, "body")}
+          </p>
+          <a
+            href="#contact"
+            onClick={() => track("cta.clicked", { place: "promise", label: "Ask for help now" })}
+            className="brand-button mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-7 py-4 text-base font-bold text-primary-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:py-3.5 sm:text-sm"
+          >
+            Ask for help now
+            <ArrowRight className="h-4 w-4" />
+          </a>
+        </div>
       </section>
 
       {/* Who we help */}
