@@ -46,17 +46,17 @@ export const SECTION_DEFS: SectionDef[] = [
       { key: "highlights", label: "Quick highlights", type: "tags" },
     ],
     defaults: {
-      eyebrow: "Gulf Assistance & Coordination",
+      eyebrow: "Help for your family back home",
       title: "We do. We assist. We connect.",
       subtitle:
-        "You are in the Gulf. Your family is in India. SAFAR N MANZIL stands in for you on the ground — groceries, parcels, home repairs, hospital visits, paperwork — handled by verified people and reported back to you.",
-      primaryCtaLabel: "Request assistance",
+        "You live in the Gulf. Your family lives in India. We do the running around for them — shopping, parcels, repairs, hospital visits and paperwork — and we send you photos and updates.",
+      primaryCtaLabel: "Ask for help",
       primaryCtaHref: "#contact",
       secondaryCtaLabel: "See how it works",
       secondaryCtaHref: "#how-it-works",
       imageUrl: "",
-      imageAlt: "A Gulf-based family member coordinating trusted help for parents in India",
-      highlights: ["Verified local partners", "One point of contact", "Updates on WhatsApp"],
+      imageAlt: "A son in the Gulf arranging help for his parents in India",
+      highlights: ["People we know and check", "One person to talk to", "Updates on WhatsApp"],
     },
   },
   {
@@ -81,9 +81,9 @@ export const SECTION_DEFS: SectionDef[] = [
       },
     ],
     defaults: {
-      title: "What we handle for your family",
+      title: "What we do for your family",
       subtitle:
-        "A deliberate set of services, each with a vetted partner behind it and a clear price before we start.",
+        "A short, clear list of jobs we do. We tell you the price before we start.",
       groceriesImageUrl: "",
       repairsImageUrl: "",
       healthcareImageUrl: "",
@@ -91,32 +91,32 @@ export const SECTION_DEFS: SectionDef[] = [
         {
           title: "Groceries & essentials",
           description:
-            "Monthly rations and everyday essentials delivered to your family's door, with a bill you can see.",
+            "Monthly ration and daily items brought to your family's door. You see the bill.",
         },
         {
           title: "Parcel & logistics",
           description:
-            "Documents and packages collected, couriered and tracked between cities — and to you in the Gulf.",
+            "We pick up papers and parcels, send them and tell you where they are.",
         },
         {
           title: "Home services",
           description:
-            "Electricians, plumbers, AC servicing and repairs arranged with verified technicians and agreed rates.",
+            "Electrician, plumber, AC service and repairs. Known workers, price fixed first.",
         },
         {
           title: "Healthcare assistance",
           description:
-            "Appointments, hospital accompaniment, medicine delivery and follow-up updates for elderly parents.",
+            "We book the doctor, go with your parents, bring medicines and tell you how it went.",
         },
         {
           title: "Documentation & legal",
           description:
-            "Certificates, attestations, bank and government paperwork followed up locally until it is done.",
+            "Certificates, bank and government work. We keep going until the paper is in hand.",
         },
         {
           title: "Property & coordination",
           description:
-            "Site visits, rent collection support, maintenance checks and photo-verified reporting.",
+            "We visit your house or land, help with rent, check repairs and send photos.",
         },
       ],
     },
@@ -139,22 +139,22 @@ export const SECTION_DEFS: SectionDef[] = [
       },
     ],
     defaults: {
-      title: "Built on accountability, not promises",
+      title: "Why families trust us",
       items: [
         {
-          title: "Verified partners only",
+          title: "We know our workers",
           description:
-            "Every serviceman and vendor in our network is identity-checked and rated after each job.",
+            "We check the ID of every worker we send, and we rate them after each job.",
         },
         {
-          title: "Clear pricing before work starts",
+          title: "Price told before work",
           description:
-            "You approve the cost first. Third-party cost and our coordination fee are shown separately.",
+            "You say yes to the cost first. We show the shop or worker cost and our fee separately.",
         },
         {
-          title: "Proof of every job",
+          title: "Proof for every job",
           description:
-            "Photos, bills and status updates for each request, kept in one place you can refer back to.",
+            "Photos, bills and updates for every job, saved in one place you can check any time.",
         },
       ],
     },
@@ -179,12 +179,12 @@ export const SECTION_DEFS: SectionDef[] = [
     ],
     defaults: {
       title: "How it works",
-      subtitle: "One message from you. One coordinator. One clear outcome.",
+      subtitle: "One message from you. One person handles it. One clear result.",
       steps: [
-        { title: "Tell us what is needed", description: "Send the request on WhatsApp or through this page." },
-        { title: "We confirm scope and cost", description: "You get the plan, the partner and the price before anything starts." },
-        { title: "We get it done locally", description: "Our verified partner carries out the work while we supervise." },
-        { title: "You get proof and the invoice", description: "Photos, bills and a clear invoice close the loop." },
+        { title: "Tell us what you need", description: "Send us a message on WhatsApp or fill the form on this page." },
+        { title: "We tell you the cost", description: "We tell you the plan, who will do it and the price before we start." },
+        { title: "We get the work done", description: "Our person does the work while we keep an eye on it." },
+        { title: "You get photos and a bill", description: "We send photos, bills and a simple invoice when it is finished." },
       ],
     },
   },
@@ -207,7 +207,7 @@ export const SECTION_DEFS: SectionDef[] = [
       },
     ],
     defaults: {
-      title: "Families we look after",
+      title: "Families we help",
       items: [],
     },
   },
@@ -222,9 +222,9 @@ export const SECTION_DEFS: SectionDef[] = [
       { key: "buttonHref", label: "Button link", type: "text" },
     ],
     defaults: {
-      title: "Something needs doing back home?",
-      subtitle: "Tell us once. We take it from there and keep you updated at every step.",
-      buttonLabel: "Talk to us on WhatsApp",
+      title: "Something to be done back home?",
+      subtitle: "Tell us once. We handle it and keep you updated at every step.",
+      buttonLabel: "Message us on WhatsApp",
       buttonHref: "#contact",
     },
   },
@@ -246,20 +246,20 @@ export const SECTION_DEFS: SectionDef[] = [
       },
     ],
     defaults: {
-      title: "Questions before you start",
+      title: "Common questions",
       items: [
         {
           question: "Which cities do you cover?",
-          answer: "Tell us the city and we will confirm coverage before accepting the request.",
+          answer: "Tell us the city. We will say yes or no before we take the job.",
         },
         {
           question: "How do I pay?",
           answer:
-            "You approve the cost first and receive a proper invoice showing the third-party cost and our coordination fee separately.",
+            "You agree the cost first. Then you get a bill that shows the shop or worker cost and our fee separately.",
         },
         {
           question: "How will I know the work is done?",
-          answer: "Every completed job comes with photos, the bill and a status update on WhatsApp.",
+          answer: "When a job is finished we send photos, the bill and a message on WhatsApp.",
         },
       ],
     },
@@ -277,8 +277,8 @@ export const SECTION_DEFS: SectionDef[] = [
       { key: "location", label: "Location line", type: "text" },
     ],
     defaults: {
-      title: "Talk to a coordinator",
-      subtitle: "Send the details and we will reply with the plan, the partner and the cost.",
+      title: "Talk to us",
+      subtitle: "Send us the details. We will reply with the plan, the person and the cost.",
       whatsapp: "",
       phone: "",
       email: "",
@@ -305,7 +305,7 @@ export const SECTION_DEFS: SectionDef[] = [
       { key: "crmLabel", label: "CRM entry label", type: "text" },
     ],
     defaults: {
-      tagline: "Gulf Assistance & Coordination for families back home in India.",
+      tagline: "We help Gulf families take care of their people back home in India.",
       links: [
         cta("Services", "#services"),
         cta("How it works", "#how-it-works"),
