@@ -281,8 +281,15 @@ export const SECTION_DEFS: SectionDef[] = [
       },
     ],
     defaults: {
-      title: "Families we help",
-      items: [],
+      title: "Priceless peace of mind",
+      items: [
+        {
+          quote:
+            "The guilt of not being there for my parents was killing me. Now, if the AC breaks or they need groceries, I just message SAFAR N MANZIL from Dubai. They handle my parents like their own family. Priceless.",
+          author: "A son like you",
+          location: "Dubai",
+        },
+      ],
     },
   },
   {
