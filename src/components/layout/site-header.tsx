@@ -49,6 +49,18 @@ export function SiteHeader({
             <BrandMark name={brandName} logoUrl={logoUrl} style={logoUrl ? logoStyle : "image"} compact />
           </Link>
 
+          <div className="utility-carousel relative hidden h-6 w-44 shrink-0 xl:block" aria-hidden>
+            {messages.map((message, index) => (
+              <span
+                key={message}
+                className="utility-message !justify-start !px-0 !text-[0.68rem] !font-semibold uppercase tracking-[0.16em] text-legacy-ink/40"
+                style={{ "--message-index": index } as CSSProperties}
+              >
+                {message}
+              </span>
+            ))}
+          </div>
+
           <nav className="ml-auto hidden items-center gap-1 lg:flex" aria-label="Main navigation">
             {links.map((link) => (
               <Link

@@ -217,7 +217,7 @@ function LandingPage() {
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <div className="glass-nav-dark mt-[-3rem] ml-4 mr-4 flex items-center gap-4 rounded-2xl p-4 sm:ml-8 sm:mr-8">
+                <div className="glass-nav-dark mt-4 flex items-center gap-4 rounded-2xl p-4">
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground">
                     <HeartHandshake className="h-5 w-5" />
                   </span>
