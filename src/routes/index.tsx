@@ -492,6 +492,7 @@ function LandingPage() {
             </p>
             <a
               href={str(ctaSection, "buttonHref", "#contact")}
+              onClick={() => track("cta.clicked", { place: "closing", label: str(ctaSection, "buttonLabel", "Talk to us") })}
                className="brand-button mt-7 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5"
             >
               {str(ctaSection, "buttonLabel", "Talk to us")}
