@@ -21,9 +21,14 @@ import groceriesStory from "../assets/safar-story-groceries.png";
 import healthcareStory from "../assets/safar-story-health.png";
 import repairsStory from "../assets/safar-story-repairs.png";
 import updatesArt from "../assets/safar-updates.png";
+import campaignDreams from "../assets/safar-campaign-dreams.png.asset.json";
+import campaignWorries from "../assets/safar-campaign-family-worries.png.asset.json";
+import campaignJourney from "../assets/safar-campaign-how-it-works.png.asset.json";
 import { SiteHeader } from "../components/layout/site-header";
 import { PublishedOr } from "../components/page-builder/published-page";
 import { SiteFooter } from "../components/site/site-footer";
+import { StoryCarousel, type StorySlide } from "../components/site/story-carousel";
+import { InvoiceExample } from "../components/site/invoice-example";
 import { useThemeSync, useWorkspaceSettings } from "../hooks/use-workspace-settings";
 import { track, trackPageView } from "../lib/analytics";
 import { defaultSections, fetchPublishedContent, type SectionContent } from "../lib/cms";
@@ -157,6 +162,12 @@ function LandingPage() {
   const trustItems = list<{ title?: string; description?: string }>(trust, "items");
   const proofPoints = list<string>(updates, "points");
   const brandName = "Safar N manzil";
+  const publicContact = settings.publicContact;
+  const storySlides: StorySlide[] = [
+    { id: "dreams", title: "You carry the dream.", accent: "We help carry the responsibility.", text: "While you build a future in the Gulf, we help with the things that still need doing at home.", image: campaignDreams.url, imageAlt: "A Gulf resident thinking about family and responsibilities in India" },
+    { id: "worries", title: "Your family’s needs", accent: "still reach you first.", text: "Groceries, appointments, repairs and paperwork can feel heavier when you have to solve them from another country.", image: campaignWorries.url, imageAlt: "A family in India sharing practical concerns with a relative in the Gulf" },
+    { id: "journey", title: "One message starts", accent: "a clear journey.", text: "Tell us what is needed. We confirm the task, share the plan, wait for approval and return with an update.", image: campaignJourney.url, imageAlt: "A simple illustrated journey from request to completed help" },
+  ];
 
   const journeySteps = [
     { title: journey[0]?.title || "You tell us", text: journey[0]?.description || "Send the need in your own words." },
@@ -258,6 +269,12 @@ function LandingPage() {
                 </article>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="bg-legacy-warm pb-20 md:pb-28">
+          <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-10">
+            <StoryCarousel slides={storySlides} />
           </div>
         </section>
 
@@ -371,37 +388,14 @@ function LandingPage() {
           </section>
         ) : null}
 
-        {/* Price before work */}
+        {/* Privacy-safe cost breakdown */}
         <section className="bg-legacy-warm py-20 md:py-28">
-          <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-6 sm:px-10 md:grid-cols-2 lg:gap-20">
-            <div>
-              <Eyebrow>Nothing begins in the dark</Eyebrow>
-              <h2 className="mt-6 font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] md:text-5xl">
-                The price comes before the work.
-              </h2>
-              <p className="mt-5 max-w-lg text-base leading-relaxed text-legacy-ink/60 md:text-lg">
-                You see the task, outside costs and our fee before giving approval. If the plan changes, we ask again.
-              </p>
-            </div>
-            <div className="soft-card p-6 shadow-lift sm:p-9">
-              <div className="flex items-start justify-between border-b border-legacy-ink/8 pb-6">
-                <div>
-                  <p className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-legacy-teal">Approval sheet</p>
-                  <p className="mt-2 font-display text-xl font-semibold">Your request plan</p>
-                </div>
-                <CircleDollarSign className="h-7 w-7 text-primary" />
-              </div>
-              {["What will be done", "Shop, worker or material cost", "Safar N manzil service fee", "Total before work starts"].map((label, index) => (
-                <div key={label} className="flex items-center justify-between gap-4 border-b border-legacy-ink/6 py-4 text-sm last:border-b-0">
-                  <span className={index === 3 ? "font-semibold" : "text-legacy-ink/75"}>{label}</span>
-                  <span className={index === 3 ? "font-bold text-legacy-teal" : "text-legacy-ink/40"}>{index === 3 ? "Shown clearly" : "Confirmed first"}</span>
-                </div>
-              ))}
-              <div className="mt-6 flex items-center gap-3 rounded-xl bg-legacy-teal/8 p-4 text-legacy-teal">
-                <Check className="h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm font-semibold">You decide when the work can begin.</span>
-              </div>
-            </div>
+          <div className="mx-auto max-w-[1280px] px-6 sm:px-10">
+            <InvoiceExample title="A clear breakdown, not a surprise bill." text="Every request is different. Before work begins, you see what will be done, the outside costs and our fee as separate lines." rows={[
+              { id: "work", title: "The work requested", text: "Written in plain language" },
+              { id: "outside", title: "Outside costs", text: "Shop, worker or materials" },
+              { id: "fee", title: "Safar N manzil fee", text: "Shown separately" },
+            ]} />
           </div>
         </section>
 
@@ -493,7 +487,7 @@ function LandingPage() {
                 </Link>
               </div>
               <div className="rounded-[1.25rem] bg-legacy-light p-6 text-legacy-ink shadow-lift sm:p-9">
-                <ContactForm whatsapp={str(contact, "whatsapp")} email={str(contact, "email")} />
+                <ContactForm whatsapp={str(contact, "whatsapp", publicContact.whatsapp)} email={str(contact, "email", publicContact.email)} />
               </div>
             </div>
           </div>
