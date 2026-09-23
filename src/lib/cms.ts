@@ -46,17 +46,32 @@ export const SECTION_DEFS: SectionDef[] = [
       { key: "highlights", label: "Quick highlights", type: "tags" },
     ],
     defaults: {
-      eyebrow: "Help for your family back home",
-      title: "We do. We assist. We connect.",
+      eyebrow: "For families living in the Gulf",
+      title: "Don't let distance become guilt.",
       subtitle:
-        "You live in the Gulf. Your family lives in India. We do the running around for them — shopping, parcels, repairs, hospital visits and paperwork — and we send you photos and updates.",
-      primaryCtaLabel: "Ask for help",
+        "One message to us, and a checked, honest person helps your parents in India — shopping, repairs, hospital visits, paperwork — with photos and updates sent back to you.",
+      primaryCtaLabel: "Ask for help now",
       primaryCtaHref: "#contact",
       secondaryCtaLabel: "See how it works",
       secondaryCtaHref: "#how-it-works",
       imageUrl: "",
       imageAlt: "A son in the Gulf arranging help for his parents in India",
       highlights: ["People we know and check", "One person to talk to", "Updates on WhatsApp"],
+    },
+  },
+  {
+    key: "promise",
+    label: "The promise",
+    description: "The emotional band right after the hero — why families abroad hand this to you.",
+    fields: [
+      { key: "eyebrow", label: "Small line above the title", type: "text" },
+      { key: "title", label: "Title", type: "text" },
+      { key: "body", label: "Paragraph", type: "textarea" },
+    ],
+    defaults: {
+      eyebrow: "We understand",
+      title: "You can't always be there for your parents in India. But we can.",
+      body: "The hardest part of living abroad is the helplessness you feel when your family needs something back home. Stop worrying about untrustworthy vendors or making your parents do the heavy lifting. We act as your trusted local proxy.",
     },
   },
   {
