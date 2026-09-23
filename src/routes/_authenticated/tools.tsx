@@ -31,7 +31,7 @@ interface ToolCard {
   /** Matches the connection id in Settings → Connections, when the tool is an external link. */
   connectionId?: string;
   /** Section inside the console, when the tool lives here. */
-  internalPath?: string;
+  internalPath?: "/intelligence";
   name: string;
   description: string;
   icon: LucideIcon;
