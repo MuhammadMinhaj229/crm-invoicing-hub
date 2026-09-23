@@ -9,9 +9,11 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 - [x] Admin shell with sidebar: Dashboard / Website / Customers / Vendors / Tools / Settings
 - [x] All six sections scaffolded with real empty states
 - [x] Foundation SQL migration (schema + RLS + roles + audit log) for user's Supabase
-- [ ] User adds SAFAR_SUPABASE_URL / SAFAR_SUPABASE_ANON_KEY / SAFAR_SUPABASE_SERVICE_ROLE_KEY secrets (form was declined; ask again at cutover)
+- [x] Foundation SQL shipped inside app as copyable setup script (src/lib/foundation.sql)
+- [x] Settings → Connections hub: Supabase card (save/test/disconnect + copy setup SQL) + WhatsApp/Invoify/Social/Finance integration cards
+- [ ] User pastes Supabase keys in Settings → Connections, runs setup SQL in their Supabase SQL editor
 
-## Phase 2 — Settings: integrations & API key hub
+## Phase 3 — Customers: Leads / Contacts / 360 profile (next)
 ## Phase 3 — Customers: Leads / Contacts / 360 profile
 ## Phase 4 — Churn & Retention intelligence (threshold: open question, default 7 days)
 ## Phase 5 — Vendors & Partners directory wired to work orders
