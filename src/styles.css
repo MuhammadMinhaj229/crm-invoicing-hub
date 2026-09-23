@@ -185,3 +185,28 @@ html {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
   50% { transform: translate3d(3%, 4%, 0) scale(1.08); }
 }
+
+@keyframes utility-message-cycle {
+  0%, 13% { opacity: 0; transform: translateY(100%); }
+  17%, 29% { opacity: 1; transform: translateY(0); }
+  33%, 100% { opacity: 0; transform: translateY(-100%); }
+}
+
+.utility-carousel {
+  position: relative;
+  height: 100%;
+}
+
+.utility-message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0;
+  animation: utility-message-cycle 18s ease-in-out infinite;
+  animation-delay: calc(var(--message-index) * 3s - 3s);
+}

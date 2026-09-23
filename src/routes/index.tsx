@@ -10,17 +10,21 @@ import {
   HeartHandshake,
   Home,
   Lock,
+  Menu,
   MessageCircle,
   PackageCheck,
   Quote,
   ShieldCheck,
   ShoppingBasket,
   Stethoscope,
+  X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { track, trackPageView } from "../lib/analytics";
 import { submitWebsiteEnquiry } from "../lib/website-capture";
+import { buildWhatsAppUrl } from "../lib/whatsapp/url-builder";
+import { generalEnquiryMessage } from "../lib/whatsapp/templates";
 
 import { SiteFooter } from "../components/site/site-footer";
 import { BrandMark } from "../components/brand-mark";
@@ -80,74 +84,100 @@ function SiteHeader({
   logoStyle: "lockup" | "image";
 }) {
   const [open, setOpen] = useState(false);
-  // Real pages, not hash anchors: each one is indexable and shareable.
   const links = [
-    { label: "Services", href: "/services" },
-    { label: "How it works", href: "/about" },
+    { label: "Our Process", href: "/about" },
+    { label: "Going to Gulf", href: "/services" },
+    { label: "Living in Gulf", href: "/services" },
     { label: "Questions", href: "/faq" },
-    { label: "Talk to us", href: "/contact" },
   ];
+  const whatsappNumber = "917207071874";
+  const whatsappUrl = buildWhatsAppUrl(whatsappNumber, generalEnquiryMessage());
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-4">
-        <a href="#top" className="min-w-0">
-          <BrandMark name={brandName} logoUrl={logoUrl} style={logoStyle} compact />
-        </a>
-
-        <nav className="ml-auto hidden items-center gap-7 md:flex" aria-label="Main">
-          {links.map((link) => (
+    <header className="relative z-40 bg-card">
+      <div className="relative h-9 overflow-hidden bg-foreground text-background" aria-label="SAFAR promises">
+        <div className="utility-carousel">
+          {["We do...", "We assist...", "We provide...", "We are always here...", "We are always with you..."].map((message, index) => (
+            <span key={message} className="utility-message" style={{ "--message-index": index } as React.CSSProperties}>
+              {message}
+            </span>
+          ))}
+          {whatsappUrl ? (
             <a
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-muted-foreground transition hover:text-foreground"
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="utility-message inline-flex items-center justify-center gap-2 font-bold text-background"
+              style={{ "--message-index": 5 } as React.CSSProperties}
+              onClick={() => track("whatsapp.clicked", { placement: "utility_bar" })}
             >
-              {link.label}
+              <MessageCircle className="h-4 w-4" /> WhatsApp Us: +91 72070 71874
             </a>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="flex min-h-20 items-center gap-4 border-b border-border px-5 sm:px-8 lg:px-10">
+        <Link to="/" className="min-w-0" aria-label={`${brandName} home`}>
+          <BrandMark name={brandName} logoUrl={logoUrl} style={logoStyle} compact />
+        </Link>
+
+        <nav className="ml-auto hidden items-center gap-7 lg:flex" aria-label="Main navigation">
+          {links.map((link) => (
+            <Link key={`${link.href}-${link.label}`} to={link.href} className="text-sm font-semibold text-foreground/75 transition-colors hover:text-primary">
+              {link.label}
+            </Link>
           ))}
         </nav>
 
-        <a
-          href="#contact"
-          onClick={() => track("cta.clicked", { place: "header", label: "Ask for help" })}
-          className="brand-button ml-auto hidden rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-md md:ml-0 md:inline-block"
-        >
-          Ask for help
-        </a>
-
-        <button
-          onClick={() => setOpen((value) => !value)}
-          className="ml-auto rounded-lg border border-border px-3 py-2 text-sm font-medium md:hidden"
-          aria-expanded={open}
-        >
-          Menu
-        </button>
+        <div className="ml-auto flex items-center gap-3 lg:ml-0">
+          {whatsappUrl ? (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => track("whatsapp.clicked", { placement: "header" })}
+              className="brand-button hidden min-h-11 items-center rounded-full bg-primary px-6 text-sm font-extrabold text-primary-foreground transition hover:-translate-y-0.5 hover:shadow-md sm:inline-flex"
+            >
+              WhatsApp Us
+            </a>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-primary text-primary transition-colors hover:bg-accent lg:hidden"
+            aria-expanded={open}
+            aria-controls="mobile-navigation"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {open ? (
-        <div className="border-t border-border bg-background px-5 py-3 md:hidden">
-          <ul className="space-y-1">
-            {links.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="block rounded-lg px-2 py-2.5 text-sm font-medium text-foreground hover:bg-accent"
-                >
+        <div id="mobile-navigation" className="fixed inset-0 z-50 lg:hidden">
+          <button type="button" aria-label="Close navigation menu" className="absolute inset-0 bg-foreground/35 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <div className="absolute inset-y-0 right-0 flex w-[min(88vw,22rem)] animate-slide-in-right flex-col bg-background p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border pb-5">
+              <BrandMark name={brandName} logoUrl={logoUrl} style={logoStyle} compact />
+              <button type="button" onClick={() => setOpen(false)} aria-label="Close navigation menu" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border text-foreground hover:bg-muted">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <nav className="mt-7 flex flex-col" aria-label="Mobile navigation">
+              {links.map((link) => (
+                <Link key={`${link.href}-${link.label}`} to={link.href} onClick={() => setOpen(false)} className="border-b border-border py-4 text-base font-bold text-foreground hover:text-primary">
                   {link.label}
+                </Link>
+              ))}
+              {whatsappUrl ? (
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="mt-7 inline-flex min-h-12 items-center justify-center rounded-full border-2 border-primary px-5 text-sm font-extrabold text-primary">
+                  WhatsApp Us
                 </a>
-              </li>
-            ))}
-            <li>
-              <a
-                href="#contact"
-                onClick={() => setOpen(false)}
-                className="mt-1 block rounded-lg bg-primary px-3 py-2.5 text-center text-sm font-semibold text-primary-foreground"
-              >
-                Ask for help
-              </a>
-            </li>
-          </ul>
+              ) : null}
+            </nav>
+          </div>
         </div>
       ) : null}
     </header>
@@ -312,15 +342,16 @@ function LandingPage() {
 
   return (
     <div id="top" className="min-h-screen bg-background text-foreground">
-      <SiteHeader
-        brandName={brandName}
-        logoUrl={settings.branding.logoUrl}
-        logoStyle={settings.branding.logoStyle}
-      />
-
       <main>
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b border-border">
+      <div className="bg-accent/45 px-0 py-0 sm:px-4 sm:py-4 lg:px-7 lg:py-7">
+       <div className="mx-auto max-w-[1480px] overflow-hidden bg-card shadow-xl sm:rounded-lg sm:border sm:border-border/70">
+        <SiteHeader
+          brandName={brandName}
+          logoUrl={settings.branding.logoUrl}
+          logoStyle={settings.branding.logoStyle}
+        />
+        {/* Hero */}
+        <section className="relative overflow-hidden border-b border-border">
         <div className="mx-auto grid max-w-7xl items-center gap-6 px-5 py-10 sm:py-14 md:min-h-[660px] md:grid-cols-[0.92fr_1.08fr] md:gap-8 md:py-16">
           <div className="relative z-10 order-1 md:col-start-1 md:row-start-1 md:self-end">
             <p className="text-xs font-extrabold uppercase tracking-wide text-primary">
@@ -381,7 +412,9 @@ function LandingPage() {
         <a href="#services" aria-label="Explore services" className="absolute bottom-5 left-1/2 hidden -translate-x-1/2 text-muted-foreground md:block">
           <ChevronDown className="h-6 w-6 animate-bounce" />
         </a>
-      </section>
+        </section>
+       </div>
+      </div>
 
       {/* The promise — the emotional hook for families in the Gulf */}
       <section className="border-b border-border bg-accent/40 py-14 md:py-20">
