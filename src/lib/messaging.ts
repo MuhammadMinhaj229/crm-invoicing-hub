@@ -11,6 +11,12 @@
 import { getSupabase } from "./supabase";
 import { normalizePhone } from "./crm";
 
+async function db() {
+  const supabase = await db();
+  if (!supabase) throw new Error("Connect your database in Settings first.");
+  return supabase;
+}
+
 export const CHANNELS = ["whatsapp", "instagram", "facebook", "email", "web"] as const;
 export type Channel = (typeof CHANNELS)[number];
 
@@ -60,7 +66,8 @@ export async function fetchConversations(filter?: {
   status?: string;
   search?: string;
 }): Promise<ConversationRow[]> {
-  let query = getSupabase()
+  const client = await db();
+  let query = client
     .from("conversations")
     .select("*")
     .order("last_message_at", { ascending: false, nullsFirst: false })
@@ -80,7 +87,7 @@ export async function fetchConversations(filter?: {
 }
 
 export async function fetchMessages(conversationId: string): Promise<MessageRow[]> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await (await db())
     .from("messages")
     .select("*")
     .eq("conversation_id", conversationId)
@@ -91,7 +98,7 @@ export async function fetchMessages(conversationId: string): Promise<MessageRow[
 }
 
 export async function fetchTemplates(): Promise<TemplateRow[]> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await (await db())
     .from("message_templates")
     .select("*")
     .order("name");
@@ -100,7 +107,7 @@ export async function fetchTemplates(): Promise<TemplateRow[]> {
 }
 
 export async function saveTemplate(input: { name: string; body: string; channel?: string }) {
-  const { error } = await getSupabase()
+  const { error } = await (await db())
     .from("message_templates")
     .upsert(
       { name: input.name, body: input.body, channel: input.channel ?? "whatsapp", updated_at: new Date().toISOString() },
@@ -110,7 +117,7 @@ export async function saveTemplate(input: { name: string; body: string; channel?
 }
 
 export async function deleteTemplate(id: string) {
-  const { error } = await getSupabase().from("message_templates").delete().eq("id", id);
+  const { error } = await (await db()).from("message_templates").delete().eq("id", id);
   if (error) throw error;
 }
 
@@ -122,7 +129,7 @@ export async function openConversation(input: {
   contactId?: string | null;
   leadId?: string | null;
 }): Promise<ConversationRow> {
-  const supabase = getSupabase();
+  const supabase = await db();
   const phone = normalizePhone(input.phone);
   const externalId = phone ?? `${input.channel}:${input.displayName ?? "unknown"}`;
 
@@ -168,7 +175,7 @@ export async function sendMessage(input: {
   body: string;
   author?: string;
 }): Promise<SendResult> {
-  const supabase = getSupabase();
+  const supabase = await db();
   const now = new Date().toISOString();
   const { data: saved, error } = await supabase
     .from("messages")
@@ -223,7 +230,7 @@ export async function sendMessage(input: {
 }
 
 export async function setConversationStatus(id: string, status: string) {
-  const { error } = await getSupabase()
+  const { error } = await (await db())
     .from("conversations")
     .update({ status, updated_at: new Date().toISOString() })
     .eq("id", id);
@@ -231,7 +238,7 @@ export async function setConversationStatus(id: string, status: string) {
 }
 
 export async function linkConversationToContact(id: string, contactId: string) {
-  const { error } = await getSupabase()
+  const { error } = await (await db())
     .from("conversations")
     .update({ contact_id: contactId, updated_at: new Date().toISOString() })
     .eq("id", id);
