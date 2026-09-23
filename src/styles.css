@@ -226,19 +226,36 @@ html {
   background-image: linear-gradient(90deg, transparent 0, transparent 2.2rem, color-mix(in oklab, var(--legacy-coral) 22%, transparent) 2.2rem, color-mix(in oklab, var(--legacy-coral) 22%, transparent) calc(2.2rem + 1px), transparent calc(2.2rem + 1px));
 }
 
-.legacy-hero header {
-  background: color-mix(in oklab, var(--legacy-deep) 90%, transparent);
-  color: var(--legacy-light);
-  backdrop-filter: blur(20px);
+/* Floating frosted navigation */
+@utility glass-nav {
+  background: color-mix(in oklab, var(--legacy-light) 72%, transparent);
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  border: 1px solid color-mix(in oklab, var(--legacy-ink) 8%, transparent);
+  box-shadow: var(--shadow-soft);
 }
 
-.legacy-hero header > div:last-of-type {
-  border-color: color-mix(in oklab, var(--legacy-light) 14%, transparent);
+@utility glass-nav-dark {
+  background: color-mix(in oklab, var(--legacy-deep) 62%, transparent);
+  backdrop-filter: blur(22px) saturate(1.4);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  border: 1px solid color-mix(in oklab, var(--legacy-light) 14%, transparent);
+  box-shadow: 0 24px 60px -30px oklch(0 0 0 / 0.55);
 }
 
-.legacy-hero header nav a,
-.legacy-hero header > div:last-of-type > a {
-  color: var(--legacy-light);
+@utility soft-card {
+  background: var(--legacy-light);
+  border: 1px solid color-mix(in oklab, var(--legacy-ink) 7%, transparent);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-soft);
+}
+
+@utility shadow-lift {
+  box-shadow: var(--shadow-lift);
+}
+
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
 }
 
 .utility-carousel {
