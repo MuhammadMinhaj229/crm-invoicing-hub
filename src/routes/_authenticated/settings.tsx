@@ -1276,8 +1276,94 @@ function TeamTab() {
   );
 }
 
+function AccountTab() {
+  const [email, setEmail] = useState<string | null>(null);
+  const [next, setNext] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    const supabase = getSupabase();
+    if (!supabase) return;
+    void supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
+  }, []);
+
+  async function changePassword(event: FormEvent) {
+    event.preventDefault();
+    const supabase = getSupabase();
+    if (!supabase) {
+      toast.error("Connect the database first");
+      return;
+    }
+    if (next.length < 8) {
+      toast.error("Use at least 8 characters");
+      return;
+    }
+    if (next !== confirm) {
+      toast.error("The two passwords do not match");
+      return;
+    }
+    setBusy(true);
+    const { error } = await supabase.auth.updateUser({ password: next });
+    setBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setNext("");
+    setConfirm("");
+    toast.success("Password changed. Use it the next time you sign in.");
+  }
+
+  return (
+    <section className="rounded-xl border border-border bg-card p-6 shadow-sm">
+      <h2 className="font-display text-lg font-semibold text-foreground">Your account</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Signed in as {email ?? "—"}. The owner account is{" "}
+        <b className="text-foreground">{OWNER_EMAIL}</b>; it always sees every section.
+      </p>
+      <form onSubmit={changePassword} className="mt-5 grid gap-4">
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-foreground">New password</label>
+          <input
+            type="password"
+            value={next}
+            onChange={(e) => setNext(e.target.value)}
+            minLength={8}
+            required
+            className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
+          />
+        </div>
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-foreground">
+            Repeat new password
+          </label>
+          <input
+            type="password"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            minLength={8}
+            required
+            className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
+          />
+        </div>
+        <div>
+          <button
+            type="submit"
+            disabled={busy}
+            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90 disabled:opacity-50"
+          >
+            {busy ? "Saving…" : "Change password"}
+          </button>
+        </div>
+      </form>
+    </section>
+  );
+}
+
 const SETTINGS_TABS = [
   { id: "connections", label: "Connections" },
+  { id: "account", label: "Account" },
   { id: "team", label: "Team & access" },
   { id: "appearance", label: "Appearance" },
   { id: "workspace", label: "Workspace" },
