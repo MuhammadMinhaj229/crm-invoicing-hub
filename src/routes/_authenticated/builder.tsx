@@ -232,9 +232,27 @@ function BuilderPage() {
     change({ ...doc, blocks: arrayMove(doc.blocks, from, to) });
   };
 
+  const saveNow = async () => {
+    setSaveState("saving");
+    try {
+      const where = await saveDocumentDraft(doc);
+      setSaveState(where === "local" ? "local" : "saved");
+      setSavedAt(new Date());
+      toast.success(
+        where === "local"
+          ? "Saved on this device. Connect the database in Settings to save for everyone."
+          : "Draft saved. Press Publish live to show it on the website.",
+      );
+    } catch (e) {
+      setSaveState("error");
+      toast.error((e as Error).message);
+    }
+  };
+
   const publish = async () => {
     try {
       const v = await publishDocument(doc);
+      setPublishedAt(new Date());
       setMeta((m) => ({ ...m, status: "published", version: v }));
       await qc.invalidateQueries({ queryKey: ["published-document", page] });
       toast.success("Published — the live website is updated.");
