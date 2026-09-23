@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   BarChart3,
   CalendarClock,
+  ExternalLink,
   FileText,
   MessageCircle,
   Wallet,
@@ -9,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { PageHeader } from "../../components/app-shell";
+import { getToolUrl } from "../../lib/connections";
 
 export const Route = createFileRoute("/_authenticated/tools")({
   head: () => ({
@@ -26,61 +28,100 @@ export const Route = createFileRoute("/_authenticated/tools")({
 
 interface ToolCard {
   id: string;
+  /** Matches the connection id in Settings → Connections, when the tool is an external link. */
+  connectionId?: string;
+  /** Section inside the console, when the tool lives here. */
+  internalPath?: string;
   name: string;
   description: string;
   icon: LucideIcon;
-  status: string;
 }
 
 const TOOLS: ToolCard[] = [
   {
     id: "invoify",
+    connectionId: "invoify",
     name: "Safar Invoify",
     description:
       "Generate professional invoices with the customer and service request pre-filled.",
     icon: FileText,
-    status: "Connect in Settings",
   },
   {
     id: "social",
+    connectionId: "social",
     name: "Social Media Scheduler",
     description:
       "Buffer-style calendar for scheduled posting across Instagram, Facebook, LinkedIn and X.",
     icon: CalendarClock,
-    status: "Connect in Settings",
   },
   {
     id: "bi",
+    internalPath: "/intelligence",
     name: "Business Intelligence",
     description:
       "Every number in the CRM as simple, readable charts — demand, repeats, revenue curves.",
     icon: BarChart3,
-    status: "Activates with your data",
   },
   {
     id: "finance",
+    connectionId: "finance",
     name: "Finance & Investments",
     description:
       "Cash flow, operating expenses, capital investments and provider payouts in one ledger.",
     icon: Wallet,
-    status: "Connect in Settings",
   },
   {
     id: "whatsapp",
+    connectionId: "whatsapp",
     name: "WhatsApp Toolbox",
     description:
       "QR session pairing, quick-reply macros and paced broadcast queues — no Meta API needed.",
     icon: MessageCircle,
-    status: "Connect in Settings",
   },
 ];
+
+function ToolAction({ tool }: { tool: ToolCard }) {
+  if (tool.internalPath) {
+    return (
+      <Link
+        to={tool.internalPath}
+        className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+      >
+        Open
+      </Link>
+    );
+  }
+
+  const url = tool.connectionId ? getToolUrl(tool.connectionId) : "";
+  if (url) {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+      >
+        Open tool <ExternalLink className="h-3.5 w-3.5" />
+      </a>
+    );
+  }
+
+  return (
+    <Link
+      to="/settings"
+      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+    >
+      Add the link in Settings
+    </Link>
+  );
+}
 
 function ToolsPage() {
   return (
     <div>
       <PageHeader
         title="Tools"
-        description="The professional toolkit. Connect each tool once in Settings → Connections and it lights up here."
+        description="Paste each tool's web address once in Settings → Connections, and the Open button here takes you straight to it."
       />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {TOOLS.map((tool) => (
@@ -97,9 +138,9 @@ function ToolsPage() {
               </h3>
             </div>
             <p className="mt-3 flex-1 text-sm text-muted-foreground">{tool.description}</p>
-            <p className="mt-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              {tool.status}
-            </p>
+            <div className="mt-4">
+              <ToolAction tool={tool} />
+            </div>
           </div>
         ))}
       </div>
