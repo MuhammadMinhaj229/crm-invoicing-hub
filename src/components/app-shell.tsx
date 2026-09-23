@@ -24,6 +24,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   "/website": Globe,
   "/customers": Users,
   "/operations": ClipboardList,
+  "/intelligence": Activity,
   "/vendors": Handshake,
   "/tools": Wrench,
   "/settings": Settings,
