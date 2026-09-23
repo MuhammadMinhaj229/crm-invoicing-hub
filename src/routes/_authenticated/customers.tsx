@@ -546,7 +546,41 @@ function ChurnTab() {
         </div>
       ) : null}
 
+      {tasks.filter((task) => task.status === "open" && task.kind === "follow_up").length > 0 ? (
+        <section className="rounded-xl border border-border bg-card p-4">
+          <h3 className="mb-2 font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Open follow-ups
+          </h3>
+          <ul className="space-y-2">
+            {tasks
+              .filter((task) => task.status === "open" && task.kind === "follow_up")
+              .map((task) => (
+                <li
+                  key={task.id}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2"
+                >
+                  <div>
+                    <p className="text-sm text-foreground">{task.title}</p>
+                    {task.due_at ? (
+                      <p className="text-xs text-muted-foreground">
+                        Due {new Date(task.due_at).toLocaleDateString(settings.locale)}
+                      </p>
+                    ) : null}
+                  </div>
+                  <button
+                    onClick={() => closeTask.mutate(task.id)}
+                    className="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-accent"
+                  >
+                    Done
+                  </button>
+                </li>
+              ))}
+          </ul>
+        </section>
+      ) : null}
+
       <div className="grid gap-3 md:grid-cols-2">
+
         {rows.map((row) => (
           <article key={row.contact.id} className="rounded-xl border border-border bg-card p-4">
             <div className="flex items-start justify-between gap-3">
