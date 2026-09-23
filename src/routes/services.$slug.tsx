@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { PublishedOr } from "../components/page-builder/published-page";
 import { CheckCircle2, MessageCircle } from "lucide-react";
 
 import { PageShell } from "../components/layout/page-shell";
@@ -50,7 +51,7 @@ export const Route = createFileRoute("/services/$slug")({
     };
   },
   notFoundComponent: ServiceNotFound,
-  component: ServiceDetail,
+  component: ServiceDetailRoute,
 });
 
 function ServiceNotFound() {
@@ -183,5 +184,14 @@ function ServiceDetail() {
         </ul>
       </section>
     </PageShell>
+  );
+}
+
+function ServiceDetailRoute() {
+  const { slug } = Route.useParams();
+  return (
+    <PublishedOr page={`service:${slug}`} pageName={`service:${slug}`}>
+      <ServiceDetail />
+    </PublishedOr>
   );
 }

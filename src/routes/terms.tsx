@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PublishedOr } from "../components/page-builder/published-page";
 
 import { PageShell } from "../components/layout/page-shell";
 import { PageIntro } from "../components/layout/page-intro";
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/terms")({
     ],
     links: [{ rel: "canonical", href: "/terms" }],
   }),
-  component: TermsPage,
+  component: TermsPageRoute,
 });
 
 function TermsPage() {
@@ -72,5 +73,13 @@ function TermsPage() {
         </section>
       </article>
     </PageShell>
+  );
+}
+
+function TermsPageRoute() {
+  return (
+    <PublishedOr page="terms" pageName="terms">
+      <TermsPage />
+    </PublishedOr>
   );
 }

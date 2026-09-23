@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PublishedOr } from "../components/page-builder/published-page";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
@@ -56,7 +57,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: LandingPage,
+  component: LandingPageRoute,
 });
 
 function str(content: SectionContent, key: string, fallback = ""): string {
@@ -709,5 +710,13 @@ function LandingPage() {
         </a>
       ) : null}
     </div>
+  );
+}
+
+function LandingPageRoute() {
+  return (
+    <PublishedOr page="home" pageName="home">
+      <LandingPage />
+    </PublishedOr>
   );
 }

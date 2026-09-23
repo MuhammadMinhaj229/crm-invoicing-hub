@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PublishedOr } from "../components/page-builder/published-page";
 import { useEffect } from "react";
 
 import { PageShell } from "../components/layout/page-shell";
@@ -51,7 +52,7 @@ export const Route = createFileRoute("/faq")({
       },
     ],
   }),
-  component: FaqPage,
+  component: FaqPageRoute,
 });
 
 function FaqPage() {
@@ -108,5 +109,13 @@ function FaqPage() {
         </Reveal>
       </section>
     </PageShell>
+  );
+}
+
+function FaqPageRoute() {
+  return (
+    <PublishedOr page="faq" pageName="faq">
+      <FaqPage />
+    </PublishedOr>
   );
 }

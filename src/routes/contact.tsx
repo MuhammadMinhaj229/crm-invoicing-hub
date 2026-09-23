@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PublishedOr } from "../components/page-builder/published-page";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -65,7 +66,7 @@ export const Route = createFileRoute("/contact")({
       },
     ],
   }),
-  component: ContactPage,
+  component: ContactPageRoute,
 });
 
 const FIELD =
@@ -305,5 +306,13 @@ function ContactPage() {
         </Reveal>
       </section>
     </PageShell>
+  );
+}
+
+function ContactPageRoute() {
+  return (
+    <PublishedOr page="contact" pageName="contact">
+      <ContactPage />
+    </PublishedOr>
   );
 }

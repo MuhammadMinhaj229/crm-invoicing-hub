@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PublishedOr } from "../components/page-builder/published-page";
 import { ArrowRight } from "lucide-react";
 
 import { PageShell } from "../components/layout/page-shell";
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/services/")({
       },
     ],
   }),
-  component: ServicesPage,
+  component: ServicesPageRoute,
 });
 
 function ServicesPage() {
@@ -90,5 +91,13 @@ function ServicesPage() {
         </Reveal>
       </section>
     </PageShell>
+  );
+}
+
+function ServicesPageRoute() {
+  return (
+    <PublishedOr page="services" pageName="services">
+      <ServicesPage />
+    </PublishedOr>
   );
 }
