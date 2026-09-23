@@ -215,12 +215,144 @@ export async function convertLeadToContact(lead: LeadRow): Promise<string> {
 
   const { error: leadError } = await supabase
     .from("leads")
-    .update({ status: "converted", updated_at: new Date().toISOString() })
+    .update({ status: "converted", contact_id: contactId, updated_at: new Date().toISOString() })
     .eq("id", lead.id);
   if (leadError) throw new Error(leadError.message);
 
+  await attachVisitorHistory(lead.visitor_key ?? null, contactId, "form");
+
+  void supabase.from("lead_events").insert({
+    lead_id: lead.id,
+    kind: "status_changed",
+    to_value: "converted",
+    detail: "Lead became a customer",
+  });
+
   return contactId;
 }
+
+/**
+ * Connects an anonymous device to a known person, and stamps that person's
+ * name onto everything the device did before. Only called when the person
+ * identified themselves — never guessed.
+ */
+export async function attachVisitorHistory(
+  visitorKey: string | null,
+  contactId: string,
+  signal: "form" | "whatsapp" | "phone" | "email" | "manual",
+): Promise<void> {
+  if (!visitorKey) return;
+  const supabase = getSupabase();
+  if (!supabase) return;
+
+  await supabase
+    .from("identity_links")
+    .upsert(
+      { visitor_key: visitorKey, contact_id: contactId, signal, confidence: "confirmed" },
+      { onConflict: "visitor_key,contact_id" },
+    );
+  await supabase.from("visitors").update({ contact_id: contactId }).eq("visitor_key", visitorKey);
+  await supabase
+    .from("events")
+    .update({ contact_id: contactId })
+    .eq("visitor_key", visitorKey)
+    .is("contact_id", null);
+}
+
+/** Everything one customer has done, newest first, across website and CRM. */
+export interface TimelineEntry {
+  id: string;
+  at: string;
+  label: string;
+  detail?: string;
+  kind: "website" | "request" | "invoice" | "payment" | "task" | "lead";
+}
+
+export async function fetchCustomerTimeline(contactId: string): Promise<TimelineEntry[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+
+  const [events, requests, invoices, payments, tasks] = await Promise.all([
+    supabase
+      .from("events")
+      .select("id, name, route, occurred_at")
+      .eq("contact_id", contactId)
+      .order("occurred_at", { ascending: false })
+      .limit(100),
+    supabase
+      .from("service_requests")
+      .select("id, title, status, created_at")
+      .eq("contact_id", contactId),
+    supabase.from("invoices").select("id, number, total_amount, status, created_at").eq("contact_id", contactId),
+    supabase.from("payments").select("id, amount, paid_at, invoice_id").eq("contact_id", contactId),
+    supabase.from("tasks").select("id, title, status, created_at").eq("contact_id", contactId),
+  ]);
+
+  const entries: TimelineEntry[] = [];
+  const push = (entry: TimelineEntry) => entries.push(entry);
+
+  for (const row of (events.data ?? []) as Array<Record<string, string>>) {
+    push({
+      id: `e-${row["id"]}`,
+      at: row["occurred_at"] as string,
+      label: WEBSITE_LABELS[row["name"] as string] ?? (row["name"] as string),
+      ...(row["route"] ? { detail: row["route"] } : {}),
+      kind: "website",
+    });
+  }
+  for (const row of (requests.data ?? []) as Array<Record<string, string>>) {
+    push({
+      id: `r-${row["id"]}`,
+      at: row["created_at"] as string,
+      label: `Service request: ${row["title"] ?? "Untitled"}`,
+      detail: row["status"] as string,
+      kind: "request",
+    });
+  }
+  for (const row of (invoices.data ?? []) as Array<Record<string, string | number>>) {
+    push({
+      id: `i-${row["id"]}`,
+      at: row["created_at"] as string,
+      label: `Invoice ${row["number"] ?? ""}`.trim(),
+      detail: `₹${Number(row["total_amount"] ?? 0).toLocaleString("en-IN")} · ${row["status"]}`,
+      kind: "invoice",
+    });
+  }
+  for (const row of (payments.data ?? []) as Array<Record<string, string | number>>) {
+    push({
+      id: `p-${row["id"]}`,
+      at: (row["paid_at"] as string) ?? new Date().toISOString(),
+      label: "Payment received",
+      detail: `₹${Number(row["amount"] ?? 0).toLocaleString("en-IN")}`,
+      kind: "payment",
+    });
+  }
+  for (const row of (tasks.data ?? []) as Array<Record<string, string>>) {
+    push({
+      id: `t-${row["id"]}`,
+      at: row["created_at"] as string,
+      label: row["title"] as string,
+      detail: row["status"] as string,
+      kind: "task",
+    });
+  }
+
+  return entries
+    .filter((entry) => Boolean(entry.at))
+    .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime());
+}
+
+const WEBSITE_LABELS: Record<string, string> = {
+  "page.viewed": "Opened a page on the website",
+  "service.viewed": "Looked at a service",
+  "pricing.viewed": "Looked at prices",
+  "cta.clicked": "Clicked a button",
+  "form.started": "Started the enquiry form",
+  "form.submitted": "Sent an enquiry",
+  "whatsapp.clicked": "Clicked WhatsApp",
+  "phone.clicked": "Clicked the phone number",
+  "email.clicked": "Clicked the email",
+};
 
 /* ---------------- Retention intelligence ---------------- */
 
