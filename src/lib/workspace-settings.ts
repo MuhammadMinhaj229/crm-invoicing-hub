@@ -29,6 +29,8 @@ export interface BrandingSettings {
   initial: string;
   logoUrl: string;
   faviconUrl: string;
+  /** "lockup" draws the SAFAR mark in code; "image" uses the logo picture. */
+  logoStyle: "lockup" | "image";
 }
 
 export interface WebsiteAppearanceSettings {
