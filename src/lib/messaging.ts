@@ -12,7 +12,7 @@ import { getSupabase } from "./supabase";
 import { normalizePhone } from "./crm";
 
 async function db() {
-  const supabase = await db();
+  const supabase = getSupabase();
   if (!supabase) throw new Error("Connect your database in Settings first.");
   return supabase;
 }
