@@ -156,6 +156,16 @@ function DatabaseCard() {
             Never used by the browser. Reserved for privileged background jobs.
           </p>
         </div>
+        <div className="rounded-lg border border-border bg-background p-3 text-sm">
+          <p className="font-medium text-foreground">Faster direct link (Transaction pooler)</p>
+          <p className="mt-1 text-muted-foreground">
+            In Supabase press <b>Connect</b> → <b>Transaction pooler</b> and copy the string
+            (it ends in <code>:6543/postgres</code>). Put your database password in it and add it as{" "}
+            <code>DATABASE_URL</code> in your hosting settings (Vercel → Environment Variables).
+            It is never typed here: anyone holding it can read every table. Server jobs like
+            incoming WhatsApp messages then save directly and faster. Check it under Server keys below.
+          </p>
+        </div>
 
         {result ? (
           <p
@@ -208,6 +218,12 @@ function DatabaseCard() {
           New query → paste the setup script → Run. It creates every table, role and security
           policy the CRM needs.
         </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Then sign up once at /auth and make yourself the owner with this query (use your email):
+        </p>
+        <pre className="mt-2 overflow-auto rounded-lg bg-muted p-3 text-xs text-foreground">{`insert into public.user_roles (user_id, role)
+select id, 'super_admin' from auth.users where email = 'YOUR@EMAIL.COM'
+on conflict do nothing;`}</pre>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             onClick={async () => {

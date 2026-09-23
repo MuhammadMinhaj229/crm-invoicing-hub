@@ -37,3 +37,8 @@ deployment from your hosting dashboard.
 
 Turn on daily backups in your Supabase project. Before any large change,
 take a manual snapshot there as well.
+
+
+## Direct database link
+
+Add `DATABASE_URL` (Supabase Transaction pooler string, port 6543, with your database password) to the Vercel environment variables for faster server jobs.

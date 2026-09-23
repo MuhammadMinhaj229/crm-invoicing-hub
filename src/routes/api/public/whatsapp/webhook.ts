@@ -168,7 +168,7 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
           // Idempotency: one row per provider event id.
           const { error: seen } = await supabase.from("webhook_events").insert({
             provider: item.provider,
-            event_id: item.eventId,
+            external_id: item.eventId,
             event_type: "message.received",
             payload: payload as Record<string, unknown>,
             processing_status: "processing",
@@ -219,9 +219,9 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
 
           await supabase
             .from("webhook_events")
-            .update({ processing_status: "done" })
+            .update({ processing_status: "processed" })
             .eq("provider", item.provider)
-            .eq("event_id", item.eventId);
+            .eq("external_id", item.eventId);
 
           stored += 1;
         }
