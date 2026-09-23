@@ -41,6 +41,22 @@ export interface WebsiteAppearanceSettings {
   showFaqSection: boolean;
 }
 
+export interface PublicContactSettings {
+  whatsapp: string;
+  phone: string;
+  email: string;
+  location: string;
+  availability: string;
+}
+
+export interface SocialLinkSetting {
+  id: string;
+  platform: "instagram" | "facebook" | "linkedin" | "youtube" | "x" | "google" | "custom";
+  label: string;
+  url: string;
+  enabled: boolean;
+}
+
 export interface NavItemSetting {
   id: string;
   label: string;
@@ -69,6 +85,8 @@ export interface WorkspaceSettings {
   serviceCategories: string[];
   retention: RetentionSettings;
   websiteAppearance: WebsiteAppearanceSettings;
+  publicContact: PublicContactSettings;
+  socialLinks: SocialLinkSetting[];
 }
 
 export const DEFAULT_SETTINGS: WorkspaceSettings = {
@@ -155,6 +173,8 @@ export const DEFAULT_SETTINGS: WorkspaceSettings = {
     showProcessSection: true,
     showFaqSection: true,
   },
+  publicContact: { whatsapp: "", phone: "", email: "", location: "", availability: "" },
+  socialLinks: [],
 };
 
 const STORAGE_KEY = "safar.workspace.settings";
@@ -191,6 +211,8 @@ function merge(stored: unknown): WorkspaceSettings {
       ...DEFAULT_SETTINGS.websiteAppearance,
       ...(value.websiteAppearance ?? {}),
     },
+    publicContact: { ...DEFAULT_SETTINGS.publicContact, ...(value.publicContact ?? {}) },
+    socialLinks: Array.isArray(value.socialLinks) ? value.socialLinks : DEFAULT_SETTINGS.socialLinks,
   };
 }
 

@@ -6,6 +6,7 @@ import { track } from "../../lib/analytics";
 import { buildWhatsAppUrl } from "../../lib/whatsapp/url-builder";
 import { generalEnquiryMessage } from "../../lib/whatsapp/templates";
 import { BrandMark } from "../brand-mark";
+import { useSiteContact } from "../../hooks/use-site-contact";
 
 /** The one site-wide header: a floating frosted navigation bar. */
 export function SiteHeader({
@@ -19,6 +20,7 @@ export function SiteHeader({
 }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const contact = useSiteContact();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -33,8 +35,7 @@ export function SiteHeader({
     { label: "Questions", href: "/faq" },
     { label: "Contact", href: "/contact" },
   ];
-  const whatsappNumber = "917207071874";
-  const whatsappUrl = buildWhatsAppUrl(whatsappNumber, generalEnquiryMessage());
+  const whatsappUrl = buildWhatsAppUrl(contact.whatsapp, generalEnquiryMessage());
   const messages = ["We do...", "We assist...", "We provide...", "We are always here...", "We are always with you..."];
 
   return (
