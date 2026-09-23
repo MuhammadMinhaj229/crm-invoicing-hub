@@ -41,18 +41,18 @@ export function PageIntro({
   children?: ReactNode;
 }) {
   return (
-    <section className="border-b border-border/60 bg-accent/30">
-      <div className="mx-auto max-w-4xl px-5 py-12 sm:py-16">
+    <section className="legacy-grid relative overflow-hidden border-b border-legacy-light/10 bg-legacy-deep text-legacy-light">
+      <div className="mx-auto max-w-6xl px-5 py-16 sm:py-24">
         {trail ? <Breadcrumbs trail={trail} /> : null}
         <Reveal>
           {eyebrow ? (
-            <p className="text-sm font-bold uppercase tracking-wide text-primary">{eyebrow}</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-legacy-peach">{eyebrow}</p>
           ) : null}
-          <h1 className="mt-2 font-display text-3xl font-extrabold leading-tight sm:text-5xl">
+          <h1 className="mt-4 max-w-4xl font-display text-4xl font-semibold leading-tight sm:text-6xl">
             {title}
           </h1>
           {lead ? (
-            <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{lead}</p>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-legacy-light/65">{lead}</p>
           ) : null}
           {children ? <div className="mt-6">{children}</div> : null}
         </Reveal>

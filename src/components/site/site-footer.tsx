@@ -28,7 +28,7 @@ export function SiteFooter({
   const phone = str(contact, "phone");
 
   return (
-    <footer className="border-t border-foreground/10 bg-foreground text-background">
+    <footer className="border-t border-legacy-light/10 bg-legacy-deep text-legacy-light">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <BrandMark name={brandName} style={logoStyle} inverse />
@@ -100,7 +100,7 @@ export function SiteFooter({
           <p>{str(footer, "legal", "© SAFAR N MANZIL. All rights reserved.")}</p>
           <Link
             to="/auth"
-             className="inline-flex items-center gap-2 rounded-lg border border-background/25 px-3 py-2 font-medium text-background transition hover:border-primary hover:text-primary"
+             className="inline-flex items-center gap-2 border border-background/25 px-3 py-2 font-medium text-background transition hover:border-primary hover:text-primary"
           >
             <Lock className="h-3.5 w-3.5" />
             {str(footer, "crmLabel", "Team login")}

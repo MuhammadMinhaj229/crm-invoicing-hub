@@ -642,6 +642,7 @@ const LABELS: Record<string, string> = {
   image: "Picture",
   src: "Picture",
   imageAlt: "Picture description (for blind visitors)",
+  accent: "Highlighted title line",
   alt: "Picture description",
   caption: "Caption",
   imageSide: "Picture side",

@@ -110,3 +110,11 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 - Team access checklist, URL-only tool links, builder save button (done)
 
 - Owner account + password change, one-tap device setup link (done)
+
+## Emotional legacy website redesign (done)
+- [x] Brand-first cinematic homepage, continuous care journey, interactive service stories
+- [x] Trust dossier, price-before-work sheet, proof-return sequence, guided request
+- [x] Outfit/Figtree and coral–teal visual foundation; exact deployed logo preserved
+- [x] New emotional-story blocks available in the visual page builder
+- [x] Supporting pages aligned to the new public visual system
+- [x] Desktop, mobile, keyboard and reduced-motion verification

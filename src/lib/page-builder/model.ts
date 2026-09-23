@@ -69,6 +69,11 @@ interface BaseBlock<T extends string, P> {
 
 export type Block =
   | BaseBlock<"hero", { eyebrow: string; title: string; text: string; image: string; imageAlt: string; imageSide: "left" | "right"; buttons: ButtonItem[] }>
+  | BaseBlock<"cinematicHero", { eyebrow: string; title: string; accent: string; text: string; image: string; imageAlt: string; buttons: ButtonItem[] }>
+  | BaseBlock<"careJourney", { eyebrow: string; title: string; text: string; items: CardItem[] }>
+  | BaseBlock<"serviceStory", { eyebrow: string; title: string; text: string; items: CardItem[] }>
+  | BaseBlock<"trustDossier", { eyebrow: string; title: string; text: string; items: CardItem[] }>
+  | BaseBlock<"proofReturn", { eyebrow: string; title: string; text: string; image: string; imageAlt: string; items: CardItem[] }>
   | BaseBlock<"heading", { eyebrow: string; text: string; level: "h1" | "h2" | "h3" }>
   | BaseBlock<"text", { text: string }>
   | BaseBlock<"image", { src: string; alt: string; caption: string }>
@@ -117,6 +122,11 @@ export const btn = (label: string, href: string, style: ButtonItem["style"] = "s
 
 /** Block library shown in the editor's "Add block" menu. */
 export const BLOCK_LIBRARY: { type: BlockType; label: string; description: string }[] = [
+  { type: "cinematicHero", label: "Cinematic opening", description: "Brand promise, family picture and main action" },
+  { type: "careJourney", label: "Care journey", description: "The request-to-result story" },
+  { type: "serviceStory", label: "Service stories", description: "Interactive service choices with pictures" },
+  { type: "trustDossier", label: "Trust dossier", description: "What stays under the customer's control" },
+  { type: "proofReturn", label: "Proof packet", description: "Photos, bill and completion update" },
   { type: "hero", label: "Big banner", description: "Headline, text, picture and buttons" },
   { type: "heading", label: "Heading", description: "A title for a new part of the page" },
   { type: "text", label: "Paragraph", description: "Plain text" },
@@ -136,6 +146,16 @@ export function createBlock(type: BlockType): Block {
   const id = uid();
   const layout = defaultLayout();
   switch (type) {
+    case "cinematicHero":
+      return { id, type, layout: defaultLayout({ width: "full", spaceTop: 0, spaceBottom: 0 }), props: { eyebrow: "From the Gulf to your family in India", title: "Your care,", accent: "carried home.", text: "Practical help for your family in India, coordinated while you live in the Gulf.", image: heroFamily, imageAlt: "A family member in the Gulf arranging help for parents in India", buttons: [btn("Tell us what they need", "/contact", "solid")] } };
+    case "careJourney":
+      return { id, type, layout: defaultLayout({ width: "full", background: "primary" }), props: { eyebrow: "One request. One clear journey.", title: "You never have to wonder what happens next.", text: "From your phone in the Gulf to the work in India—and back with proof.", items: ["You tell us", "We understand it", "You approve", "We coordinate", "Proof returns"].map((title) => ({ id: uid(), title, text: "Explain this step in one clear sentence." })) } };
+    case "serviceStory":
+      return { id, type, layout: defaultLayout({ width: "full" }), props: { eyebrow: "Help shaped around real life", title: "What needs doing back home?", text: "Choose a service to explain how it is handled.", items: services.map((service, index) => ({ id: uid(), title: service.title, text: service.shortDescription, image: [groceriesStory, groceriesStory, repairsStory, healthcareStory, healthcareStory, repairsStory][index] ?? "", href: `/services/${service.slug}` })) } };
+    case "trustDossier":
+      return { id, type, layout: defaultLayout({ background: "muted" }), props: { eyebrow: "Trust is not a slogan", title: "See what stays under your control.", text: "Show how each request is agreed, handled and completed.", items: ["Request confirmed", "Plan and price approved", "Work coordinated", "Proof returned"].map((title) => ({ id: uid(), title, text: "Explain what the customer sees at this stage." })) } };
+    case "proofReturn":
+      return { id, type, layout: defaultLayout({ width: "full", background: "primary" }), props: { eyebrow: "Proof returns home", title: "You see how it ended.", text: "The completed work comes back to your phone as a clear update.", image: updatesArt, imageAlt: "A completed task update returning to a family member in the Gulf", items: ["A photo of the work", "The shop or worker bill", "Our fee shown separately", "A short message on WhatsApp"].map((title) => ({ id: uid(), title, text: "" })) } };
     case "hero":
       return { id, type, layout, props: { eyebrow: "Small line", title: "Your headline", text: "A short supporting sentence.", image: "", imageAlt: "", imageSide: "right", buttons: [btn("Ask for help now", "/contact")] } };
     case "heading":
@@ -196,9 +216,12 @@ export function defaultDocument(page: string): PageDocument {
     const items = Array.isArray(svc["items"]) ? (svc["items"] as { title?: string; description?: string }[]) : [];
     const art = [groceriesStory, repairsStory, healthcareStory];
     return b([
-      { id: uid(), type: "hero", layout: defaultLayout({ spaceTop: 4, spaceBottom: 4 }), props: { eyebrow: s(hero["eyebrow"]), title: s(hero["title"]), text: s(hero["subtitle"]), image: heroFamily, imageAlt: s(hero["imageAlt"]), imageSide: "right", buttons: [btn(s(hero["primaryCtaLabel"], site.cta.primary), "/contact"), btn(s(hero["secondaryCtaLabel"], "See how it works"), "/about", "outline")] } },
+      { id: uid(), type: "cinematicHero", layout: defaultLayout({ width: "full", spaceTop: 0, spaceBottom: 0 }), props: { eyebrow: s(hero["eyebrow"], "From the Gulf to your family in India"), title: "Your care,", accent: "carried home.", text: s(hero["subtitle"]), image: heroFamily, imageAlt: s(hero["imageAlt"]), buttons: [btn("Tell us what they need", "/contact")] } },
       { id: uid(), type: "imageText", layout: defaultLayout({ background: "muted" }), props: { eyebrow: s(promise["eyebrow"]), title: s(promise["title"]), text: s(promise["body"]), image: updatesArt, imageAlt: "Photo updates sent on WhatsApp", imageSide: "left", buttons: [] } },
-      { id: uid(), type: "cards", layout: defaultLayout(), anchor: "services", props: { title: s(svc["title"], "What we do"), subtitle: s(svc["subtitle"]), columns: 3, items: items.slice(0, 6).map((it, i) => ({ id: uid(), title: s(it.title), text: s(it.description), image: art[i] ?? "", href: "/services" })) } },
+      { ...createBlock("careJourney"), id: uid() },
+      { id: uid(), type: "serviceStory", layout: defaultLayout({ width: "full" }), anchor: "services", props: { eyebrow: "Help shaped around real life", title: s(svc["title"], "What needs doing back home?"), text: s(svc["subtitle"]), items: items.slice(0, 6).map((it, i) => ({ id: uid(), title: s(it.title), text: s(it.description), image: art[i % art.length] ?? "", href: "/services" })) } },
+      { ...createBlock("trustDossier"), id: uid() },
+      { ...createBlock("proofReturn"), id: uid() },
       { id: uid(), type: "faq", layout: defaultLayout({ width: "narrow" }), props: { title: "Questions families ask", items: faqs.slice(0, 5).map((f) => ({ id: uid(), question: f.question, answer: f.answer })) } },
       createBlock("contactStrip"),
     ]);
