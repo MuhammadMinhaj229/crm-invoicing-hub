@@ -10,7 +10,7 @@ import repairsStory from "../assets/safar-story-repairs.png";
 import campaignDreams from "../assets/safar-campaign-dreams.png.asset.json";
 import campaignWorries from "../assets/safar-campaign-family-worries.png.asset.json";
 import campaignJourney from "../assets/safar-campaign-how-it-works.png.asset.json";
-import serviceFilm from "../assets/safar-services-cinematic.mp4.asset.json";
+import serviceFilm from "../assets/safar-story-animated.mp4.asset.json";
 import { SiteHeader } from "../components/layout/site-header";
 import { PublishedOr } from "../components/page-builder/published-page";
 import { SiteFooter } from "../components/site/site-footer";
@@ -228,6 +228,19 @@ function LandingPage() {
           </div>
         </section>
 
+        {/* Service film */}
+        <section id="film" className="relative bg-legacy-light py-16 md:py-20">
+          <div className="mx-auto max-w-[1280px] px-6 sm:px-10">
+            <ServiceFilm
+              src={serviceFilm.url}
+              title={str(updates, "title", "See the care, not just the promise.")}
+              text={str(updates, "subtitle", "Watch how a single message turns into real help at home — and the photo proof that comes back to you.")}
+              {...(proofPoints.length ? { points: proofPoints } : {})}
+            />
+          </div>
+        </section>
+
+
         {/* Recognition */}
         <section id="recognition" className="bg-legacy-warm py-16 md:py-24">
           <div className="mx-auto max-w-[1280px] px-6 sm:px-10">
@@ -380,17 +393,6 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* Service film */}
-        <section id="film" className="bg-legacy-light py-20 md:py-28">
-          <div className="mx-auto max-w-[1280px] px-6 sm:px-10">
-            <ServiceFilm
-              src={serviceFilm.url}
-              title={str(updates, "title", "See the care, not just the promise.")}
-              text={str(updates, "subtitle", "Watch how a single message turns into real help at home — and the photo proof that comes back to you.")}
-              {...(proofPoints.length ? { points: proofPoints } : {})}
-            />
-          </div>
-        </section>
 
 
         {/* FAQ */}
