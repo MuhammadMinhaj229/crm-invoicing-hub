@@ -234,6 +234,7 @@ function LandingPage() {
           <div className="mx-auto max-w-[1280px] px-6 sm:px-10">
             <ServiceFilm
               src={serviceFilm.url}
+              poster={serviceFilmPoster}
               title={str(updates, "title", "See the care, not just the promise.")}
               text={str(updates, "subtitle", "Watch how a single message turns into real help at home — and the photo proof that comes back to you.")}
               {...(proofPoints.length ? { points: proofPoints } : {})}
