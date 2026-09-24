@@ -10,7 +10,7 @@ import repairsStory from "../assets/safar-story-repairs.png";
 import campaignDreams from "../assets/safar-campaign-dreams.png.asset.json";
 import campaignWorries from "../assets/safar-campaign-family-worries.png.asset.json";
 import campaignJourney from "../assets/safar-campaign-how-it-works.png.asset.json";
-import serviceFilm from "../assets/safar-services-cinematic.mp4.asset.json";
+import serviceFilm from "../assets/safar-story-animated.mp4.asset.json";
 import { SiteHeader } from "../components/layout/site-header";
 import { PublishedOr } from "../components/page-builder/published-page";
 import { SiteFooter } from "../components/site/site-footer";
