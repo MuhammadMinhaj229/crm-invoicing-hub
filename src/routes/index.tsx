@@ -380,17 +380,6 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* Service film */}
-        <section id="film" className="bg-legacy-light py-20 md:py-28">
-          <div className="mx-auto max-w-[1280px] px-6 sm:px-10">
-            <ServiceFilm
-              src={serviceFilm.url}
-              title={str(updates, "title", "See the care, not just the promise.")}
-              text={str(updates, "subtitle", "Watch how a single message turns into real help at home — and the photo proof that comes back to you.")}
-              {...(proofPoints.length ? { points: proofPoints } : {})}
-            />
-          </div>
-        </section>
 
 
         {/* FAQ */}
