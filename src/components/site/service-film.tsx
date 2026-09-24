@@ -109,7 +109,7 @@ export function ServiceFilm({
 
   return (
     <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
-      <div className="relative overflow-hidden rounded-[1.5rem] bg-legacy-deep shadow-lift sm:rounded-[2rem]">
+      <div className="relative aspect-[16/10] overflow-hidden rounded-[1.5rem] bg-legacy-deep shadow-lift sm:aspect-video sm:rounded-[2rem]">
         <video
           ref={videoRef}
           src={src}
@@ -119,8 +119,9 @@ export function ServiceFilm({
           loop
           playsInline
           preload="metadata"
-          className="h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
         />
+
 
         {/* Brand and purpose */}
         <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-3 bg-gradient-to-b from-black/55 to-transparent p-4 sm:p-5">
