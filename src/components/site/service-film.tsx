@@ -9,10 +9,10 @@ type Chapter = {
 
 const CHAPTERS: Chapter[] = [
   { id: "distance", title: "The distance", start: 0 },
-  { id: "calls", title: "Ten calls, one small task", start: 23.9 },
-  { id: "home", title: "Quiet struggles at home", start: 35.9 },
-  { id: "someone", title: "Someone at the door", start: 59.8 },
-  { id: "relief", title: "The worry lifts", start: 95.6 },
+  { id: "calls", title: "Ten calls, one small task", start: 22 },
+  { id: "home", title: "Quiet struggles at home", start: 33 },
+  { id: "someone", title: "Someone at the door", start: 55 },
+  { id: "relief", title: "The worry lifts", start: 88 },
 ];
 
 type ServiceFilmProps = {
