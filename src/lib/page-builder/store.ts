@@ -8,6 +8,23 @@ import { isPageDocument, type PageDocument } from "./model";
 
 const KEY = "__document";
 const LOCAL = (page: string) => `safar.builder.draft.${page}`;
+const LOCAL_PUB = (page: string) => `safar.builder.published.${page}`;
+const LOCAL_VER = (page: string) => `safar.builder.version.${page}`;
+
+function readLocal(key: string): PageDocument | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(key);
+    const doc = raw ? (JSON.parse(raw) as unknown) : null;
+    return isPageDocument(doc) ? doc : null;
+  } catch {
+    return null;
+  }
+}
+function localPublished(page: string): PageDocument | null {
+  const doc = readLocal(LOCAL_PUB(page));
+  return doc && doc.blocks.length > 0 ? doc : null;
+}
 
 export interface DocumentState {
   id: string | null;
@@ -27,7 +44,7 @@ export interface DocumentRevision {
 /** Published document for the public site, or null to use the built-in page. */
 export async function fetchPublishedDocument(page: string): Promise<PageDocument | null> {
   const supabase = getSupabase();
-  if (!supabase) return null;
+  if (!supabase) return localPublished(page);
   const { data, error } = await supabase
     .from("cms_sections")
     .select("content, status")
@@ -35,7 +52,7 @@ export async function fetchPublishedDocument(page: string): Promise<PageDocument
     .eq("section_key", KEY)
     .eq("status", "published")
     .maybeSingle();
-  if (error || !data) return null;
+  if (error || !data) return localPublished(page);
   const content = (data as { content: unknown }).content;
   return isPageDocument(content) && content.blocks.length > 0 ? content : null;
 }
@@ -44,7 +61,11 @@ export async function fetchDocumentState(page: string): Promise<DocumentState> {
   const localRaw = typeof window !== "undefined" ? window.localStorage.getItem(LOCAL(page)) : null;
   const local = localRaw ? (JSON.parse(localRaw) as PageDocument) : null;
   const supabase = getSupabase();
-  if (!supabase) return { id: null, draft: local, published: null, status: "none", version: 0 };
+  if (!supabase) {
+    const pub = localPublished(page);
+    const ver = Number(typeof window !== "undefined" ? window.localStorage.getItem(LOCAL_VER(page)) : 0) || 0;
+    return { id: null, draft: local ?? pub, published: pub, status: pub ? "published" : "none", version: ver };
+  }
   const { data, error } = await supabase
     .from("cms_sections")
     .select("id, content, draft_content, status, version")
@@ -75,9 +96,16 @@ export async function saveDocumentDraft(doc: PageDocument): Promise<"cloud" | "l
 }
 
 export async function publishDocument(doc: PageDocument): Promise<number> {
-  const supabase = getSupabase();
-  if (!supabase) throw new Error("Connect your database in Settings → Connections before publishing.");
   const stamped = { ...doc, updatedAt: new Date().toISOString() };
+  const supabase = getSupabase();
+  if (!supabase) {
+    // No database: publish on this device so the live site shows it right away.
+    const version = (Number(window.localStorage.getItem(LOCAL_VER(doc.page))) || 0) + 1;
+    window.localStorage.setItem(LOCAL_PUB(doc.page), JSON.stringify(stamped));
+    window.localStorage.setItem(LOCAL(doc.page), JSON.stringify(stamped));
+    window.localStorage.setItem(LOCAL_VER(doc.page), String(version));
+    return version;
+  }
   const { data: existing } = await supabase
     .from("cms_sections")
     .select("version")
@@ -103,8 +131,9 @@ export async function publishDocument(doc: PageDocument): Promise<number> {
 
 /** Take the page off the builder; the built-in page shows again. */
 export async function unpublishDocument(page: string): Promise<void> {
+  if (typeof window !== "undefined") window.localStorage.removeItem(LOCAL_PUB(page));
   const supabase = getSupabase();
-  if (!supabase) throw new Error("Connect your database first.");
+  if (!supabase) return;
   const { error } = await supabase
     .from("cms_sections")
     .update({ status: "draft", updated_at: new Date().toISOString() })

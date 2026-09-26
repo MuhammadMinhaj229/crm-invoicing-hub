@@ -8,7 +8,7 @@ import { BlockRenderer } from "./block-renderer";
 export const publishedDocQuery = (page: string) => ({
   queryKey: ["published-document", page],
   queryFn: () => fetchPublishedDocument(page),
-  staleTime: 60 * 1000,
+  staleTime: 5 * 1000,
 });
 
 /**

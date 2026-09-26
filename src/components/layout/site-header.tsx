@@ -1,6 +1,8 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { publishedDocQuery } from "../page-builder/published-page";
 
 import { track } from "../../lib/analytics";
 import { buildWhatsAppUrl } from "../../lib/whatsapp/url-builder";
@@ -29,12 +31,20 @@ export function SiteHeader({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const links = [
-    { label: "Our Process", href: "/about" },
-    { label: "Services", href: "/services" },
-    { label: "Questions", href: "/faq" },
-    { label: "Contact", href: "/contact" },
-  ];
+  const { data: globalDoc } = useQuery(publishedDocQuery("global"));
+  const navBlock = globalDoc?.blocks.find((b) => b.type === "navigation");
+  const customLinks =
+    navBlock && navBlock.type === "navigation"
+      ? navBlock.props.links.filter((l) => l.label && l.href.startsWith("/")).map((l) => ({ label: l.label, href: l.href as "/" }))
+      : [];
+  const links = customLinks.length
+    ? customLinks
+    : [
+        { label: "Our Process", href: "/about" as const },
+        { label: "Services", href: "/services" as const },
+        { label: "Questions", href: "/faq" as const },
+        { label: "Contact", href: "/contact" as const },
+      ];
   const whatsappUrl = buildWhatsAppUrl(contact.whatsapp, generalEnquiryMessage());
   const messages = ["We do...", "We assist...", "We provide...", "We are always here...", "We are always with you..."];
 
