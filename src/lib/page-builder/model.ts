@@ -15,9 +15,7 @@ import repairsStory from "../../assets/safar-story-repairs.png";
 import healthcareStory from "../../assets/safar-story-health.png";
 import castArt from "../../assets/safar-cast.png";
 import updatesArt from "../../assets/safar-updates.png";
-import campaignDreams from "../../assets/safar-campaign-dreams.png.asset.json";
-import campaignWorries from "../../assets/safar-campaign-family-worries.png.asset.json";
-import campaignJourney from "../../assets/safar-campaign-how-it-works.png.asset.json";
+import { campaignDreams, campaignJourney, campaignWorries } from "@/lib/media";
 import type { StorySlide } from "../../components/site/story-carousel";
 import type { InvoiceExampleRow } from "../../components/site/invoice-example";
 

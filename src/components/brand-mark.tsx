@@ -1,4 +1,4 @@
-import brandLogo from "../assets/safar-logo.png.asset.json";
+import { brandLogo } from "@/lib/media";
 
 export type LogoStyle = "lockup" | "image";
 
