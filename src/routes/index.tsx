@@ -7,11 +7,13 @@ import heroFamily from "../assets/safar-hero-family.png";
 import groceriesStory from "../assets/safar-story-groceries.png";
 import healthcareStory from "../assets/safar-story-health.png";
 import repairsStory from "../assets/safar-story-repairs.png";
-import campaignDreams from "../assets/safar-campaign-dreams.png.asset.json";
-import campaignWorries from "../assets/safar-campaign-family-worries.png.asset.json";
-import campaignJourney from "../assets/safar-campaign-how-it-works.png.asset.json";
-import serviceFilm from "../assets/safar-brand-film.mp4.asset.json";
-import serviceFilmPoster from "../assets/safar-brand-film-poster.jpg";
+import {
+  brandFilm as serviceFilm,
+  brandFilmPoster,
+  campaignDreams,
+  campaignJourney,
+  campaignWorries,
+} from "@/lib/media";
 import { SiteHeader } from "../components/layout/site-header";
 import { PublishedOr } from "../components/page-builder/published-page";
 import { SiteFooter } from "../components/site/site-footer";
@@ -234,7 +236,7 @@ function LandingPage() {
           <div className="mx-auto max-w-[1280px] px-6 sm:px-10">
             <ServiceFilm
               src={serviceFilm.url}
-              poster={serviceFilmPoster}
+              poster={brandFilmPoster.url}
               title={str(updates, "title", "See the care, not just the promise.")}
               text={str(updates, "subtitle", "Watch how a single message turns into real help at home — and the photo proof that comes back to you.")}
               {...(proofPoints.length ? { points: proofPoints } : {})}
