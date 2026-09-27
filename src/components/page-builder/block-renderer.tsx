@@ -208,18 +208,19 @@ function FaqList({ items }: { items: { id: string; question: string; answer: str
       {items.map((f, i) => {
         const isOpen = editing || open === f.id;
         return (
-          <div key={f.id} className="px-5 py-4">
+          <div key={f.id} className="soft-card px-6 py-5">
             <button
               type="button"
-              className="flex w-full items-center justify-between gap-4 text-left font-semibold"
+              className="flex w-full items-center justify-between gap-5 text-left font-display text-base font-semibold @3xl:text-lg"
               onClick={() => !editing && setOpen(isOpen ? null : f.id)}
               aria-expanded={isOpen}
             >
               <Editable path={`items.${i}.question`} value={f.question} />
-              {!editing && <ChevronDown className={cn("h-4 w-4 shrink-0 transition-transform", isOpen && "rotate-180")} />}
+              {!editing && <ChevronDown className={cn("h-4 w-4 shrink-0 text-primary transition-transform", isOpen && "rotate-180")} />}
             </button>
-            {isOpen && <Editable as="p" multiline path={`items.${i}.answer`} value={f.answer} className="mt-2 block text-muted-foreground" />}
+            {isOpen && <Editable as="p" multiline path={`items.${i}.answer`} value={f.answer} className="mt-3 block max-w-2xl leading-relaxed text-legacy-ink/60" />}
           </div>
+
         );
       })}
     </div>
