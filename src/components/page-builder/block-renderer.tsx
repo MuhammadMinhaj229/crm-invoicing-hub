@@ -147,12 +147,28 @@ function Picture({ src, alt, className }: { src: string; alt: string; className?
 /* ---------- layout wrapper ---------- */
 
 const BG: Record<BlockLayout["background"], string> = {
-  none: "",
-  muted: "bg-muted",
-  card: "bg-card",
-  primary: "bg-primary text-primary-foreground",
-  accent: "bg-accent text-accent-foreground",
+  none: "bg-legacy-warm text-legacy-ink",
+  muted: "bg-legacy-warm text-legacy-ink",
+  card: "bg-legacy-light text-legacy-ink",
+  primary: "bg-legacy-light text-legacy-ink",
+  accent: "bg-legacy-warm text-legacy-ink",
 };
+
+function Eyebrow({ path, value, light = false }: { path: string; value: string; light?: boolean }) {
+  if (!value) return null;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-2.5 rounded-full px-3.5 py-1.5 text-[0.7rem] font-bold uppercase tracking-[0.16em]",
+        light ? "bg-legacy-light/10 text-legacy-light/80" : "bg-primary/10 text-primary",
+      )}
+    >
+      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+      <Editable path={path} value={value} />
+    </span>
+  );
+}
+
 
 function Frame({ block, children }: { block: Block; children: ReactNode }) {
   const l = block.layout;
