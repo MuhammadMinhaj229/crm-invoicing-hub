@@ -10,6 +10,9 @@ import type { Block, BlockLayout, ButtonItem } from "../../lib/page-builder/mode
 import { cn } from "../../lib/utils";
 import { StoryCarousel } from "../site/story-carousel";
 import { InvoiceExample } from "../site/invoice-example";
+import { ServiceFilm } from "../site/service-film";
+import { brandFilm, brandFilmPoster } from "../../lib/media";
+
 
 /* ---------- editing context ---------- */
 
