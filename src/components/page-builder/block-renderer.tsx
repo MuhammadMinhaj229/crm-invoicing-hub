@@ -204,7 +204,7 @@ function FaqList({ items }: { items: { id: string; question: string; answer: str
   const { editing } = useContext(EditCtx);
   const [open, setOpen] = useState<string | null>(null);
   return (
-    <div className="mt-6 divide-y divide-border rounded-3xl border border-border bg-card text-left text-card-foreground">
+    <div className="mt-6 grid gap-3 text-left">
       {items.map((f, i) => {
         const isOpen = editing || open === f.id;
         return (
