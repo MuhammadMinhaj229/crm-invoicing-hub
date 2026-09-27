@@ -271,50 +271,131 @@ function BlockBody({ block }: { block: Block }) {
     case "cinematicHero": {
       const p = block.props;
       return (
-        <div className="legacy-grid relative grid min-h-[38rem] items-end overflow-hidden bg-legacy-deep px-5 py-12 text-legacy-light @3xl:grid-cols-[0.88fr_1.12fr] @3xl:items-center @3xl:px-12">
-          <div className="relative z-10">
-            <Editable as="p" path="eyebrow" value={p.eyebrow} className="block text-xs font-bold uppercase tracking-widest text-legacy-peach" />
-            <h1 className="mt-5 font-display text-5xl font-semibold leading-none @3xl:text-7xl"><Editable path="title" value={p.title} /><Editable as="span" path="accent" value={p.accent} className="block text-primary" /></h1>
-            <Editable as="p" multiline path="text" value={p.text} className="mt-5 block max-w-xl text-lg leading-8 text-legacy-light/70" />
-            <Buttons items={p.buttons} basePath="buttons" align="left" />
+        <div className="relative overflow-hidden rounded-[1.75rem] bg-legacy-deep text-legacy-light sm:rounded-[2.5rem]">
+          <div className="legacy-grid absolute inset-0 opacity-[0.12]" aria-hidden />
+          <div
+            className="absolute -right-24 top-0 h-[38rem] w-[38rem] rounded-full opacity-40 blur-3xl"
+            style={{ background: "radial-gradient(circle, color-mix(in oklab, var(--legacy-coral) 42%, transparent), transparent 70%)" }}
+            aria-hidden
+          />
+          <div className="relative grid items-center gap-10 px-6 py-14 sm:px-10 @3xl:grid-cols-2 @3xl:py-20 @3xl:gap-16">
+            <div className="relative z-10">
+              <Eyebrow light path="eyebrow" value={p.eyebrow} />
+              <h1 className="mt-6 max-w-2xl font-display text-[2.75rem] font-semibold leading-[1.02] tracking-[-0.02em] @3xl:text-7xl">
+                <Editable path="title" value={p.title} />
+                <Editable as="span" path="accent" value={p.accent} className="block text-primary" />
+              </h1>
+              <Editable as="p" multiline path="text" value={p.text} className="mt-6 block max-w-lg text-base leading-relaxed text-legacy-light/65 @3xl:text-lg" />
+              <Buttons items={p.buttons} basePath="buttons" align="left" />
+            </div>
+            <div className="relative overflow-hidden rounded-[1.5rem] border border-legacy-light/10 sm:rounded-[2rem]">
+              <Picture src={p.image} alt={p.imageAlt} className="rounded-none" />
+            </div>
           </div>
-          <Picture src={p.image} alt={p.imageAlt} className="relative z-0 mt-8 max-h-[36rem] rounded-none object-contain object-bottom @3xl:mt-0" />
         </div>
       );
     }
     case "careJourney": {
       const p = block.props;
       return (
-        <div className="bg-legacy-deep px-5 py-16 text-legacy-light @3xl:px-12">
-          <Editable as="p" path="eyebrow" value={p.eyebrow} className="block text-xs font-bold uppercase tracking-widest text-legacy-peach" />
-          <Editable as="h2" path="title" value={p.title} className="mt-4 block max-w-3xl font-display text-4xl font-semibold @3xl:text-6xl" />
-          <Editable as="p" multiline path="text" value={p.text} className="mt-4 block max-w-2xl text-legacy-light/65" />
-          <div className="mt-12 grid @3xl:grid-cols-5">
-            {p.items.map((item, index) => <article key={item.id} className="border-l border-legacy-light/15 py-6 pl-6 @3xl:border-l-0 @3xl:border-t @3xl:px-4"><span className="text-xs font-bold text-primary">0{index + 1}</span><Editable as="h3" path={`items.${index}.title`} value={item.title} className="mt-2 block font-display text-xl font-semibold" /><Editable as="p" multiline path={`items.${index}.text`} value={item.text} className="mt-2 block text-sm leading-6 text-legacy-light/60" /></article>)}
+        <div>
+          <div className="max-w-3xl">
+            <Eyebrow path="eyebrow" value={p.eyebrow} />
+            <Editable as="h2" path="title" value={p.title} className="mt-6 block font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] @3xl:text-5xl" />
+            <Editable as="p" multiline path="text" value={p.text} className="mt-5 block max-w-xl text-base leading-relaxed text-legacy-ink/60 @3xl:text-lg" />
           </div>
+          <ol className="mt-12 grid gap-4 @xl:grid-cols-2 @4xl:grid-cols-3">
+            {p.items.map((item, index) => (
+              <li key={item.id} className="soft-card relative p-6">
+                <span className="font-display text-xs font-bold text-primary">0{index + 1}</span>
+                <Editable as="h3" path={`items.${index}.title`} value={item.title} className="mt-3 block font-display text-lg font-semibold tracking-[-0.01em]" />
+                <Editable as="p" multiline path={`items.${index}.text`} value={item.text} className="mt-2 block text-sm leading-relaxed text-legacy-ink/60" />
+              </li>
+            ))}
+          </ol>
         </div>
       );
     }
     case "serviceStory": {
       const p = block.props;
       return (
-        <div className="px-5 py-16 @3xl:px-12">
-          <Editable as="p" path="eyebrow" value={p.eyebrow} className="block text-xs font-bold uppercase tracking-widest text-legacy-teal" />
-          <Editable as="h2" path="title" value={p.title} className="mt-4 block font-display text-4xl font-semibold @3xl:text-6xl" />
-          <Editable as="p" multiline path="text" value={p.text} className="mt-4 block max-w-2xl text-lg text-legacy-ink/65" />
-          <div className="mt-10 grid overflow-hidden border border-legacy-ink/15 @3xl:grid-cols-2">
-            {p.items.map((item, index) => <article key={item.id} className="grid min-h-52 grid-cols-[1fr_0.8fr] border-b border-legacy-ink/10 bg-legacy-warm p-5 @3xl:odd:border-r"><div><span className="text-xs font-bold text-primary">0{index + 1}</span><Editable as="h3" path={`items.${index}.title`} value={item.title} className="mt-2 block font-display text-xl font-semibold" /><Editable as="p" multiline path={`items.${index}.text`} value={item.text} className="mt-2 block text-sm text-legacy-ink/65" /></div>{item.image ? <img src={item.image} alt="" className="h-full w-full object-contain" /> : null}</article>)}
+        <div>
+          <div className="max-w-3xl">
+            <Eyebrow path="eyebrow" value={p.eyebrow} />
+            <Editable as="h2" path="title" value={p.title} className="mt-6 block font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] @3xl:text-5xl" />
+            <Editable as="p" multiline path="text" value={p.text} className="mt-5 block max-w-xl text-base leading-relaxed text-legacy-ink/60 @3xl:text-lg" />
+          </div>
+          <div className="mt-12 grid gap-4 @xl:grid-cols-2 @4xl:grid-cols-3">
+            {p.items.map((item, index) => (
+              <article key={item.id} className="soft-card overflow-hidden">
+                {item.image ? <img src={item.image} alt="" loading="lazy" className="aspect-[4/3] w-full object-cover" /> : null}
+                <div className="p-6">
+                  <Editable as="h3" path={`items.${index}.title`} value={item.title} className="block font-display text-xl font-semibold tracking-[-0.01em]" />
+                  <Editable as="p" multiline path={`items.${index}.text`} value={item.text} className="mt-2 block text-base leading-relaxed text-legacy-ink/60" />
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       );
     }
     case "trustDossier": {
       const p = block.props;
-      return <div className="grid gap-10 @3xl:grid-cols-[0.75fr_1.25fr]"><div><Editable as="p" path="eyebrow" value={p.eyebrow} className="block text-xs font-bold uppercase tracking-widest text-legacy-teal" /><Editable as="h2" path="title" value={p.title} className="mt-4 block font-display text-4xl font-semibold @3xl:text-5xl" /><Editable as="p" multiline path="text" value={p.text} className="mt-4 block text-legacy-ink/65" /></div><div className="border border-legacy-ink/15 bg-legacy-light">{p.items.map((item, index) => <article key={item.id} className="grid grid-cols-[3rem_1fr] border-b border-legacy-ink/10 p-5 last:border-0"><span className="text-xs font-bold text-primary">0{index + 1}</span><div><Editable as="h3" path={`items.${index}.title`} value={item.title} className="block font-display text-lg font-semibold" /><Editable as="p" multiline path={`items.${index}.text`} value={item.text} className="mt-2 block text-sm text-legacy-ink/65" /></div></article>)}</div></div>;
+      return (
+        <div className="grid gap-12 @4xl:grid-cols-[0.8fr_1.2fr] @4xl:gap-20">
+          <div>
+            <Eyebrow path="eyebrow" value={p.eyebrow} />
+            <Editable as="h2" path="title" value={p.title} className="mt-6 block font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] @3xl:text-5xl" />
+            <Editable as="p" multiline path="text" value={p.text} className="mt-5 block max-w-md text-base leading-relaxed text-legacy-ink/60" />
+          </div>
+          <div className="soft-card overflow-hidden">
+            {p.items.map((item, index) => (
+              <article key={item.id} className="grid gap-3 border-b border-legacy-ink/8 px-6 py-6 last:border-b-0 @xl:grid-cols-[2.5rem_1fr]">
+                <span className="font-display text-xs font-bold text-primary">0{index + 1}</span>
+                <div>
+                  <Editable as="h3" path={`items.${index}.title`} value={item.title} className="block font-display text-lg font-semibold tracking-[-0.01em]" />
+                  <Editable as="p" multiline path={`items.${index}.text`} value={item.text} className="mt-2 block leading-relaxed text-legacy-ink/60" />
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      );
     }
     case "proofReturn": {
       const p = block.props;
-      return <div className="grid items-center gap-10 bg-legacy-deep px-5 py-16 text-legacy-light @3xl:grid-cols-2 @3xl:px-12"><Picture src={p.image} alt={p.imageAlt} className="max-h-[34rem] rounded-none object-contain" /><div><Editable as="p" path="eyebrow" value={p.eyebrow} className="block text-xs font-bold uppercase tracking-widest text-legacy-peach" /><Editable as="h2" path="title" value={p.title} className="mt-4 block font-display text-4xl font-semibold @3xl:text-6xl" /><Editable as="p" multiline path="text" value={p.text} className="mt-4 block text-legacy-light/65" /><div className="mt-7 divide-y divide-legacy-light/15 border-y border-legacy-light/15">{p.items.map((item, index) => <Editable key={item.id} as="p" path={`items.${index}.title`} value={item.title} className="block py-4" />)}</div></div></div>;
+      return (
+        <div className="relative overflow-hidden rounded-[1.75rem] bg-legacy-deep px-6 py-16 text-legacy-light sm:rounded-[2.5rem] sm:px-10">
+          <div className="legacy-grid absolute inset-0 opacity-[0.1]" aria-hidden />
+          <div className="relative grid items-center gap-10 @4xl:grid-cols-2 @4xl:gap-16">
+            <div className="overflow-hidden rounded-[1.25rem] border border-legacy-light/10">
+              <Picture src={p.image} alt={p.imageAlt} className="rounded-none" />
+            </div>
+            <div>
+              <Eyebrow light path="eyebrow" value={p.eyebrow} />
+              <Editable as="h2" path="title" value={p.title} className="mt-6 block font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] @3xl:text-5xl" />
+              <Editable as="p" multiline path="text" value={p.text} className="mt-5 block leading-relaxed text-legacy-light/65" />
+              <div className="mt-7 divide-y divide-legacy-light/12 border-y border-legacy-light/12">
+                {p.items.map((item, index) => (
+                  <Editable key={item.id} as="p" path={`items.${index}.title`} value={item.title} className="block py-4 text-legacy-light/85" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    case "serviceFilm": {
+      const p = block.props;
+      return (
+        <ServiceFilm
+          src={brandFilm.url}
+          poster={brandFilmPoster.url}
+          title={p.title}
+          text={p.text}
+          {...(p.items.length ? { points: p.items.map((i) => i.title) } : {})}
+        />
+      );
     }
     case "storyCarousel": {
       const p = block.props;
@@ -324,6 +405,7 @@ function BlockBody({ block }: { block: Block }) {
       const p = block.props;
       return <InvoiceExample title={p.title} text={p.text} rows={p.items} />;
     }
+
     case "hero":
     case "imageText": {
       const p = block.props;
