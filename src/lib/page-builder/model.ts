@@ -77,6 +77,8 @@ export type Block =
   | BaseBlock<"serviceStory", { eyebrow: string; title: string; text: string; items: CardItem[] }>
   | BaseBlock<"trustDossier", { eyebrow: string; title: string; text: string; items: CardItem[] }>
   | BaseBlock<"proofReturn", { eyebrow: string; title: string; text: string; image: string; imageAlt: string; items: CardItem[] }>
+  | BaseBlock<"serviceFilm", { eyebrow: string; title: string; text: string; items: CardItem[] }>
+
   | BaseBlock<"storyCarousel", { title: string; text: string; items: StorySlide[] }>
   | BaseBlock<"invoiceExample", { title: string; text: string; items: InvoiceExampleRow[] }>
   | BaseBlock<"heading", { eyebrow: string; text: string; level: "h1" | "h2" | "h3" }>
