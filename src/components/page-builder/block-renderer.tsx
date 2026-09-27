@@ -395,12 +395,14 @@ function BlockBody({ block }: { block: Block }) {
         <ServiceFilm
           src={brandFilm.url}
           poster={brandFilmPoster.url}
+          eyebrow={p.eyebrow}
           title={p.title}
           text={p.text}
-          {...(p.items.length ? { points: p.items.map((i) => i.title) } : {})}
+          points={p.items.map((i) => i.title).filter(Boolean)}
         />
       );
     }
+
     case "storyCarousel": {
       const p = block.props;
       return <StoryCarousel slides={p.items} editing={editing} />;
