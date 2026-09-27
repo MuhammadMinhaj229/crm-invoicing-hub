@@ -457,20 +457,20 @@ function BlockBody({ block }: { block: Block }) {
       const cols = { 1: "@3xl:grid-cols-1", 2: "@3xl:grid-cols-2", 3: "@3xl:grid-cols-3", 4: "@3xl:grid-cols-4" }[p.columns];
       return (
         <div>
-          <Editable as="h2" path="title" value={p.title} className="block font-display text-3xl font-bold @3xl:text-4xl" placeholder="Section title" />
-          <Editable as="p" multiline path="subtitle" value={p.subtitle} className="mt-3 block max-w-2xl text-lg opacity-80" placeholder="Subtitle" />
-          <div className={cn("mt-8 grid gap-5 text-left", cols)}>
+          <Editable as="h2" path="title" value={p.title} className="block font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] @3xl:text-4xl" placeholder="Section title" />
+          <Editable as="p" multiline path="subtitle" value={p.subtitle} className="mt-4 block max-w-2xl text-base leading-relaxed text-legacy-ink/60 @3xl:text-lg" placeholder="Subtitle" />
+          <div className={cn("mt-10 grid gap-4 text-left", cols)}>
             {p.items.map((c, i) => {
               const inner = (
                 <>
-                  {c.image ? <img src={c.image} alt="" loading="lazy" className="mb-4 aspect-[4/3] w-full rounded-2xl object-cover" /> : null}
-                  <Editable as="h3" path={`items.${i}.title`} value={c.title} className="block text-lg font-bold" />
-                  <Editable as="p" multiline path={`items.${i}.text`} value={c.text} className="mt-2 block text-muted-foreground" placeholder="Description" />
+                  {c.image ? <img src={c.image} alt="" loading="lazy" className="mb-5 aspect-[4/3] w-full rounded-xl object-cover" /> : null}
+                  <Editable as="h3" path={`items.${i}.title`} value={c.title} className="block font-display text-xl font-semibold tracking-[-0.01em]" />
+                  <Editable as="p" multiline path={`items.${i}.text`} value={c.text} className="mt-2 block text-base leading-relaxed text-legacy-ink/60" placeholder="Description" />
                 </>
               );
-              const cls = "block rounded-3xl border border-border bg-card p-5 text-card-foreground";
+              const cls = "soft-card block p-6";
               return c.href && !editing ? (
-                <a key={c.id} href={c.href} className={cn(cls, "transition-shadow hover:shadow-lg")}>
+                <a key={c.id} href={c.href} className={cn(cls, "transition hover:-translate-y-0.5")}>
                   {inner}
                 </a>
               ) : (
@@ -486,18 +486,27 @@ function BlockBody({ block }: { block: Block }) {
     case "faq":
       return (
         <div>
-          <Editable as="h2" path="title" value={block.props.title} className="block font-display text-3xl font-bold" placeholder="Title" />
+          <Editable as="h2" path="title" value={block.props.title} className="block font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] @3xl:text-4xl" placeholder="Title" />
           <FaqList items={block.props.items} />
         </div>
       );
     case "contactStrip":
       return (
-        <div className="py-4">
-          <Editable as="h2" path="title" value={block.props.title} className="block font-display text-3xl font-bold" />
-          <Editable as="p" multiline path="text" value={block.props.text} className="mt-3 block text-lg opacity-90" />
-          <Buttons items={block.props.buttons} basePath="buttons" align={align} />
+        <div className="relative overflow-hidden rounded-[1.75rem] bg-legacy-deep px-6 py-14 text-legacy-light sm:rounded-[2.5rem] sm:px-10 @3xl:py-20">
+          <div className="legacy-grid absolute inset-0 opacity-[0.1]" aria-hidden />
+          <div
+            className="absolute -left-20 bottom-0 h-[26rem] w-[26rem] rounded-full opacity-35 blur-3xl"
+            style={{ background: "radial-gradient(circle, color-mix(in oklab, var(--legacy-coral) 40%, transparent), transparent 70%)" }}
+            aria-hidden
+          />
+          <div className="relative">
+            <Editable as="h2" path="title" value={block.props.title} className="block max-w-2xl font-display text-3xl font-semibold leading-[1.1] tracking-[-0.02em] @3xl:text-5xl" />
+            <Editable as="p" multiline path="text" value={block.props.text} className="mt-5 block max-w-xl leading-relaxed text-legacy-light/65" />
+            <Buttons items={block.props.buttons} basePath="buttons" align={align} />
+          </div>
         </div>
       );
+
     case "enquiryForm":
       return (
         <div>
