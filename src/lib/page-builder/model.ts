@@ -242,17 +242,21 @@ export function defaultDocument(page: string): PageDocument {
     const items = Array.isArray(svc["items"]) ? (svc["items"] as { title?: string; description?: string }[]) : [];
     const art = [groceriesStory, repairsStory, healthcareStory];
     return b([
-      { id: uid(), type: "cinematicHero", layout: defaultLayout({ width: "full", spaceTop: 0, spaceBottom: 0 }), props: { eyebrow: s(hero["eyebrow"], "From the Gulf to your family in India"), title: "Your care,", accent: "carried home.", text: s(hero["subtitle"]), image: heroFamily, imageAlt: s(hero["imageAlt"]), buttons: [btn("Tell us what they need", "/contact")] } },
-      { id: uid(), type: "imageText", layout: defaultLayout({ background: "muted" }), props: { eyebrow: s(promise["eyebrow"]), title: s(promise["title"]), text: s(promise["body"]), image: updatesArt, imageAlt: "Photo updates sent on WhatsApp", imageSide: "left", buttons: [] } },
+      { id: uid(), type: "cinematicHero", layout: defaultLayout({ width: "full", spaceTop: 0, spaceBottom: 2 }), props: { eyebrow: s(hero["eyebrow"], "From the Gulf to your family in India"), title: "Your care,", accent: "carried home.", text: s(hero["subtitle"], "Practical help for your family in India, coordinated while you live in the Gulf."), image: heroFamily, imageAlt: s(hero["imageAlt"], "A family in India being looked after"), buttons: [btn("Tell us what they need", "/contact"), btn("See the care journey", "#journey", "outline")] } },
+      { ...createBlock("serviceFilm"), id: uid(), anchor: "film" },
       { ...createBlock("storyCarousel"), id: uid() },
-      { ...createBlock("careJourney"), id: uid() },
-      { id: uid(), type: "serviceStory", layout: defaultLayout({ width: "full" }), anchor: "services", props: { eyebrow: "Help shaped around real life", title: s(svc["title"], "What needs doing back home?"), text: s(svc["subtitle"]), items: items.slice(0, 6).map((it, i) => ({ id: uid(), title: s(it.title), text: s(it.description), image: art[i % art.length] ?? "", href: "/services" })) } },
+      { id: uid(), type: "careJourney", layout: defaultLayout({ width: "normal", spaceTop: 4, spaceBottom: 4 }), anchor: "journey", props: { eyebrow: "One request, one clear journey", title: s(promise["title"], "You never have to wonder what happens next."), text: s(promise["body"], "From your phone in the Gulf to the work in India — and back with proof."), items: [
+        { id: uid(), title: "You message us", text: "Tell us in one message what your family needs." },
+        { id: uid(), title: "You approve", text: "We confirm the plan and the cost before any work begins." },
+        { id: uid(), title: "Proof returns", text: "Photos, the bill and a short update come back to your phone." },
+      ] } },
+      { id: uid(), type: "serviceStory", layout: defaultLayout({ width: "normal", spaceTop: 4, spaceBottom: 4 }), anchor: "services", props: { eyebrow: "Help shaped around real life", title: s(svc["title"], "What needs doing back home?"), text: s(svc["subtitle"], "Choose what your family needs and we take it from there."), items: items.slice(0, 6).map((it, i) => ({ id: uid(), title: s(it.title), text: s(it.description), image: art[i % art.length] ?? "", href: "/services" })) } },
       { ...createBlock("trustDossier"), id: uid() },
       { ...createBlock("invoiceExample"), id: uid() },
-      { ...createBlock("proofReturn"), id: uid() },
-      { id: uid(), type: "faq", layout: defaultLayout({ width: "narrow" }), props: { title: "Questions families ask", items: faqs.slice(0, 5).map((f) => ({ id: uid(), question: f.question, answer: f.answer })) } },
+      { id: uid(), type: "faq", layout: defaultLayout({ width: "narrow", spaceTop: 4, spaceBottom: 4 }), props: { title: "Questions families ask", items: faqs.slice(0, 5).map((f) => ({ id: uid(), question: f.question, answer: f.answer })) } },
       createBlock("contactStrip"),
     ]);
+
   }
 
   if (page === "services") {
