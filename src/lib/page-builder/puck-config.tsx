@@ -6,6 +6,7 @@
  * model makes it draggable and editable here with no extra form code.
  * Rendering reuses the same RenderBlock the public site uses.
  */
+import type React from "react";
 import type { ComponentConfig, Config, Data, Field, Fields } from "@puckeditor/core";
 
 import { RenderBlock } from "../../components/page-builder/block-renderer";
@@ -127,7 +128,7 @@ function componentFor(type: BlockType, label: string): ComponentConfig<PuckProps
   fields["layout"] = layoutField;
   return {
     label,
-    fields: fields as ComponentConfig<PuckProps>["fields"],
+    fields: fields as NonNullable<ComponentConfig<PuckProps>["fields"]>,
     defaultProps: { ...(sample.props as Record<string, unknown>), layout: sample.layout } as PuckProps,
     render: (props) => <RenderBlock block={propsToBlock(type, props as Record<string, unknown>)} />,
   };
@@ -143,7 +144,7 @@ export const safarPuckConfig: Config = {
     action: { title: "Actions", components: ["contactStrip", "enquiryForm"] },
     layout: { title: "Layout", components: ["spacer", "divider", "navigation"] },
   },
-  root: { render: ({ children }) => <div className="@container bg-background text-foreground">{children}</div> },
+  root: { render: ({ children }: { children?: React.ReactNode }) => <div className="@container bg-background text-foreground">{children}</div> },
 } as Config;
 
 export function documentToPuck(doc: PageDocument): Data {

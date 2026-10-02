@@ -103,7 +103,7 @@ function StudioPage() {
             config={safarPuckConfig}
             data={data}
             onPublish={publish}
-            headerTitle={BUILDER_PAGES.find((p) => p.id === page)?.label}
+            headerTitle={BUILDER_PAGES.find((p) => p.id === page)?.label ?? "Page"}
             overrides={{
               headerActions: ({ children }) => (
                 <>
