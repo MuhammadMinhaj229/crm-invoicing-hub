@@ -57,10 +57,10 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "../../lib/utils";
 
-export const Route = createFileRoute("/_authenticated/builder")({
+export const Route = createFileRoute("/_authenticated/builder-classic")({
   head: () => ({
     meta: [
-      { title: "Website builder — SAFAR N MANZIL" },
+      { title: "Classic builder — SAFAR N MANZIL" },
       { name: "description", content: "Edit, arrange and publish every page of the SAFAR website visually." },
       { name: "robots", content: "noindex" },
     ],
