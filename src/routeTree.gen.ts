@@ -21,6 +21,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedAutomationsRouteImport } from './routes/_authenticated/automations'
 import { Route as AuthenticatedBuilderRouteImport } from './routes/_authenticated/builder'
+import { Route as AuthenticatedBuilderClassicRouteImport } from './routes/_authenticated/builder-classic'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedFinanceRouteImport } from './routes/_authenticated/finance'
@@ -99,6 +100,12 @@ const AuthenticatedBuilderRoute = AuthenticatedBuilderRouteImport.update({
   path: '/builder',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBuilderClassicRoute =
+  AuthenticatedBuilderClassicRouteImport.update({
+    id: '/builder-classic',
+    path: '/builder-classic',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
   id: '/customers',
   path: '/customers',
@@ -199,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/automations': typeof AuthenticatedAutomationsRoute
   '/builder': typeof AuthenticatedBuilderRoute
+  '/builder-classic': typeof AuthenticatedBuilderClassicRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/finance': typeof AuthenticatedFinanceRoute
@@ -229,6 +237,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/automations': typeof AuthenticatedAutomationsRoute
   '/builder': typeof AuthenticatedBuilderRoute
+  '/builder-classic': typeof AuthenticatedBuilderClassicRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/finance': typeof AuthenticatedFinanceRoute
@@ -261,6 +270,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/automations': typeof AuthenticatedAutomationsRoute
   '/_authenticated/builder': typeof AuthenticatedBuilderRoute
+  '/_authenticated/builder-classic': typeof AuthenticatedBuilderClassicRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/finance': typeof AuthenticatedFinanceRoute
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/automations'
     | '/builder'
+    | '/builder-classic'
     | '/customers'
     | '/dashboard'
     | '/finance'
@@ -323,6 +334,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/automations'
     | '/builder'
+    | '/builder-classic'
     | '/customers'
     | '/dashboard'
     | '/finance'
@@ -354,6 +366,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/automations'
     | '/_authenticated/builder'
+    | '/_authenticated/builder-classic'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
     | '/_authenticated/finance'
@@ -475,6 +488,13 @@ declare module '@tanstack/react-router' {
       path: '/builder'
       fullPath: '/builder'
       preLoaderRoute: typeof AuthenticatedBuilderRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/builder-classic': {
+      id: '/_authenticated/builder-classic'
+      path: '/builder-classic'
+      fullPath: '/builder-classic'
+      preLoaderRoute: typeof AuthenticatedBuilderClassicRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/customers': {
@@ -602,6 +622,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAutomationsRoute: typeof AuthenticatedAutomationsRoute
   AuthenticatedBuilderRoute: typeof AuthenticatedBuilderRoute
+  AuthenticatedBuilderClassicRoute: typeof AuthenticatedBuilderClassicRoute
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFinanceRoute: typeof AuthenticatedFinanceRoute
@@ -619,6 +640,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAutomationsRoute: AuthenticatedAutomationsRoute,
   AuthenticatedBuilderRoute: AuthenticatedBuilderRoute,
+  AuthenticatedBuilderClassicRoute: AuthenticatedBuilderClassicRoute,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFinanceRoute: AuthenticatedFinanceRoute,

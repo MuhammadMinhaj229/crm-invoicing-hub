@@ -126,3 +126,9 @@ Approved plan: .lovable/plan/safar-n-manzil-business-operating-system-build-plan
 - [x] Privacy-safe example cost breakdown based on the invoice structure, with no customer or payment data
 - [x] Matching story and invoice blocks in the visual page builder
 - [x] Final desktop/mobile, keyboard, reduced-motion and supporting-page verification
+
+## Puck studio (Oct 2026)
+- [x] Puck visual studio at /builder (drag, drop, edit, undo/redo, phone/tablet preview, save draft, publish); old builder kept at /builder-classic
+- [ ] Single seed.json master file loaded into the database once (next)
+- [ ] Move remaining hardcoded page text/images/theme into the seed
+- [ ] Remove CRM sections from the app (waiting on user go-ahead to delete)
