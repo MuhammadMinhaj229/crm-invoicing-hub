@@ -20,6 +20,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedAutomationsRouteImport } from './routes/_authenticated/automations'
+import { Route as AuthenticatedBuilderRouteImport } from './routes/_authenticated/builder'
 import { Route as AuthenticatedBuilderClassicRouteImport } from './routes/_authenticated/builder-classic'
 import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -94,6 +95,11 @@ const AuthenticatedAutomationsRoute =
     path: '/automations',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedBuilderRoute = AuthenticatedBuilderRouteImport.update({
+  id: '/builder',
+  path: '/builder',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedBuilderClassicRoute =
   AuthenticatedBuilderClassicRouteImport.update({
     id: '/builder-classic',
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/automations': typeof AuthenticatedAutomationsRoute
+  '/builder': typeof AuthenticatedBuilderRoute
   '/builder-classic': typeof AuthenticatedBuilderClassicRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -229,6 +236,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/automations': typeof AuthenticatedAutomationsRoute
+  '/builder': typeof AuthenticatedBuilderRoute
   '/builder-classic': typeof AuthenticatedBuilderClassicRoute
   '/customers': typeof AuthenticatedCustomersRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -261,6 +269,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/_authenticated/automations': typeof AuthenticatedAutomationsRoute
+  '/_authenticated/builder': typeof AuthenticatedBuilderRoute
   '/_authenticated/builder-classic': typeof AuthenticatedBuilderClassicRoute
   '/_authenticated/customers': typeof AuthenticatedCustomersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -293,6 +302,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/automations'
+    | '/builder'
     | '/builder-classic'
     | '/customers'
     | '/dashboard'
@@ -323,6 +333,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/automations'
+    | '/builder'
     | '/builder-classic'
     | '/customers'
     | '/dashboard'
@@ -354,6 +365,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/_authenticated/automations'
+    | '/_authenticated/builder'
     | '/_authenticated/builder-classic'
     | '/_authenticated/customers'
     | '/_authenticated/dashboard'
@@ -469,6 +481,13 @@ declare module '@tanstack/react-router' {
       path: '/automations'
       fullPath: '/automations'
       preLoaderRoute: typeof AuthenticatedAutomationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/builder': {
+      id: '/_authenticated/builder'
+      path: '/builder'
+      fullPath: '/builder'
+      preLoaderRoute: typeof AuthenticatedBuilderRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/builder-classic': {
@@ -602,6 +621,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAutomationsRoute: typeof AuthenticatedAutomationsRoute
+  AuthenticatedBuilderRoute: typeof AuthenticatedBuilderRoute
   AuthenticatedBuilderClassicRoute: typeof AuthenticatedBuilderClassicRoute
   AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -619,6 +639,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAutomationsRoute: AuthenticatedAutomationsRoute,
+  AuthenticatedBuilderRoute: AuthenticatedBuilderRoute,
   AuthenticatedBuilderClassicRoute: AuthenticatedBuilderClassicRoute,
   AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,

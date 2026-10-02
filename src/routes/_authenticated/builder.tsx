@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Puck, type Data } from "@puckeditor/core";
+import { Puck, createUsePuck, type Data } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { BUILDER_PAGES, defaultDocument } from "../../lib/page-builder/model";
 import { documentToPuck, puckToDocument, safarPuckConfig } from "../../lib/page-builder/puck-config";
 import { fetchDocumentState, publishDocument, saveDocumentDraft } from "../../lib/page-builder/store";
+
+const usePuck = createUsePuck();
 
 export const Route = createFileRoute("/_authenticated/builder")({
   head: () => ({
@@ -120,8 +122,6 @@ function StudioPage() {
 }
 
 function SaveDraftButton({ onSave }: { onSave: (d: Data) => void }) {
-  // Lazily read Puck's current data via its hook to avoid stale copies.
-  const { usePuck } = PuckHooks;
   const appState = usePuck((s) => s.appState);
   return (
     <button
@@ -133,6 +133,3 @@ function SaveDraftButton({ onSave }: { onSave: (d: Data) => void }) {
     </button>
   );
 }
-
-import { createUsePuck } from "@puckeditor/core";
-const PuckHooks = { usePuck: createUsePuck() };
