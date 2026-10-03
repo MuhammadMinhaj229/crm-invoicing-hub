@@ -22,7 +22,7 @@ import { InvoiceExample } from "../components/site/invoice-example";
 import { ServiceFilm } from "../components/site/service-film";
 import { useThemeSync, useWorkspaceSettings } from "../hooks/use-workspace-settings";
 import { track, trackPageView } from "../lib/analytics";
-import { defaultSections, fetchPublishedContent, type SectionContent } from "../lib/cms";
+import { defaultSections, fetchPublishedContent, type SectionContent } from "../content/home-sections";
 import { submitWebsiteEnquiry } from "../lib/website-capture";
 
 export const Route = createFileRoute("/")({

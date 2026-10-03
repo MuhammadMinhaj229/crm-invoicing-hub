@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { trackPageView } from "../../lib/analytics";
-import { defaultSections, fetchPublishedContent } from "../../lib/cms";
+import { defaultSections, fetchPublishedContent } from "../../content/home-sections";
 import { useThemeSync, useWorkspaceSettings } from "../../hooks/use-workspace-settings";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "../site/site-footer";

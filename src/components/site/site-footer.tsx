@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Linkedin, Lock, Youtube, Globe2 } from "lucide-react";
 
-import type { SectionContent } from "../../lib/cms";
+import type { SectionContent } from "../../content/home-sections";
 import { BrandMark } from "../brand-mark";
 import { useWorkspaceSettings } from "../../hooks/use-workspace-settings";
 import { useSiteContact } from "../../hooks/use-site-contact";

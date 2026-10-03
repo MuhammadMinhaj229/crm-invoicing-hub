@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { site } from "../content/site";
-import { fetchPublishedContent } from "../lib/cms";
+import { fetchPublishedContent } from "../content/home-sections";
 import type { ContactChannels } from "../types/site";
 import { useWorkspaceSettings } from "./use-workspace-settings";
 
