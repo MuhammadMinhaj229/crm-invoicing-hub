@@ -22,7 +22,6 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedBuilderRouteImport } from './routes/_authenticated/builder'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
-import { Route as ApiIntegrationsHealthRouteImport } from './routes/api/integrations/health'
 import { Route as ApiPublicWhatsappWebhookRouteImport } from './routes/api/public/whatsapp/webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -89,11 +88,6 @@ const ServicesSlugRoute = ServicesSlugRouteImport.update({
   path: '/services/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiIntegrationsHealthRoute = ApiIntegrationsHealthRouteImport.update({
-  id: '/api/integrations/health',
-  path: '/api/integrations/health',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicWhatsappWebhookRoute =
   ApiPublicWhatsappWebhookRouteImport.update({
     id: '/api/public/whatsapp/webhook',
@@ -114,7 +108,6 @@ export interface FileRoutesByFullPath {
   '/builder': typeof AuthenticatedBuilderRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/': typeof ServicesIndexRoute
-  '/api/integrations/health': typeof ApiIntegrationsHealthRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -130,7 +123,6 @@ export interface FileRoutesByTo {
   '/builder': typeof AuthenticatedBuilderRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services': typeof ServicesIndexRoute
-  '/api/integrations/health': typeof ApiIntegrationsHealthRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRoutesById {
@@ -148,7 +140,6 @@ export interface FileRoutesById {
   '/_authenticated/builder': typeof AuthenticatedBuilderRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/services/': typeof ServicesIndexRoute
-  '/api/integrations/health': typeof ApiIntegrationsHealthRoute
   '/api/public/whatsapp/webhook': typeof ApiPublicWhatsappWebhookRoute
 }
 export interface FileRouteTypes {
@@ -166,7 +157,6 @@ export interface FileRouteTypes {
     | '/builder'
     | '/services/$slug'
     | '/services/'
-    | '/api/integrations/health'
     | '/api/public/whatsapp/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -182,7 +172,6 @@ export interface FileRouteTypes {
     | '/builder'
     | '/services/$slug'
     | '/services'
-    | '/api/integrations/health'
     | '/api/public/whatsapp/webhook'
   id:
     | '__root__'
@@ -199,7 +188,6 @@ export interface FileRouteTypes {
     | '/_authenticated/builder'
     | '/services/$slug'
     | '/services/'
-    | '/api/integrations/health'
     | '/api/public/whatsapp/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -216,7 +204,6 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
-  ApiIntegrationsHealthRoute: typeof ApiIntegrationsHealthRoute
   ApiPublicWhatsappWebhookRoute: typeof ApiPublicWhatsappWebhookRoute
 }
 
@@ -313,13 +300,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/integrations/health': {
-      id: '/api/integrations/health'
-      path: '/api/integrations/health'
-      fullPath: '/api/integrations/health'
-      preLoaderRoute: typeof ApiIntegrationsHealthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/whatsapp/webhook': {
       id: '/api/public/whatsapp/webhook'
       path: '/api/public/whatsapp/webhook'
@@ -354,7 +334,6 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ServicesSlugRoute: ServicesSlugRoute,
   ServicesIndexRoute: ServicesIndexRoute,
-  ApiIntegrationsHealthRoute: ApiIntegrationsHealthRoute,
   ApiPublicWhatsappWebhookRoute: ApiPublicWhatsappWebhookRoute,
 }
 export const routeTree = rootRouteImport
