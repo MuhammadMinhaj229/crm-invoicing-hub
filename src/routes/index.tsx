@@ -22,7 +22,7 @@ import { InvoiceExample } from "../components/site/invoice-example";
 import { ServiceFilm } from "../components/site/service-film";
 import { useThemeSync, useWorkspaceSettings } from "../hooks/use-workspace-settings";
 import { track, trackPageView } from "../lib/analytics";
-import { defaultSections, fetchPublishedContent, type SectionContent } from "../lib/cms";
+import { defaultSections, loadHomeSections, type SectionContent } from "../content/home-sections";
 import { submitWebsiteEnquiry } from "../lib/website-capture";
 
 export const Route = createFileRoute("/")({
@@ -131,7 +131,7 @@ function LandingPage() {
   const fallback = useMemo(() => defaultSections(), []);
   const { data: sections = fallback } = useQuery({
     queryKey: ["cms-published"],
-    queryFn: fetchPublishedContent,
+    queryFn: loadHomeSections,
     initialData: fallback,
   });
   const [activeService, setActiveService] = useState(0);

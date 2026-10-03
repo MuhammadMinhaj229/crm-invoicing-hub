@@ -1,21 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 
-import {
-  OWNER_EMAIL,
-  OWNER_STARTER_PASSWORD,
-  isOwnerEmail,
-  signInOrCreateOwner,
-} from "../lib/admin";
 import { getSupabase, isSupabaseConfigured } from "../lib/supabase";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Sign in — SAFAR N MANZIL" },
-      { name: "description", content: "Secure sign-in to the SAFAR N MANZIL business console." },
+      { name: "description", content: "Secure sign-in to the SAFAR N MANZIL website builder." },
       { property: "og:title", content: "Sign in — SAFAR N MANZIL" },
-      { property: "og:description", content: "Secure sign-in to the SAFAR N MANZIL business console." },
+      { property: "og:description", content: "Secure sign-in to the SAFAR N MANZIL website builder." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -43,14 +37,13 @@ function AuthPage() {
             Connect your database first
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            The CRM signs team members in through your own Supabase project. Paste the project
-            URL and keys in Settings → Connections, then come back here to sign in.
+            The website builder signs team members in through your own Supabase project. Link your database, then come back here to sign in.
           </p>
           <Link
-            to="/settings"
+            to="/connect"
             className="mt-6 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90"
           >
-            Open Settings → Connections
+            Connect the database
           </Link>
         </div>
       </div>
@@ -66,17 +59,9 @@ function AuthPage() {
     setNotice(null);
     try {
       if (mode === "sign-in") {
-        if (isOwnerEmail(email)) {
-          // The owner account is created automatically the first time.
-          await signInOrCreateOwner(supabase, password);
-        } else {
-          const { error: signInError } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
-          if (signInError) throw signInError;
-        }
-        navigate({ to: "/dashboard", replace: true });
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInError) throw signInError;
+        navigate({ to: "/builder", replace: true });
       } else {
         const { error: signUpError } = await supabase.auth.signUp({ email, password });
         if (signUpError) throw signUpError;
@@ -98,7 +83,7 @@ function AuthPage() {
           </div>
           <h1 className="mt-4 font-display text-xl font-bold text-foreground">SAFAR N MANZIL</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {mode === "sign-in" ? "Sign in to the business console" : "Create a team account"}
+            {mode === "sign-in" ? "Sign in to the website builder" : "Create a team account"}
           </p>
         </div>
 
@@ -153,25 +138,6 @@ function AuthPage() {
           </button>
         </form>
 
-        {mode === "sign-in" ? (
-          <button
-            type="button"
-            onClick={() => {
-              setMode("sign-in");
-              setEmail(OWNER_EMAIL);
-              setPassword(OWNER_STARTER_PASSWORD);
-              setError(null);
-              setNotice(
-                isOwnerEmail(email)
-                  ? "Owner details filled in. Press Sign in."
-                  : "Owner details filled in. Press Sign in, then change the password in Settings → Account.",
-              );
-            }}
-            className="mt-4 w-full rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Use the owner account
-          </button>
-        ) : null}
 
         <button
           onClick={() => {

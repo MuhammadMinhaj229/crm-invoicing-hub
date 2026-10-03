@@ -8,7 +8,7 @@
 import { site } from "../../content/site";
 import { services } from "../../content/services";
 import { faqs } from "../../content/faqs";
-import { defaultSections } from "../cms";
+import { defaultSections } from "../../content/home-sections";
 import heroFamily from "../../assets/safar-hero-family.png";
 import groceriesStory from "../../assets/safar-story-groceries.png";
 import repairsStory from "../../assets/safar-story-repairs.png";

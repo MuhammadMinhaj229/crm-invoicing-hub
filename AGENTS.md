@@ -9,3 +9,4 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 - Visual editing uses Puck; the registry in src/lib/page-builder/puck-config.tsx infers fields from model block defaults and renders via RenderBlock, so new blocks only need adding to the model. Why: one source for public rendering and editing.
+- The app has exactly two areas: the public website and the sign-in-gated Puck builder at /builder; no CRM modules. Why: website-only phase, one deployable app keeps the preview working.

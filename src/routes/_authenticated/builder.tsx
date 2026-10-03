@@ -73,7 +73,7 @@ function StudioPage() {
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background">
       <div className="flex flex-wrap items-center gap-3 border-b border-border bg-card px-4 py-2 text-sm">
-        <Link to="/dashboard" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground">
+        <Link to="/" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Back
         </Link>
         <select
@@ -92,9 +92,6 @@ function StudioPage() {
         <a href={path} target="_blank" rel="noreferrer" className="ml-auto inline-flex items-center gap-1 text-muted-foreground hover:text-foreground">
           Open live page <ExternalLink className="h-3.5 w-3.5" />
         </a>
-        <Link to="/builder-classic" className="text-muted-foreground hover:text-foreground">
-          Classic builder
-        </Link>
       </div>
       <div className="min-h-0 flex-1">
         {data ? (
