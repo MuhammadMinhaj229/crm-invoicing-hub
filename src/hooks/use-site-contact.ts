@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { site } from "../content/site";
-import { fetchPublishedContent } from "../content/home-sections";
+import { loadHomeSections } from "../content/home-sections";
 import type { ContactChannels } from "../types/site";
 import { useWorkspaceSettings } from "./use-workspace-settings";
 
@@ -19,7 +19,7 @@ export function useSiteContact(): ContactChannels {
   const { settings } = useWorkspaceSettings();
   const { data } = useQuery({
     queryKey: ["published-content"],
-    queryFn: fetchPublishedContent,
+    queryFn: loadHomeSections,
     staleTime: 5 * 60 * 1000,
   });
 

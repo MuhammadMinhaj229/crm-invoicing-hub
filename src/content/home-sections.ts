@@ -400,3 +400,8 @@ export function defaultContent(key: string): SectionContent {
 export function defaultSections(): Record<string, SectionContent> {
   return Object.fromEntries(SECTION_DEFS.map((def) => [def.key, defaultContent(def.key)]));
 }
+
+/** Built-in home page content. Pages published from the builder replace it. */
+export async function loadHomeSections(): Promise<Record<string, SectionContent>> {
+  return defaultSections();
+}
