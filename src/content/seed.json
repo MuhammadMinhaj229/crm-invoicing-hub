@@ -1,0 +1,2161 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "site": {
+    "brand": {
+      "name": "SAFAR N MANZIL",
+      "tagline": "Help for your family in India, while you work in the Gulf",
+      "description": "We do the shopping, parcels, home repairs, hospital visits and paperwork for your family back home in India — with photos, updates and a clear price agreed before we start.",
+      "motto": "We do. We assist. We connect."
+    },
+    "contact": {
+      "whatsapp": "917207071874",
+      "phone": "",
+      "email": "",
+      "location": ""
+    },
+    "location": {
+      "city": "",
+      "region": "",
+      "country": "India"
+    },
+    "serviceAreas": [],
+    "hours": "We reply every day. Urgent family needs come first.",
+    "navigation": [
+      {
+        "label": "Home",
+        "href": "/"
+      },
+      {
+        "label": "Services",
+        "href": "/services",
+        "hint": "What we can do for your family"
+      },
+      {
+        "label": "How it works",
+        "href": "/about",
+        "hint": "Who we are and how we work"
+      },
+      {
+        "label": "Questions",
+        "href": "/faq",
+        "hint": "Price, trust and timing"
+      },
+      {
+        "label": "Talk to us",
+        "href": "/contact",
+        "hint": "Send your request"
+      }
+    ],
+    "legalLinks": [
+      {
+        "label": "Privacy",
+        "href": "/privacy"
+      },
+      {
+        "label": "Terms",
+        "href": "/terms"
+      }
+    ],
+    "cta": {
+      "primary": "Ask for help now",
+      "whatsapp": "Message us on WhatsApp",
+      "call": "Call us"
+    }
+  },
+  "theme": {
+    "light": {
+      "radius": "1rem",
+      "background": "oklch(0.982 0.005 82)",
+      "foreground": "oklch(0.28 0.028 190)",
+      "card": "oklch(1 0 0)",
+      "card-foreground": "oklch(0.28 0.028 190)",
+      "popover": "oklch(1 0 0)",
+      "popover-foreground": "oklch(0.28 0.028 190)",
+      "primary": "oklch(0.705 0.148 38)",
+      "primary-foreground": "oklch(0.995 0.002 90)",
+      "secondary": "oklch(0.925 0.042 52)",
+      "secondary-foreground": "oklch(0.3 0.03 190)",
+      "muted": "oklch(0.962 0.01 78)",
+      "muted-foreground": "oklch(0.545 0.022 195)",
+      "accent": "oklch(0.948 0.028 52)",
+      "accent-foreground": "oklch(0.3 0.03 190)",
+      "destructive": "oklch(0.577 0.215 27.3)",
+      "destructive-foreground": "oklch(0.985 0.005 75)",
+      "border": "oklch(0.925 0.008 80)",
+      "input": "oklch(0.925 0.008 80)",
+      "ring": "oklch(0.705 0.148 38)",
+      "legacy-coral": "oklch(0.705 0.148 38)",
+      "legacy-peach": "oklch(0.925 0.042 52)",
+      "legacy-warm": "oklch(0.982 0.005 82)",
+      "legacy-light": "oklch(0.997 0.002 90)",
+      "legacy-teal": "oklch(0.47 0.062 192)",
+      "legacy-deep": "oklch(0.255 0.032 195)",
+      "legacy-ink": "oklch(0.28 0.028 190)",
+      "shadow-soft": "0 1px 2px oklch(0.28 0.028 190 / 0.04), 0 12px 32px -14px oklch(0.28 0.028 190 / 0.14)",
+      "shadow-lift": "0 2px 4px oklch(0.28 0.028 190 / 0.05), 0 28px 60px -28px oklch(0.28 0.028 190 / 0.24)",
+      "chart-1": "oklch(0.762 0.128 49.5)",
+      "chart-2": "oklch(0.65 0.12 200)",
+      "chart-3": "oklch(0.45 0.08 258)",
+      "chart-4": "oklch(0.83 0.12 85)",
+      "chart-5": "oklch(0.72 0.15 25)",
+      "sidebar": "oklch(0.99 0.004 75)",
+      "sidebar-foreground": "oklch(0.27 0.045 258)",
+      "sidebar-primary": "oklch(0.762 0.128 49.5)",
+      "sidebar-primary-foreground": "oklch(0.25 0.045 258)",
+      "sidebar-accent": "oklch(0.955 0.018 72)",
+      "sidebar-accent-foreground": "oklch(0.27 0.045 258)",
+      "sidebar-border": "oklch(0.915 0.02 68)",
+      "sidebar-ring": "oklch(0.762 0.128 49.5)"
+    }
+  },
+  "pages": {
+    "home": {
+      "label": "Home",
+      "path": "/",
+      "seo": {
+        "title": "SAFAR N MANZIL — Help for your family in India, while you work in the Gulf",
+        "description": "We do the shopping, parcels, home repairs, hospital visits and paperwork for your family back home in India — with photos, updates and a clear price agreed before we start."
+      },
+      "blocks": [
+        {
+          "id": "home-001",
+          "type": "cinematicHero",
+          "layout": {
+            "align": "left",
+            "width": "full",
+            "spaceTop": 0,
+            "spaceBottom": 2,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "For families living in the Gulf",
+            "title": "Your care,",
+            "accent": "carried home.",
+            "text": "One message to us, and a checked, honest person helps your parents in India — shopping, repairs, hospital visits, paperwork — with photos and updates sent back to you.",
+            "image": "/media/safar-hero-family.png",
+            "imageAlt": "A son in the Gulf arranging help for his parents in India",
+            "buttons": [
+              {
+                "id": "home-002",
+                "label": "Tell us what they need",
+                "href": "/contact",
+                "style": "solid",
+                "size": "md"
+              },
+              {
+                "id": "home-003",
+                "label": "See the care journey",
+                "href": "#journey",
+                "style": "outline",
+                "size": "md"
+              }
+            ]
+          }
+        },
+        {
+          "id": "home-004",
+          "type": "serviceFilm",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 4,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "Our story in two minutes",
+            "title": "The worry you carry. The help we bring.",
+            "text": "From a worried night in the Gulf to your parents cared for at home — the whole journey, scene by scene.",
+            "items": [
+              {
+                "id": "home-005",
+                "title": "Elderly care visits",
+                "text": ""
+              },
+              {
+                "id": "home-006",
+                "title": "Groceries and medicines",
+                "text": ""
+              },
+              {
+                "id": "home-007",
+                "title": "Home and repair checks",
+                "text": ""
+              },
+              {
+                "id": "home-008",
+                "title": "Photo proof after every task",
+                "text": ""
+              }
+            ]
+          },
+          "anchor": "film"
+        },
+        {
+          "id": "home-009",
+          "type": "storyCarousel",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 5,
+            "spaceBottom": 5,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "We understand the distance.",
+            "text": "The practical needs back home do not pause while you are away.",
+            "items": [
+              {
+                "id": "home-010",
+                "title": "You carry the dream.",
+                "accent": "We help carry the responsibility.",
+                "text": "While you build a future in the Gulf, we help with the things that still need doing at home.",
+                "image": "/media/safar-campaign-dreams.png",
+                "imageAlt": "A Gulf resident thinking about family and responsibilities in India"
+              },
+              {
+                "id": "home-011",
+                "title": "Your family’s needs",
+                "accent": "still reach you first.",
+                "text": "Groceries, appointments, repairs and paperwork can feel heavier when you have to solve them from another country.",
+                "image": "/media/safar-campaign-family-worries.png",
+                "imageAlt": "A family in India sharing practical concerns with a relative in the Gulf"
+              },
+              {
+                "id": "home-012",
+                "title": "One message starts",
+                "accent": "a clear journey.",
+                "text": "Tell us what is needed. We confirm the task, share the plan, wait for approval and return with an update.",
+                "image": "/media/safar-campaign-how-it-works.png",
+                "imageAlt": "A simple illustrated journey from request to completed help"
+              }
+            ]
+          }
+        },
+        {
+          "id": "home-013",
+          "type": "careJourney",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 4,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "anchor": "journey",
+          "props": {
+            "eyebrow": "One request, one clear journey",
+            "title": "You can't always be there for your parents in India. But we can.",
+            "text": "The hardest part of living abroad is the helplessness you feel when your family needs something back home. Stop worrying about untrustworthy vendors or making your parents do the heavy lifting. We act as your trusted local proxy.",
+            "items": [
+              {
+                "id": "home-014",
+                "title": "You message us",
+                "text": "Tell us in one message what your family needs."
+              },
+              {
+                "id": "home-015",
+                "title": "You approve",
+                "text": "We confirm the plan and the cost before any work begins."
+              },
+              {
+                "id": "home-016",
+                "title": "Proof returns",
+                "text": "Photos, the bill and a short update come back to your phone."
+              }
+            ]
+          }
+        },
+        {
+          "id": "home-017",
+          "type": "serviceStory",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 4,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "anchor": "services",
+          "props": {
+            "eyebrow": "Help shaped around real life",
+            "title": "Three ways we help you",
+            "text": "Instead of searching for many different people, just ask SAFAR N MANZIL. Here is how we handle your requests — and we tell you the price before we start.",
+            "items": [
+              {
+                "id": "home-018",
+                "title": "Groceries & gifts",
+                "text": "Surprise them with gifts or make sure their weekly groceries arrive without them lifting a finger. You see the bill.",
+                "image": "/media/safar-story-groceries.png",
+                "href": "/services"
+              },
+              {
+                "id": "home-019",
+                "title": "Parcel & logistics",
+                "text": "We pick up papers and parcels, send them and tell you where they are.",
+                "image": "/media/safar-story-repairs.png",
+                "href": "/services"
+              },
+              {
+                "id": "home-020",
+                "title": "Trusted home repairs",
+                "text": "From plumbing to electrical work, we send verified, honest professionals so your family is never taken advantage of. Price fixed first.",
+                "image": "/media/safar-story-health.png",
+                "href": "/services"
+              },
+              {
+                "id": "home-021",
+                "title": "Medical & errands",
+                "text": "We arrange safe transport and go with your parents to hospital visits, bring medicines and run their local errands — then tell you how it went.",
+                "image": "/media/safar-story-groceries.png",
+                "href": "/services"
+              },
+              {
+                "id": "home-022",
+                "title": "Documentation & legal",
+                "text": "Certificates, bank and government work. We keep going until the paper is in hand.",
+                "image": "/media/safar-story-repairs.png",
+                "href": "/services"
+              },
+              {
+                "id": "home-023",
+                "title": "Property & coordination",
+                "text": "We visit your house or land, help with rent, check repairs and send photos.",
+                "image": "/media/safar-story-health.png",
+                "href": "/services"
+              }
+            ]
+          }
+        },
+        {
+          "id": "home-024",
+          "type": "trustDossier",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "muted",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "Trust is not a slogan",
+            "title": "See what stays under your control.",
+            "text": "Show how each request is agreed, handled and completed.",
+            "items": [
+              {
+                "id": "home-025",
+                "title": "Request confirmed",
+                "text": "Explain what the customer sees at this stage."
+              },
+              {
+                "id": "home-026",
+                "title": "Plan and price approved",
+                "text": "Explain what the customer sees at this stage."
+              },
+              {
+                "id": "home-027",
+                "title": "Work coordinated",
+                "text": "Explain what the customer sees at this stage."
+              },
+              {
+                "id": "home-028",
+                "title": "Proof returned",
+                "text": "Explain what the customer sees at this stage."
+              }
+            ]
+          }
+        },
+        {
+          "id": "home-029",
+          "type": "invoiceExample",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 5,
+            "spaceBottom": 5,
+            "background": "muted",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "A clear breakdown, not a surprise bill.",
+            "text": "Every real request is different. This example shows the structure you can expect, without using any customer or payment details.",
+            "items": [
+              {
+                "id": "home-030",
+                "title": "The work requested",
+                "text": "Written in plain language"
+              },
+              {
+                "id": "home-031",
+                "title": "Outside costs",
+                "text": "Shop, worker or materials"
+              },
+              {
+                "id": "home-032",
+                "title": "Safar N manzil fee",
+                "text": "Shown separately"
+              }
+            ]
+          }
+        },
+        {
+          "id": "home-033",
+          "type": "faq",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 4,
+            "spaceBottom": 4,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "Questions families ask",
+            "items": [
+              {
+                "id": "home-034",
+                "question": "How much does it cost?",
+                "answer": "It depends on the job. We always tell you the cost before we start, and the final bill matches what we agreed. You pay the actual expense plus our service charge — nothing is added afterwards."
+              },
+              {
+                "id": "home-035",
+                "question": "How do I pay from the Gulf?",
+                "answer": "You can pay us after the work is done, using the method that is easiest for you. We send the bill with photos first, so you always see what you are paying for."
+              },
+              {
+                "id": "home-036",
+                "question": "Who actually goes to my parents' house?",
+                "answer": "A person from our team, or a worker we have checked ourselves. They carry an ID. For repairs and outside workers, our coordinator stays with them for the whole visit."
+              },
+              {
+                "id": "home-037",
+                "question": "How do I know the work was really done?",
+                "answer": "Every job comes back with photos, the bill and a short message on WhatsApp. You see what happened even though you are thousands of kilometres away."
+              },
+              {
+                "id": "home-038",
+                "question": "How do I start?",
+                "answer": "Send us one message with what your family needs. We reply with the plan, who will go and what it will cost. If you agree, we do it."
+              }
+            ]
+          }
+        },
+        {
+          "id": "home-039",
+          "type": "contactStrip",
+          "layout": {
+            "align": "center",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "primary",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "Need help for your family?",
+            "text": "Send us a message and we reply the same day.",
+            "buttons": [
+              {
+                "id": "home-040",
+                "label": "Message us on WhatsApp",
+                "href": "whatsapp",
+                "style": "outline",
+                "size": "md"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "services": {
+      "label": "Services",
+      "path": "/services",
+      "seo": {
+        "title": "Services — SAFAR N MANZIL",
+        "description": "Shopping, parcels, home repairs, hospital visits and paperwork for your family in India."
+      },
+      "blocks": [
+        {
+          "id": "services-041",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "Services",
+            "text": "What we can do for your family",
+            "level": "h1"
+          }
+        },
+        {
+          "id": "services-042",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 0,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "We do the shopping, parcels, home repairs, hospital visits and paperwork for your family back home in India — with photos, updates and a clear price agreed before we start."
+          }
+        },
+        {
+          "id": "services-043",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "",
+            "subtitle": "",
+            "columns": 3,
+            "items": [
+              {
+                "id": "services-044",
+                "title": "Groceries & gifts",
+                "text": "Weekly shopping, medicines and surprise gifts delivered to your parents' door.",
+                "href": "/services/groceries-and-gifts"
+              },
+              {
+                "id": "services-045",
+                "title": "Trusted home repairs",
+                "text": "Plumbing, electrical, appliance and AC work done by people we have checked.",
+                "href": "/services/home-repairs"
+              },
+              {
+                "id": "services-046",
+                "title": "Medical visits & errands",
+                "text": "Safe transport, hospital company and the small errands nobody should do alone.",
+                "href": "/services/medical-and-errands"
+              },
+              {
+                "id": "services-047",
+                "title": "Parcels & deliveries",
+                "text": "Sending something home, or collecting something for you.",
+                "href": "/services/parcels-and-deliveries"
+              },
+              {
+                "id": "services-048",
+                "title": "Paperwork & documents",
+                "text": "Government offices, bills, renewals and the queues that go with them.",
+                "href": "/services/paperwork-and-documents"
+              },
+              {
+                "id": "services-049",
+                "title": "Property checks",
+                "text": "Someone to look in on the house, land or flat you left behind.",
+                "href": "/services/property-checks"
+              }
+            ]
+          }
+        },
+        {
+          "id": "services-050",
+          "type": "contactStrip",
+          "layout": {
+            "align": "center",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "primary",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "Need help for your family?",
+            "text": "Send us a message and we reply the same day.",
+            "buttons": [
+              {
+                "id": "services-051",
+                "label": "Message us on WhatsApp",
+                "href": "whatsapp",
+                "style": "outline",
+                "size": "md"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "service:groceries-and-gifts": {
+      "label": "Service · Groceries & gifts",
+      "path": "/services/groceries-and-gifts",
+      "seo": {
+        "title": "Groceries & gifts — SAFAR N MANZIL",
+        "description": "Weekly shopping, medicines and surprise gifts delivered to your parents' door."
+      },
+      "blocks": [
+        {
+          "id": "service-groceries-and-gifts-052",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "Service",
+            "text": "Groceries & gifts",
+            "level": "h1"
+          }
+        },
+        {
+          "id": "service-groceries-and-gifts-053",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 0,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "Your parents should not be carrying heavy bags or standing in queues. Tell us what they need — the monthly ration, fresh vegetables, medicines, or a gift for a birthday — and our person buys it and takes it to their home."
+          }
+        },
+        {
+          "id": "service-groceries-and-gifts-054",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "How it works",
+            "subtitle": "",
+            "columns": 3,
+            "items": [
+              {
+                "id": "service-groceries-and-gifts-055",
+                "title": "1. You send the list",
+                "text": "A message with what is needed is enough."
+              },
+              {
+                "id": "service-groceries-and-gifts-056",
+                "title": "2. We confirm the cost",
+                "text": "We tell you the price before we buy."
+              },
+              {
+                "id": "service-groceries-and-gifts-057",
+                "title": "3. We shop and deliver",
+                "text": "Our person buys it and hands it over at home."
+              },
+              {
+                "id": "service-groceries-and-gifts-058",
+                "title": "4. You get the proof",
+                "text": "Photos and the bill come back to your phone."
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-groceries-and-gifts-059",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "muted",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "What you get",
+            "subtitle": "You pay the actual bill plus a service charge we agree with you before we start. Nothing is added later.",
+            "columns": 2,
+            "items": [
+              {
+                "id": "service-groceries-and-gifts-060",
+                "title": "Shopping list confirmed with you on WhatsApp",
+                "text": ""
+              },
+              {
+                "id": "service-groceries-and-gifts-061",
+                "title": "Photo of the items before delivery",
+                "text": ""
+              },
+              {
+                "id": "service-groceries-and-gifts-062",
+                "title": "Original bill shared with you",
+                "text": ""
+              },
+              {
+                "id": "service-groceries-and-gifts-063",
+                "title": "Delivery confirmation from your parents",
+                "text": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-groceries-and-gifts-064",
+          "type": "contactStrip",
+          "layout": {
+            "align": "center",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "primary",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "Need help for your family?",
+            "text": "Send us a message and we reply the same day.",
+            "buttons": [
+              {
+                "id": "service-groceries-and-gifts-065",
+                "label": "Message us on WhatsApp",
+                "href": "whatsapp",
+                "style": "outline",
+                "size": "md"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "service:home-repairs": {
+      "label": "Service · Trusted home repairs",
+      "path": "/services/home-repairs",
+      "seo": {
+        "title": "Trusted home repairs — SAFAR N MANZIL",
+        "description": "Plumbing, electrical, appliance and AC work done by people we have checked."
+      },
+      "blocks": [
+        {
+          "id": "service-home-repairs-066",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "Service",
+            "text": "Trusted home repairs",
+            "level": "h1"
+          }
+        },
+        {
+          "id": "service-home-repairs-067",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 0,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "The worry is not the broken tap. It is who walks into your parents' house. We send workers we have checked ourselves, we stay while the work happens, and we make sure your family is not overcharged."
+          }
+        },
+        {
+          "id": "service-home-repairs-068",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "How it works",
+            "subtitle": "",
+            "columns": 3,
+            "items": [
+              {
+                "id": "service-home-repairs-069",
+                "title": "1. You describe the problem",
+                "text": "A photo or voice note works."
+              },
+              {
+                "id": "service-home-repairs-070",
+                "title": "2. We inspect",
+                "text": "Our person visits and sends you an honest estimate."
+              },
+              {
+                "id": "service-home-repairs-071",
+                "title": "3. We supervise the work",
+                "text": "Nobody is left alone with your parents."
+              },
+              {
+                "id": "service-home-repairs-072",
+                "title": "4. We show you the result",
+                "text": "Photos of the finished work reach you."
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-home-repairs-073",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "muted",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "What you get",
+            "subtitle": "Material cost plus the worker's charge, both shown to you before the work begins.",
+            "columns": 2,
+            "items": [
+              {
+                "id": "service-home-repairs-074",
+                "title": "Problem understood over a call or photo",
+                "text": ""
+              },
+              {
+                "id": "service-home-repairs-075",
+                "title": "Estimate shared with you before work starts",
+                "text": ""
+              },
+              {
+                "id": "service-home-repairs-076",
+                "title": "Photos during and after the work",
+                "text": ""
+              },
+              {
+                "id": "service-home-repairs-077",
+                "title": "Final bill with no hidden additions",
+                "text": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-home-repairs-078",
+          "type": "contactStrip",
+          "layout": {
+            "align": "center",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "primary",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "Need help for your family?",
+            "text": "Send us a message and we reply the same day.",
+            "buttons": [
+              {
+                "id": "service-home-repairs-079",
+                "label": "Message us on WhatsApp",
+                "href": "whatsapp",
+                "style": "outline",
+                "size": "md"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "service:medical-and-errands": {
+      "label": "Service · Medical visits & errands",
+      "path": "/services/medical-and-errands",
+      "seo": {
+        "title": "Medical visits & errands — SAFAR N MANZIL",
+        "description": "Safe transport, hospital company and the small errands nobody should do alone."
+      },
+      "blocks": [
+        {
+          "id": "service-medical-and-errands-080",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "Service",
+            "text": "Medical visits & errands",
+            "level": "h1"
+          }
+        },
+        {
+          "id": "service-medical-and-errands-081",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 0,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "Hospital days are long and confusing. Our person picks your parents up, stays with them through the queue, helps with the forms, collects the reports and sends you an update the same day."
+          }
+        },
+        {
+          "id": "service-medical-and-errands-082",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "How it works",
+            "subtitle": "",
+            "columns": 3,
+            "items": [
+              {
+                "id": "service-medical-and-errands-083",
+                "title": "1. You tell us the appointment",
+                "text": "Or ask us to arrange one."
+              },
+              {
+                "id": "service-medical-and-errands-084",
+                "title": "2. We arrange safe transport",
+                "text": "Pick-up from home, drop back home."
+              },
+              {
+                "id": "service-medical-and-errands-085",
+                "title": "3. We stay with them",
+                "text": "Through the queue, the forms and the doctor."
+              },
+              {
+                "id": "service-medical-and-errands-086",
+                "title": "4. You get the update",
+                "text": "Reports and what happened, same day."
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-medical-and-errands-087",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "muted",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "What you get",
+            "subtitle": "Transport cost plus a companion charge for the hours used, agreed before the day.",
+            "columns": 2,
+            "items": [
+              {
+                "id": "service-medical-and-errands-088",
+                "title": "Appointment day and time confirmed with you",
+                "text": ""
+              },
+              {
+                "id": "service-medical-and-errands-089",
+                "title": "Update message while they are at the hospital",
+                "text": ""
+              },
+              {
+                "id": "service-medical-and-errands-090",
+                "title": "Photos of reports and prescriptions",
+                "text": ""
+              },
+              {
+                "id": "service-medical-and-errands-091",
+                "title": "A short summary of what the doctor said",
+                "text": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-medical-and-errands-092",
+          "type": "contactStrip",
+          "layout": {
+            "align": "center",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "primary",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "Need help for your family?",
+            "text": "Send us a message and we reply the same day.",
+            "buttons": [
+              {
+                "id": "service-medical-and-errands-093",
+                "label": "Message us on WhatsApp",
+                "href": "whatsapp",
+                "style": "outline",
+                "size": "md"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "service:parcels-and-deliveries": {
+      "label": "Service · Parcels & deliveries",
+      "path": "/services/parcels-and-deliveries",
+      "seo": {
+        "title": "Parcels & deliveries — SAFAR N MANZIL",
+        "description": "Sending something home, or collecting something for you."
+      },
+      "blocks": [
+        {
+          "id": "service-parcels-and-deliveries-094",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "Service",
+            "text": "Parcels & deliveries",
+            "level": "h1"
+          }
+        },
+        {
+          "id": "service-parcels-and-deliveries-095",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 0,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "Documents, medicines, a package waiting at a courier office, or something that needs to reach a relative in another city. We pick it up, pack it, send it and track it until it arrives."
+          }
+        },
+        {
+          "id": "service-parcels-and-deliveries-096",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "How it works",
+            "subtitle": "",
+            "columns": 3,
+            "items": [
+              {
+                "id": "service-parcels-and-deliveries-097",
+                "title": "1. Tell us what and where",
+                "text": "Address and contact are enough."
+              },
+              {
+                "id": "service-parcels-and-deliveries-098",
+                "title": "2. We collect and pack",
+                "text": "Carefully, with a photo before dispatch."
+              },
+              {
+                "id": "service-parcels-and-deliveries-099",
+                "title": "3. We track it",
+                "text": "You get the tracking and the delivery proof."
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-parcels-and-deliveries-100",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "muted",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "What you get",
+            "subtitle": "Courier charges plus a small handling charge, told to you upfront.",
+            "columns": 2,
+            "items": [
+              {
+                "id": "service-parcels-and-deliveries-101",
+                "title": "Pick-up confirmation",
+                "text": ""
+              },
+              {
+                "id": "service-parcels-and-deliveries-102",
+                "title": "Tracking number shared on WhatsApp",
+                "text": ""
+              },
+              {
+                "id": "service-parcels-and-deliveries-103",
+                "title": "Delivery photo",
+                "text": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-parcels-and-deliveries-104",
+          "type": "contactStrip",
+          "layout": {
+            "align": "center",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "primary",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "Need help for your family?",
+            "text": "Send us a message and we reply the same day.",
+            "buttons": [
+              {
+                "id": "service-parcels-and-deliveries-105",
+                "label": "Message us on WhatsApp",
+                "href": "whatsapp",
+                "style": "outline",
+                "size": "md"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "service:paperwork-and-documents": {
+      "label": "Service · Paperwork & documents",
+      "path": "/services/paperwork-and-documents",
+      "seo": {
+        "title": "Paperwork & documents — SAFAR N MANZIL",
+        "description": "Government offices, bills, renewals and the queues that go with them."
+      },
+      "blocks": [
+        {
+          "id": "service-paperwork-and-documents-106",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "Service",
+            "text": "Paperwork & documents",
+            "level": "h1"
+          }
+        },
+        {
+          "id": "service-paperwork-and-documents-107",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 0,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "Certificates, pension paperwork, bill payments, document collection, attestation runs — the tasks that take a full day of standing in line. We do the running so your parents do not have to."
+          }
+        },
+        {
+          "id": "service-paperwork-and-documents-108",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "How it works",
+            "subtitle": "",
+            "columns": 3,
+            "items": [
+              {
+                "id": "service-paperwork-and-documents-109",
+                "title": "1. You tell us the task",
+                "text": "We check what documents are needed."
+              },
+              {
+                "id": "service-paperwork-and-documents-110",
+                "title": "2. We do the running",
+                "text": "Office visits, queues, submissions."
+              },
+              {
+                "id": "service-paperwork-and-documents-111",
+                "title": "3. You get every receipt",
+                "text": "Photographed and sent to you."
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-paperwork-and-documents-112",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "muted",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "What you get",
+            "subtitle": "Official fees at actual cost plus a charge for the time used, agreed beforehand.",
+            "columns": 2,
+            "items": [
+              {
+                "id": "service-paperwork-and-documents-113",
+                "title": "List of what is required, confirmed first",
+                "text": ""
+              },
+              {
+                "id": "service-paperwork-and-documents-114",
+                "title": "Receipts and acknowledgements photographed",
+                "text": ""
+              },
+              {
+                "id": "service-paperwork-and-documents-115",
+                "title": "Final document handed over or couriered",
+                "text": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-paperwork-and-documents-116",
+          "type": "contactStrip",
+          "layout": {
+            "align": "center",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "primary",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "Need help for your family?",
+            "text": "Send us a message and we reply the same day.",
+            "buttons": [
+              {
+                "id": "service-paperwork-and-documents-117",
+                "label": "Message us on WhatsApp",
+                "href": "whatsapp",
+                "style": "outline",
+                "size": "md"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "service:property-checks": {
+      "label": "Service · Property checks",
+      "path": "/services/property-checks",
+      "seo": {
+        "title": "Property checks — SAFAR N MANZIL",
+        "description": "Someone to look in on the house, land or flat you left behind."
+      },
+      "blocks": [
+        {
+          "id": "service-property-checks-118",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "Service",
+            "text": "Property checks",
+            "level": "h1"
+          }
+        },
+        {
+          "id": "service-property-checks-119",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 0,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "An empty house needs eyes on it. We visit, check the locks, water and condition, meet the caretaker or tenant if needed, and send you a photo record of every visit."
+          }
+        },
+        {
+          "id": "service-property-checks-120",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "How it works",
+            "subtitle": "",
+            "columns": 3,
+            "items": [
+              {
+                "id": "service-property-checks-121",
+                "title": "1. You share the address",
+                "text": "And what you want checked."
+              },
+              {
+                "id": "service-property-checks-122",
+                "title": "2. We visit",
+                "text": "On the schedule you choose."
+              },
+              {
+                "id": "service-property-checks-123",
+                "title": "3. You get the record",
+                "text": "Photos and a short honest note."
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-property-checks-124",
+          "type": "cards",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "muted",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "What you get",
+            "subtitle": "A per-visit charge based on distance, agreed before the first visit.",
+            "columns": 2,
+            "items": [
+              {
+                "id": "service-property-checks-125",
+                "title": "Visit date agreed with you",
+                "text": ""
+              },
+              {
+                "id": "service-property-checks-126",
+                "title": "Photo set from every room or corner",
+                "text": ""
+              },
+              {
+                "id": "service-property-checks-127",
+                "title": "A short written note on the condition",
+                "text": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "service-property-checks-128",
+          "type": "contactStrip",
+          "layout": {
+            "align": "center",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "primary",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "Need help for your family?",
+            "text": "Send us a message and we reply the same day.",
+            "buttons": [
+              {
+                "id": "service-property-checks-129",
+                "label": "Message us on WhatsApp",
+                "href": "whatsapp",
+                "style": "outline",
+                "size": "md"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "about": {
+      "label": "How it works",
+      "path": "/about",
+      "seo": {
+        "title": "How it works — SAFAR N MANZIL",
+        "description": "Who we are and how one message becomes help for your family in India."
+      },
+      "blocks": [
+        {
+          "id": "about-130",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "How it works",
+            "text": "We do. We assist. We connect.",
+            "level": "h1"
+          }
+        },
+        {
+          "id": "about-131",
+          "type": "imageText",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "",
+            "title": "Who we are",
+            "text": "We do the shopping, parcels, home repairs, hospital visits and paperwork for your family back home in India — with photos, updates and a clear price agreed before we start.",
+            "image": "/media/safar-cast.png",
+            "imageAlt": "The SAFAR family characters",
+            "imageSide": "right",
+            "buttons": [
+              {
+                "id": "about-132",
+                "label": "Ask for help now",
+                "href": "/contact",
+                "style": "solid",
+                "size": "md"
+              }
+            ]
+          }
+        },
+        {
+          "id": "about-133",
+          "type": "contactStrip",
+          "layout": {
+            "align": "center",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "primary",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "Need help for your family?",
+            "text": "Send us a message and we reply the same day.",
+            "buttons": [
+              {
+                "id": "about-134",
+                "label": "Message us on WhatsApp",
+                "href": "whatsapp",
+                "style": "outline",
+                "size": "md"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "faq": {
+      "label": "Questions",
+      "path": "/faq",
+      "seo": {
+        "title": "Questions — SAFAR N MANZIL",
+        "description": "Answers about price, trust and timing for families in the Gulf."
+      },
+      "blocks": [
+        {
+          "id": "faq-135",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "Questions",
+            "text": "Price, trust and timing",
+            "level": "h1"
+          }
+        },
+        {
+          "id": "faq-136",
+          "type": "faq",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "",
+            "items": [
+              {
+                "id": "faq-137",
+                "question": "How much does it cost?",
+                "answer": "It depends on the job. We always tell you the cost before we start, and the final bill matches what we agreed. You pay the actual expense plus our service charge — nothing is added afterwards."
+              },
+              {
+                "id": "faq-138",
+                "question": "How do I pay from the Gulf?",
+                "answer": "You can pay us after the work is done, using the method that is easiest for you. We send the bill with photos first, so you always see what you are paying for."
+              },
+              {
+                "id": "faq-139",
+                "question": "Who actually goes to my parents' house?",
+                "answer": "A person from our team, or a worker we have checked ourselves. They carry an ID. For repairs and outside workers, our coordinator stays with them for the whole visit."
+              },
+              {
+                "id": "faq-140",
+                "question": "How do I know the work was really done?",
+                "answer": "Every job comes back with photos, the bill and a short message on WhatsApp. You see what happened even though you are thousands of kilometres away."
+              },
+              {
+                "id": "faq-141",
+                "question": "How do I start?",
+                "answer": "Send us one message with what your family needs. We reply with the plan, who will go and what it will cost. If you agree, we do it."
+              },
+              {
+                "id": "faq-142",
+                "question": "What if it is urgent?",
+                "answer": "Tell us it is urgent in your first message. Hospital and emergency requests are handled first."
+              },
+              {
+                "id": "faq-143",
+                "question": "Will my parents understand your person?",
+                "answer": "Yes. Our people speak the local language, and we explain everything to your parents calmly before anything happens in their home."
+              },
+              {
+                "id": "faq-144",
+                "question": "Which places do you cover?",
+                "answer": "Ask us with the exact area. If we do not cover it directly, we will tell you honestly instead of promising something we cannot do."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "contact": {
+      "label": "Talk to us",
+      "path": "/contact",
+      "seo": {
+        "title": "Talk to us — SAFAR N MANZIL",
+        "description": "Tell us what your family in India needs. We reply on WhatsApp."
+      },
+      "blocks": [
+        {
+          "id": "contact-145",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 4,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "Talk to us",
+            "text": "Tell us what your family needs",
+            "level": "h1"
+          }
+        },
+        {
+          "id": "contact-146",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 0,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "We reply every day. Urgent family needs come first."
+          }
+        },
+        {
+          "id": "contact-147",
+          "type": "enquiryForm",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "title": "Tell us what you need",
+            "text": "We reply on WhatsApp.",
+            "submitLabel": "Send request"
+          }
+        }
+      ]
+    },
+    "privacy": {
+      "label": "Privacy",
+      "path": "/privacy",
+      "seo": {
+        "title": "How we handle your information — SAFAR N MANZIL",
+        "description": "What we collect when you use this website, why we keep it, and how to ask us to remove it."
+      },
+      "blocks": [
+        {
+          "id": "privacy-148",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 4,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "",
+            "text": "How we handle your information",
+            "level": "h1"
+          }
+        },
+        {
+          "id": "privacy-149",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 0,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "What we collect when you use this website, why we keep it, and how to ask us to remove it."
+          }
+        },
+        {
+          "id": "privacy-150",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 2,
+            "spaceBottom": 0,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "",
+            "text": "What we collect",
+            "level": "h2"
+          }
+        },
+        {
+          "id": "privacy-151",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 1,
+            "spaceBottom": 1,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "When you send us a request, we keep the details you give us: your name, the number or email you want us to reply on, where your family lives and what you need. We use this only to do the work you asked for and to stay in touch about it."
+          }
+        },
+        {
+          "id": "privacy-152",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 2,
+            "spaceBottom": 0,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "",
+            "text": "What the website records",
+            "level": "h2"
+          }
+        },
+        {
+          "id": "privacy-153",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 1,
+            "spaceBottom": 1,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "This website counts visits and clicks using our own records. We do not use outside advertising trackers. We do not try to find out who you are before you tell us."
+          }
+        },
+        {
+          "id": "privacy-154",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 2,
+            "spaceBottom": 0,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "",
+            "text": "Who else sees it",
+            "level": "h2"
+          }
+        },
+        {
+          "id": "privacy-155",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 1,
+            "spaceBottom": 1,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "Nobody, except the person doing your job who needs to know the address and the task. We do not sell or rent your details."
+          }
+        },
+        {
+          "id": "privacy-156",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 2,
+            "spaceBottom": 0,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "",
+            "text": "Removing your details",
+            "level": "h2"
+          }
+        },
+        {
+          "id": "privacy-157",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 1,
+            "spaceBottom": 1,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "Ask us and we will delete your records, except anything we must keep for a bill that has already been paid."
+          }
+        }
+      ]
+    },
+    "terms": {
+      "label": "Terms",
+      "path": "/terms",
+      "seo": {
+        "title": "Terms of service — SAFAR N MANZIL",
+        "description": "The simple rules for how we work with you and your family."
+      },
+      "blocks": [
+        {
+          "id": "terms-158",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 4,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "",
+            "text": "Terms of service",
+            "level": "h1"
+          }
+        },
+        {
+          "id": "terms-159",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 0,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "The simple rules for how we work with you and your family."
+          }
+        },
+        {
+          "id": "terms-160",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 2,
+            "spaceBottom": 0,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "",
+            "text": "What we do",
+            "level": "h2"
+          }
+        },
+        {
+          "id": "terms-161",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 1,
+            "spaceBottom": 1,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "We act on your behalf for the task you ask for, in the area we agree. We are not a medical, legal or financial service, and we do not give advice in those matters."
+          }
+        },
+        {
+          "id": "terms-162",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 2,
+            "spaceBottom": 0,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "",
+            "text": "Prices",
+            "level": "h2"
+          }
+        },
+        {
+          "id": "terms-163",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 1,
+            "spaceBottom": 1,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "We tell you the expected cost before we start. If something changes during the work, we stop and tell you before spending more."
+          }
+        },
+        {
+          "id": "terms-164",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 2,
+            "spaceBottom": 0,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "",
+            "text": "Outside workers",
+            "level": "h2"
+          }
+        },
+        {
+          "id": "terms-165",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 1,
+            "spaceBottom": 1,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "For repairs we use workers we have checked, and our coordinator stays during the visit. Any warranty on parts or work comes from the supplier or the worker."
+          }
+        },
+        {
+          "id": "terms-166",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 2,
+            "spaceBottom": 0,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "",
+            "text": "Cancelling",
+            "level": "h2"
+          }
+        },
+        {
+          "id": "terms-167",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 1,
+            "spaceBottom": 1,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "You can cancel before the work starts at no cost. If we have already travelled or bought something, we will ask only for that actual expense."
+          }
+        },
+        {
+          "id": "terms-168",
+          "type": "heading",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 2,
+            "spaceBottom": 0,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "eyebrow": "",
+            "text": "Limits",
+            "level": "h2"
+          }
+        },
+        {
+          "id": "terms-169",
+          "type": "text",
+          "layout": {
+            "align": "left",
+            "width": "narrow",
+            "spaceTop": 1,
+            "spaceBottom": 1,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "text": "We take care, but we cannot be responsible for delays caused by hospitals, government offices, couriers or suppliers."
+          }
+        }
+      ]
+    },
+    "global": {
+      "label": "Header menu",
+      "path": "/",
+      "seo": {
+        "title": "Header menu",
+        "description": "Help for your family in India, while you work in the Gulf"
+      },
+      "blocks": [
+        {
+          "id": "global-170",
+          "type": "navigation",
+          "layout": {
+            "align": "left",
+            "width": "normal",
+            "spaceTop": 3,
+            "spaceBottom": 3,
+            "background": "none",
+            "hideMobile": false,
+            "hideDesktop": false
+          },
+          "props": {
+            "links": [
+              {
+                "id": "global-171",
+                "label": "Home",
+                "href": "/"
+              },
+              {
+                "id": "global-172",
+                "label": "Services",
+                "href": "/services"
+              },
+              {
+                "id": "global-173",
+                "label": "How it works",
+                "href": "/about"
+              },
+              {
+                "id": "global-174",
+                "label": "Questions",
+                "href": "/faq"
+              },
+              {
+                "id": "global-175",
+                "label": "Talk to us",
+                "href": "/contact"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
