@@ -12,7 +12,7 @@
 
 ## Browser configuration and publishing
 
-The browser configuration stores only the Supabase project URL and public/anon key. The client module removes the legacy serviceRoleKey property from stored browser configuration when it is next read. The public key is not a substitute for row-level security.
+The client module stores only the Supabase project URL and public/anon key, and removes any legacy `serviceRoleKey` field from browser storage when read. In production, the deployment-level Supabase configuration takes precedence so the server-rendered website, editor and every visitor use the same database. Per-device overrides are development fallbacks only; the public key is not a substitute for row-level security.
 
 Never enter or persist a service-role key in the visual editor, browser local storage, seed data, or any VITE-prefixed environment variable. Keep service-role keys and direct PostgreSQL connection strings in server-only environment variables. Rotate a privileged key if it may have been exposed; deleting a value from the current file does not remove it from Git history.
 
