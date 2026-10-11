@@ -1,29 +1,25 @@
 /**
- * Persistence for page documents. Reuses the existing CMS tables:
- * one `cms_sections` row per page (section_key "__document") with draft and
- * published content, plus `cms_revisions` for history. No new tables.
+ * Persistence boundary for page documents.
+ *
+ * Drafts may be kept locally while disconnected, but only the shared database
+ * can publish. Published versions are validated by the runtime schema and are
+ * advanced by a transactional RPC using optimistic concurrency.
  */
 import { getSupabase } from "../supabase";
-import { isPageDocument, type PageDocument } from "./model";
+import type { PageDocument } from "./model";
+import { PAGE_DOCUMENT_VERSION, parsePageDocument, validatePageDocument } from "./schema";
 
 const KEY = "__document";
-const LOCAL = (page: string) => `safar.builder.draft.${page}`;
-const LOCAL_PUB = (page: string) => `safar.builder.published.${page}`;
-const LOCAL_VER = (page: string) => `safar.builder.version.${page}`;
+const LOCAL = (page: string) => "safar.builder.draft." + page;
 
 function readLocal(key: string): PageDocument | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(key);
-    const doc = raw ? (JSON.parse(raw) as unknown) : null;
-    return isPageDocument(doc) ? doc : null;
+    return raw ? parsePageDocument(JSON.parse(raw) as unknown) : null;
   } catch {
     return null;
   }
-}
-function localPublished(page: string): PageDocument | null {
-  const doc = readLocal(LOCAL_PUB(page));
-  return doc && doc.blocks.length > 0 ? doc : null;
 }
 
 export interface DocumentState {
@@ -41,10 +37,14 @@ export interface DocumentRevision {
   content: PageDocument;
 }
 
-/** Published document for the public site, or null to use the built-in page. */
+/**
+ * Return only shared, published content. A local draft or old local-only
+ * publication must never be mistaken for the website seen by other visitors.
+ */
 export async function fetchPublishedDocument(page: string): Promise<PageDocument | null> {
   const supabase = getSupabase();
-  if (!supabase) return localPublished(page);
+  if (!supabase) return null;
+
   const { data, error } = await supabase
     .from("cms_sections")
     .select("content, status")
@@ -52,105 +52,202 @@ export async function fetchPublishedDocument(page: string): Promise<PageDocument
     .eq("section_key", KEY)
     .eq("status", "published")
     .maybeSingle();
-  if (error || !data) return localPublished(page);
-  const content = (data as { content: unknown }).content;
-  return isPageDocument(content) && content.blocks.length > 0 ? content : null;
+
+  if (error || !data) return null;
+  const document = parsePageDocument((data as { content: unknown }).content);
+  return document && document.blocks.length > 0 ? document : null;
 }
 
 export async function fetchDocumentState(page: string): Promise<DocumentState> {
-  const localRaw = typeof window !== "undefined" ? window.localStorage.getItem(LOCAL(page)) : null;
-  const local = localRaw ? (JSON.parse(localRaw) as PageDocument) : null;
+  const local = readLocal(LOCAL(page));
   const supabase = getSupabase();
+
+  // Local drafts help an editor work offline. They are deliberately not live
+  // and are never returned as published content.
   if (!supabase) {
-    const pub = localPublished(page);
-    const ver = Number(typeof window !== "undefined" ? window.localStorage.getItem(LOCAL_VER(page)) : 0) || 0;
-    return { id: null, draft: local ?? pub, published: pub, status: pub ? "published" : "none", version: ver };
+    return {
+      id: null,
+      draft: local,
+      published: null,
+      status: local ? "draft" : "none",
+      version: 0,
+    };
   }
+
   const { data, error } = await supabase
     .from("cms_sections")
     .select("id, content, draft_content, status, version")
     .eq("page", page)
     .eq("section_key", KEY)
     .maybeSingle();
+
   if (error) throw new Error(error.message);
-  if (!data) return { id: null, draft: local, published: null, status: "none", version: 0 };
-  const row = data as { id: string; content: unknown; draft_content: unknown; status: string; version: number };
-  const published = isPageDocument(row.content) && row.content.blocks.length ? row.content : null;
-  const draft = isPageDocument(row.draft_content) ? row.draft_content : local;
-  return { id: row.id, draft, published, status: row.status === "published" ? "published" : "draft", version: row.version ?? 0 };
+  if (!data) {
+    return {
+      id: null,
+      draft: local,
+      published: null,
+      status: local ? "draft" : "none",
+      version: 0,
+    };
+  }
+
+  const row = data as {
+    id: string;
+    content: unknown;
+    draft_content: unknown;
+    status: string;
+    version: number | null;
+  };
+  const storedPublished = parsePageDocument(row.content);
+  const published = row.status === "published" && storedPublished?.blocks.length
+    ? storedPublished
+    : null;
+  const draft = parsePageDocument(row.draft_content) ?? local;
+  const version = Number.isSafeInteger(row.version) && Number(row.version) >= 0
+    ? Number(row.version)
+    : 0;
+
+  return {
+    id: row.id,
+    draft,
+    published,
+    status: published ? "published" : draft ? "draft" : "none",
+    version,
+  };
 }
 
 export async function saveDocumentDraft(doc: PageDocument): Promise<"cloud" | "local"> {
-  const stamped = { ...doc, updatedAt: new Date().toISOString() };
-  if (typeof window !== "undefined") window.localStorage.setItem(LOCAL(doc.page), JSON.stringify(stamped));
+  const validation = validatePageDocument(doc);
+  if (!validation.ok) {
+    throw new Error("Cannot save invalid page document:\n" + validation.issues.slice(0, 8).join("\n"));
+  }
+
+  const stamped: PageDocument = {
+    ...validation.document,
+    schemaVersion: PAGE_DOCUMENT_VERSION,
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(LOCAL(doc.page), JSON.stringify(stamped));
+    } catch {
+      // Browser storage is only a convenience; shared persistence is attempted below.
+    }
+  }
+
   const supabase = getSupabase();
   if (!supabase) return "local";
+
   const { error } = await supabase
     .from("cms_sections")
     .upsert(
-      { page: doc.page, section_key: KEY, draft_content: stamped, updated_at: stamped.updatedAt },
+      {
+        page: stamped.page,
+        section_key: KEY,
+        draft_content: stamped,
+        updated_at: stamped.updatedAt,
+      },
       { onConflict: "page,section_key" },
     );
+
   if (error) throw new Error(error.message);
   return "cloud";
 }
 
-export async function publishDocument(doc: PageDocument): Promise<number> {
-  const stamped = { ...doc, updatedAt: new Date().toISOString() };
+/**
+ * Publish through a single PostgreSQL transaction. The expected version stops
+ * a stale editor from silently replacing a newer published page.
+ *
+ * Requires supabase/migrations/20261011000000_atomic_page_publish.sql to be
+ * applied to the connected Supabase project. It intentionally fails closed if
+ * the database connection or migration is missing.
+ */
+export async function publishDocument(doc: PageDocument, expectedVersion: number): Promise<number> {
+  const validation = validatePageDocument(doc);
+  if (!validation.ok) {
+    throw new Error("Cannot publish invalid page document:\n" + validation.issues.slice(0, 8).join("\n"));
+  }
+  if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 0) {
+    throw new Error("The published version is invalid. Reload the page before publishing.");
+  }
+
   const supabase = getSupabase();
   if (!supabase) {
-    // No database: publish on this device so the live site shows it right away.
-    const version = (Number(window.localStorage.getItem(LOCAL_VER(doc.page))) || 0) + 1;
-    window.localStorage.setItem(LOCAL_PUB(doc.page), JSON.stringify(stamped));
-    window.localStorage.setItem(LOCAL(doc.page), JSON.stringify(stamped));
-    window.localStorage.setItem(LOCAL_VER(doc.page), String(version));
-    return version;
+    throw new Error("Connect this editor to the shared Supabase database before publishing. Local drafts are not visible to visitors.");
   }
-  const { data: existing } = await supabase
-    .from("cms_sections")
-    .select("version")
-    .eq("page", doc.page)
-    .eq("section_key", KEY)
-    .maybeSingle();
-  const version = ((existing as { version?: number } | null)?.version ?? 0) + 1;
-  const { data: saved, error } = await supabase
-    .from("cms_sections")
-    .upsert(
-      { page: doc.page, section_key: KEY, content: stamped, draft_content: stamped, status: "published", version, updated_at: stamped.updatedAt },
-      { onConflict: "page,section_key" },
-    )
-    .select("id")
-    .single();
-  if (error) throw new Error(error.message);
-  const { error: revError } = await supabase
-    .from("cms_revisions")
-    .insert({ section_id: (saved as { id: string }).id, content: stamped, version });
-  if (revError) throw new Error(revError.message);
+
+  const stamped: PageDocument = {
+    ...validation.document,
+    schemaVersion: PAGE_DOCUMENT_VERSION,
+    updatedAt: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase.rpc("publish_page_document", {
+    p_page: stamped.page,
+    p_content: stamped,
+    p_expected_version: expectedVersion,
+  });
+
+  if (error) {
+    if (/publish_page_document|schema cache|could not find the function/i.test(error.message)) {
+      throw new Error("The atomic publishing migration is not installed on this Supabase project. Apply supabase/migrations/20261011000000_atomic_page_publish.sql, then retry.");
+    }
+    if (error.code === "40001") {
+      throw new Error("This page changed in another editor. Reload the page to review the latest version before publishing.");
+    }
+    throw new Error("Publishing failed: " + error.message);
+  }
+
+  const version = typeof data === "number" ? data : Number(data);
+  if (!Number.isSafeInteger(version) || version !== expectedVersion + 1) {
+    throw new Error("The database returned an unexpected published version. Check the page status before retrying.");
+  }
+
+  // Keep the browser's draft aligned with the successful shared publication.
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(LOCAL(stamped.page), JSON.stringify(stamped));
+    } catch {
+      // A browser cache failure must not undo an already committed publication.
+    }
+  }
   return version;
 }
 
-/** Take the page off the builder; the built-in page shows again. */
+/** Take a page out of public circulation; never fake this as a local operation. */
 export async function unpublishDocument(page: string): Promise<void> {
-  if (typeof window !== "undefined") window.localStorage.removeItem(LOCAL_PUB(page));
   const supabase = getSupabase();
-  if (!supabase) return;
+  if (!supabase) {
+    throw new Error("Connect to the shared Supabase database before unpublishing a page.");
+  }
+
   const { error } = await supabase
     .from("cms_sections")
     .update({ status: "draft", updated_at: new Date().toISOString() })
     .eq("page", page)
     .eq("section_key", KEY);
+
   if (error) throw new Error(error.message);
 }
 
 export async function fetchDocumentRevisions(sectionId: string): Promise<DocumentRevision[]> {
   const supabase = getSupabase();
   if (!supabase) return [];
+
   const { data, error } = await supabase
     .from("cms_revisions")
     .select("id, version, saved_at, content")
     .eq("section_id", sectionId)
     .order("version", { ascending: false })
     .limit(30);
+
   if (error) throw new Error(error.message);
-  return ((data ?? []) as DocumentRevision[]).filter((r) => isPageDocument(r.content));
+
+  return ((data ?? []) as Array<{ id: string; version: number; saved_at: string; content: unknown }>)
+    .flatMap((revision) => {
+      const content = parsePageDocument(revision.content);
+      return content ? [{ ...revision, content }] : [];
+    });
 }
