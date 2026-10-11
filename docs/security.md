@@ -10,6 +10,14 @@
   repository. Rotate that key in Supabase and remove it from the repository
   history before going live.
 
+## Browser configuration and publishing
+
+The browser configuration stores only the Supabase project URL and public/anon key. The client module removes the legacy serviceRoleKey property from stored browser configuration when it is next read. The public key is not a substitute for row-level security.
+
+Never enter or persist a service-role key in the visual editor, browser local storage, seed data, or any VITE-prefixed environment variable. Keep service-role keys and direct PostgreSQL connection strings in server-only environment variables. Rotate a privileged key if it may have been exposed; deleting a value from the current file does not remove it from Git history.
+
+Page documents are validated before saving and publishing. The database publishing RPC runs as the caller and relies on the existing RLS policies; verify those policies explicitly for the intended editor/publisher roles before production use. Local-only drafts are never an authoritative public publication.
+
 ## Who can do what
 
 Roles are kept in `user_roles`, never on the person's profile row. A
