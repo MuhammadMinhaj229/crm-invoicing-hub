@@ -67,6 +67,26 @@ describe("page document contract", () => {
     if (!result.ok) expect(result.issues.join(" ")).toContain("HTTP(S)");
   });
 
+  test("rejects backslash-prefixed links", () => {
+    const document = {
+      schemaVersion: 1,
+      page: "home",
+      blocks: [
+        {
+          id: "button-block",
+          type: "buttons",
+          props: {
+            items: [
+              { id: "btn-1", label: "Open", href: "\\evil.example", style: "solid", size: "md" },
+            ],
+          },
+          layout,
+        },
+      ],
+    };
+    expect(validatePageDocument(document).ok).toBe(false);
+  });
+
   test("rejects unsupported document versions", () => {
     const document = { ...validDocument(), schemaVersion: 99 };
     expect(parsePageDocument(document)).toBeNull();
