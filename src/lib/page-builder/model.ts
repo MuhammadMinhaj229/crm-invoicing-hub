@@ -98,6 +98,8 @@ export type Block =
 export type BlockType = Block["type"];
 
 export interface PageDocument {
+  /** Persisted document format version; absent in legacy documents means v1. */
+  schemaVersion?: number;
   page: string;
   blocks: Block[];
   updatedAt?: string;
