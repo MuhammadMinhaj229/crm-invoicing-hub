@@ -97,11 +97,16 @@ const layoutField: Field = {
   },
 };
 
-type PuckProps = Record<string, unknown> & { id: string; layout?: BlockLayout; anchor?: string };
+type PuckProps = Record<string, unknown> & {
+  id: string;
+  layout?: BlockLayout;
+  anchor?: string;
+  hidden?: boolean;
+};
 
 /** Puck props → document block. */
 export function propsToBlock(type: BlockType, raw: Record<string, unknown>): Block {
-  const { id, layout, anchor, puck: _puck, editMode: _e, ...props } = raw as PuckProps & {
+  const { id, layout, anchor, hidden, puck: _puck, editMode: _e, ...props } = raw as PuckProps & {
     puck?: unknown;
     editMode?: unknown;
   };
@@ -113,6 +118,7 @@ export function propsToBlock(type: BlockType, raw: Record<string, unknown>): Blo
     type,
     props: withIds,
     layout: { ...defaultLayout(), ...(layout ?? {}) },
+    ...(typeof hidden === "boolean" ? { hidden } : {}),
     ...(anchor ? { anchor: String(anchor) } : {}),
   } as Block;
 }
@@ -125,11 +131,16 @@ function componentFor(type: BlockType, label: string): ComponentConfig<PuckProps
     if (f) fields[k] = f;
   }
   fields["anchor"] = { type: "text", label: "Section link name (optional)" };
+  fields["hidden"] = {
+    type: "radio",
+    label: "Hide from public website",
+    options: [{ label: "Visible", value: false }, { label: "Hidden", value: true }],
+  };
   fields["layout"] = layoutField;
   return {
     label,
     fields: fields as NonNullable<ComponentConfig<PuckProps>["fields"]>,
-    defaultProps: { ...(sample.props as Record<string, unknown>), layout: sample.layout } as PuckProps,
+    defaultProps: { ...(sample.props as Record<string, unknown>), hidden: false, layout: sample.layout } as PuckProps,
     render: (props) => <RenderBlock block={propsToBlock(type, props as Record<string, unknown>)} />,
   };
 }
@@ -150,12 +161,16 @@ export const safarPuckConfig: Config = {
 export function documentToPuck(doc: PageDocument): Data {
   return {
     root: { props: {} },
-    content: doc.blocks
-      .filter((b) => !b.hidden)
-      .map((b) => ({
-        type: b.type,
-        props: { id: b.id, ...(b.props as Record<string, unknown>), layout: b.layout, ...(b.anchor ? { anchor: b.anchor } : {}) },
-      })),
+    content: doc.blocks.map((b) => ({
+      type: b.type,
+      props: {
+        ...(b.props as Record<string, unknown>),
+        id: b.id,
+        layout: b.layout,
+        hidden: b.hidden ?? false,
+        ...(b.anchor ? { anchor: b.anchor } : {}),
+      },
+    })),
   } as Data;
 }
 
