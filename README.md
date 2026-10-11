@@ -35,7 +35,7 @@ The runtime document contract lives in src/lib/page-builder/schema.ts. Architect
 
 ### Database prerequisites
 
-Connect the intended Supabase project using its project URL and public/anon key in Settings → Connections. Verify the CMS tables and row-level-security policies before migrating.
+For production, configure `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel to identify the one shared Supabase project. Deployment configuration is authoritative for server-rendered public pages and editor writes. A browser-local connection link is only a local/manual fallback when deployment variables are absent; it must not be used to switch production databases. The anon key is designed for public use, but row-level-security policies are still mandatory. Verify the CMS tables and policies before migrating.
 
 The atomic publisher migration is supabase/migrations/20261011000000_atomic_page_publish.sql. Apply it only after confirming that cms_sections and cms_revisions exist with the expected columns and policies. Do not run it against an unrelated Supabase project.
 
