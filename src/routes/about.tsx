@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PublishedOr } from "../components/page-builder/published-page";
+import { fetchPublishedDocument } from "../lib/page-builder/store";
 
 import { PageShell } from "../components/layout/page-shell";
 import { PageIntro } from "../components/layout/page-intro";
@@ -68,6 +69,7 @@ export const Route = createFileRoute("/about")({
       },
     ],
   }),
+  loader: async () => ({ publishedDocument: await fetchPublishedDocument("about") }),
   component: AboutPageRoute,
 });
 
@@ -147,8 +149,9 @@ function AboutPage() {
 }
 
 function AboutPageRoute() {
+  const { publishedDocument } = Route.useLoaderData();
   return (
-    <PublishedOr page="about" pageName="about">
+    <PublishedOr page="about" pageName="about" initialDocument={publishedDocument}>
       <AboutPage />
     </PublishedOr>
   );
