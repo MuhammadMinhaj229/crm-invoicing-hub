@@ -28,25 +28,31 @@ function StudioPage() {
   const [page, setPage] = useState("home");
   const [data, setData] = useState<Data | null>(null);
   const [version, setVersion] = useState(0);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
     let alive = true;
     setData(null);
+    setLoadError(null);
+    setVersion(0);
     fetchDocumentState(page)
       .then((s) => {
         if (!alive) return;
-        const doc = s.draft && s.draft.blocks.length ? s.draft : s.published ?? defaultDocument(page);
+        const doc = s.draft ?? s.published ?? defaultDocument(page);
         setVersion(s.version);
         setData(documentToPuck(doc));
       })
       .catch((e: Error) => {
-        toast.error(`Could not load this page: ${e.message}`);
-        if (alive) setData(documentToPuck(defaultDocument(page)));
+        if (!alive) return;
+        const message = `Could not load this page safely: ${e.message}`;
+        setLoadError(message);
+        toast.error(message);
       });
     return () => {
       alive = false;
     };
-  }, [page]);
+  }, [page, reloadToken]);
 
   const path = BUILDER_PAGES.find((p) => p.id === page)?.path ?? "/";
 
@@ -94,7 +100,24 @@ function StudioPage() {
         </a>
       </div>
       <div className="min-h-0 flex-1">
-        {data ? (
+        {loadError ? (
+          <div className="grid h-full place-items-center p-6">
+            <div className="max-w-lg rounded-xl border border-destructive/30 bg-card p-6 text-center">
+              <h2 className="font-display text-lg font-bold text-foreground">Page not loaded</h2>
+              <p role="alert" className="mt-2 text-sm text-muted-foreground">{loadError}</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Editing is disabled until the saved page state can be read. This prevents a fallback document from overwriting published work.
+              </p>
+              <button
+                type="button"
+                onClick={() => setReloadToken((value) => value + 1)}
+                className="mt-4 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+              >
+                Retry loading
+              </button>
+            </div>
+          </div>
+        ) : data ? (
           <Puck
             key={page}
             config={safarPuckConfig}
