@@ -23,12 +23,12 @@ export function getStoredSupabaseConfig(): SupabaseConnectionConfig | null {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Record<string, unknown>;
-    const url = typeof parsed.url === "string" ? parsed.url.replace(/\/+$/, "") : "";
-    const anonKey = typeof parsed.anonKey === "string" ? parsed.anonKey : "";
+    const url = typeof parsed["url"] === "string" ? parsed["url"].replace(/\/+$/, "") : "";
+    const anonKey = typeof parsed["anonKey"] === "string" ? parsed["anonKey"] : "";
 
     // Remove legacy fields from prior builds, including any accidentally stored
     // serviceRoleKey. This is a one-time in-browser cleanup on the next read.
-    if ("serviceRoleKey" in parsed || parsed.url !== url) {
+    if ("serviceRoleKey" in parsed || parsed["url"] !== url) {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ url, anonKey }));
     }
 
