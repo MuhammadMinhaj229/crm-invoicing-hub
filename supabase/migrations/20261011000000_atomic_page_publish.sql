@@ -33,10 +33,38 @@ begin
       using errcode = '22023';
   end if;
 
-  if jsonb_typeof(p_content) <> 'object'
-     or jsonb_typeof(p_content -> 'blocks') <> 'array'
-     or p_content ->> 'page' is distinct from p_page then
-    raise exception 'Page document shape or page identifier is invalid.'
+  if jsonb_typeof(p_content) is distinct from 'object'
+     or jsonb_typeof(p_content -> 'blocks') is distinct from 'array'
+     or p_content ->> 'page' is distinct from p_page
+     or (p_content ->> 'schemaVersion')::integer is distinct from 1 then
+    raise exception 'Page document shape, version or page identifier is invalid.'
+      using errcode = '22023';
+  end if;
+
+  if jsonb_array_length(p_content -> 'blocks') > 150 then
+    raise exception 'Page document contains more than 150 blocks.'
+      using errcode = '22023';
+  end if;
+
+  if exists (
+    select 1
+      from jsonb_array_elements(p_content -> 'blocks') as item(block)
+     where jsonb_typeof(item.block) is distinct from 'object'
+        or coalesce(item.block ->> 'id', '') = ''
+        or item.block ->> 'type' is null
+        or item.block ->> 'type' not in (
+          'hero', 'cinematicHero', 'careJourney', 'serviceStory', 'trustDossier',
+          'proofReturn', 'serviceFilm', 'storyCarousel', 'invoiceExample', 'heading',
+          'text', 'image', 'buttons', 'imageText', 'cards', 'faq', 'contactStrip',
+          'enquiryForm', 'video', 'spacer', 'divider', 'navigation'
+        )
+        or jsonb_typeof(item.block -> 'props') is distinct from 'object'
+        or jsonb_typeof(item.block -> 'layout') is distinct from 'object'
+        or not ((item.block -> 'layout') ?& array[
+          'align', 'width', 'spaceTop', 'spaceBottom', 'background', 'hideMobile', 'hideDesktop'
+        ])
+  ) then
+    raise exception 'Page document contains an unsupported or malformed block.'
       using errcode = '22023';
   end if;
 
