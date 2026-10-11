@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PublishedOr } from "../components/page-builder/published-page";
+import { fetchPublishedDocument } from "../lib/page-builder/store";
 import { CheckCircle2, MessageCircle } from "lucide-react";
 
 import { PageShell } from "../components/layout/page-shell";
@@ -14,10 +15,11 @@ import { serviceEnquiryMessage } from "../lib/whatsapp/templates";
 import { useSiteContact } from "../hooks/use-site-contact";
 
 export const Route = createFileRoute("/services/$slug")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const service = findService(params.slug);
     if (!service) throw notFound();
-    return { service };
+    const publishedDocument = await fetchPublishedDocument(`service:${params.slug}`);
+    return { service, publishedDocument };
   },
   head: ({ params, loaderData }) => {
     if (!loaderData) {
@@ -189,8 +191,9 @@ function ServiceDetail() {
 
 function ServiceDetailRoute() {
   const { slug } = Route.useParams();
+  const { publishedDocument } = Route.useLoaderData();
   return (
-    <PublishedOr page={`service:${slug}`} pageName={`service:${slug}`}>
+    <PublishedOr page={`service:${slug}`} pageName={`service:${slug}`} initialDocument={publishedDocument}>
       <ServiceDetail />
     </PublishedOr>
   );
