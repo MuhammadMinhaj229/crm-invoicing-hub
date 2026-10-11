@@ -52,7 +52,7 @@ function StudioPage() {
 
   const publish = async (next: Data) => {
     try {
-      const v = await publishDocument(puckToDocument(page, next));
+      const v = await publishDocument(puckToDocument(page, next), version);
       setVersion(v);
       await qc.invalidateQueries({ queryKey: ["published-document", page] });
       toast.success(`Published version ${v}`);
