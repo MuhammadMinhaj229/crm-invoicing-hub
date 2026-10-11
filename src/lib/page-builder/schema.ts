@@ -52,10 +52,10 @@ function safeAssetReference(value: string): boolean {
   }
 }
 
-const hrefSchema = z.string().max(2_048).refine(safeHref, {
+const hrefSchema = z.string().trim().max(2_048).refine(safeHref, {
   message: "Use a site path, a section anchor, a supported contact action, or an HTTP(S) URL.",
 });
-const assetSchema = z.string().max(2_048).refine(safeAssetReference, {
+const assetSchema = z.string().trim().max(2_048).refine(safeAssetReference, {
   message: "Use a relative asset path or an HTTP(S) media URL.",
 });
 
@@ -261,7 +261,7 @@ export function validatePageDocument(value: unknown): PageDocumentValidation {
   try {
     serialized = JSON.stringify(value);
     if (!serialized) return { ok: false, issues: ["Document is not JSON serializable."] };
-    if (serialized.length > MAX_DOCUMENT_BYTES) {
+    if (new TextEncoder().encode(serialized).byteLength > MAX_DOCUMENT_BYTES) {
       return { ok: false, issues: ["Document exceeds the 2 MB limit."] };
     }
     normalized = JSON.parse(serialized) as unknown;
@@ -292,6 +292,9 @@ export function validatePageDocument(value: unknown): PageDocumentValidation {
         }),
       };
     }
+    // Use Zod's parsed output, not just its success flag, so trimming and
+    // other canonical transformations actually reach the persisted document.
+    envelope.data.blocks[index] = { ...block, props: result.data };
   }
 
   return { ok: true, document: envelope.data as unknown as PageDocument };
