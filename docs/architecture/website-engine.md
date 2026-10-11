@@ -61,7 +61,9 @@ Uploads go through an authenticated media workflow. Persist an asset ID and meta
 
 ### 7. Fast public rendering
 
-The public renderer resolves one published document plus the content and assets it references, then renders through the same block registry used by Puck. It must not issue one database request per block.
+Public route loaders resolve the shared published document on the server and pass it to `PublishedOr`, so dynamic blocks are part of the initial HTML rather than being swapped in by a browser-only query after hydration. The public renderer uses the same block registry as Puck and must not issue one database request per block.
+
+The Vercel deployment's `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are the canonical project configuration for SSR, the editor and all visitors. A browser-local configuration cannot be the production source of truth: it is invisible to other visitors and to the server. The application therefore prefers deployment configuration and refuses per-device database switching when deployment config exists.
 
 Cache only published, visitor-independent output. Editor routes and previews are private and uncacheable. Publish events invalidate the affected page and dependent reusable-content paths. A database failure must produce a clear fallback or error; it must not substitute a visitor's local draft as public content.
 
