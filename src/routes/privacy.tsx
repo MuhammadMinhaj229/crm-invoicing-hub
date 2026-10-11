@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PublishedOr } from "../components/page-builder/published-page";
+import { fetchPublishedDocument } from "../lib/page-builder/store";
 
 import { PageShell } from "../components/layout/page-shell";
 import { PageIntro } from "../components/layout/page-intro";
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/privacy")({
     ],
     links: [{ rel: "canonical", href: "/privacy" }],
   }),
+  loader: async () => ({ publishedDocument: await fetchPublishedDocument("privacy") }),
   component: PrivacyPageRoute,
 });
 
@@ -71,8 +73,9 @@ function PrivacyPage() {
 }
 
 function PrivacyPageRoute() {
+  const { publishedDocument } = Route.useLoaderData();
   return (
-    <PublishedOr page="privacy" pageName="privacy">
+    <PublishedOr page="privacy" pageName="privacy" initialDocument={publishedDocument}>
       <PrivacyPage />
     </PublishedOr>
   );
