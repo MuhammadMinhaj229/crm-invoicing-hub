@@ -85,11 +85,14 @@ export function getSupabase(): SupabaseClient | null {
   if (!config) return null;
   const fingerprint = config.url + "|" + config.anonKey;
   if (!client || clientFingerprint !== fingerprint) {
+    const isBrowser = typeof window !== "undefined";
     client = createClient(config.url, config.anonKey, {
       auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
+        // Public route loaders run on the server; only browser clients should
+        // persist a user session in local storage.
+        persistSession: isBrowser,
+        autoRefreshToken: isBrowser,
+        detectSessionInUrl: isBrowser,
       },
     });
     clientFingerprint = fingerprint;
