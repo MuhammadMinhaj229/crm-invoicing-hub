@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PublishedOr } from "../components/page-builder/published-page";
+import { fetchPublishedDocument } from "../lib/page-builder/store";
 import { ArrowRight } from "lucide-react";
 
 import { PageShell } from "../components/layout/page-shell";
@@ -39,6 +40,7 @@ export const Route = createFileRoute("/services/")({
       },
     ],
   }),
+  loader: async () => ({ publishedDocument: await fetchPublishedDocument("services") }),
   component: ServicesPageRoute,
 });
 
@@ -95,8 +97,9 @@ function ServicesPage() {
 }
 
 function ServicesPageRoute() {
+  const { publishedDocument } = Route.useLoaderData();
   return (
-    <PublishedOr page="services" pageName="services">
+    <PublishedOr page="services" pageName="services" initialDocument={publishedDocument}>
       <ServicesPage />
     </PublishedOr>
   );
