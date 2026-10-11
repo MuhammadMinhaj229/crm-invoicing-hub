@@ -18,6 +18,21 @@ concurrency:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,6 +52,15 @@ jobs:
         run: bunx eslint src/lib/page-builder/schema.ts src/lib/page-builder/store.ts src/lib/page-builder/model.ts src/lib/supabase.ts src/routes/_authenticated/builder.tsx tests/page-document-schema.test.ts --rule '{"prettier/prettier":"off"}'
       - name: Page document schema tests
         run: bun test tests/page-document-schema.test.ts
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      - name: SQL publication migration integration test
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/sql/publish-page-document.setup.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261011000000_atomic_page_publish.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/sql/publish-page-document.test.sql
       - name: Type check
         run: bunx tsc --noEmit
       - name: Production build
