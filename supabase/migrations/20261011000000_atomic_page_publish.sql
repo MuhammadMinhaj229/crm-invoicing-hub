@@ -8,7 +8,7 @@
 --   * Existing RLS policies permit authorized editors/publishers to select,
 --     insert/update their CMS row and insert its revision.
 --
--- Run only after confirming the intended Supabase project and policies.
+-- Apply only after confirming the intended Supabase project and its RLS.
 -- SECURITY INVOKER is deliberate: this function does not bypass RLS.
 
 create or replace function public.publish_page_document(
@@ -31,7 +31,10 @@ begin
       using errcode = '42501';
   end if;
 
-  if p_page is null or p_page <> btrim(p_page) or length(p_page) = 0 or length(p_page) > 200 then
+  if p_page is null
+     or p_page <> btrim(p_page)
+     or length(p_page) = 0
+     or length(p_page) > 200 then
     raise exception 'A valid page identifier is required.'
       using errcode = '22023';
   end if;
@@ -67,6 +70,7 @@ begin
     select 1
       from jsonb_array_elements(p_content -> 'blocks') as item(block)
      where jsonb_typeof(item.block) is distinct from 'object'
+        or jsonb_typeof(item.block -> 'id') is distinct from 'string'
         or length(btrim(coalesce(item.block ->> 'id', ''))) = 0
         or length(item.block ->> 'id') > 128
         or coalesce(item.block ->> 'type', '') not in (
@@ -114,199 +118,58 @@ begin
       using errcode = '22023';
   end if;
 
-  -- Defence in depth for URLs. Client-side validation is not a trust boundary:
-  -- authenticated users can invoke PostgREST RPCs without using the UI.
+  -- Defense in depth for URL-bearing properties. The browser-side schema is
+  -- not a trust boundary because authenticated users can call PostgREST RPCs
+  -- directly without using the visual editor.
   if exists (
-    with recursive nodes(value, key_name) as (
-      select p_content, null::text
+    with url_values(key_name, url_json) as (
+      select 'href', found.value
+        from jsonb_path_query(p_content, '$.**.href') as found(value)
       union all
-      select child.value, child.key_name
-      from nodes as parent
-      cross join lateral (
-        select entry.value, entry.key as key_name
-        from jsonb_each(
-          case
-            when jsonb_typeof(parent.value) = 'object' then parent.value
-            else '{}'::jsonb
-          end
-        ) as entry
-        union all
-        select array_item.value, parent.key_name as key_name
-        from jsonb_array_elements(
-          case
-            when jsonb_typeof(parent.value) = 'array' then parent.value
-            else '[]'::jsonb
-          end
-        ) as array_item
-      ) as child
+      select 'src', found.value
+        from jsonb_path_query(p_content, '$.**.src') as found(value)
+      union all
+      select 'image', found.value
+        from jsonb_path_query(p_content, '$.**.image') as found(value)
+      union all
+      select 'url', found.value
+        from jsonb_path_query(p_content, '$.**.url') as found(value)
     )
     select 1
-      from nodes
-     where key_name in ('href', 'src', 'image', 'url')
-       and (
-         jsonb_typeof(value) is distinct from 'string'
-         or not (
-           value #>> '{}' = ''
-           or (
-             strpos(value #>> '{}', chr(92)) = 0
-             and (value #>> '{}') !~ '[[:cntrl:]]'
-             and (
-               (
-                 key_name = 'href'
-                 and value #>> '{}' in ('whatsapp', 'phone', 'email')
-               )
-               or (
-                 key_name = 'href'
-                 and value #>> '{}' ~ '^#[A-Za-z0-9_.:-]*
+      from url_values
+     where jsonb_typeof(url_json) is distinct from 'string'
+        or not (
+          url_json #>> '{}' = ''
+          or (
+            strpos(url_json #>> '{}', chr(92)) = 0
+            and (url_json #>> '{}') !~ '[[:cntrl:]]'
+            and (
+              (
+                key_name = 'href'
+                and url_json #>> '{}' in ('whatsapp', 'phone', 'email')
+              )
+              or (
+                key_name = 'href'
+                and url_json #>> '{}' ~ '^#[A-Za-z0-9_.:-]*$'
+              )
+              or (
+                left(url_json #>> '{}', 1) = '/'
+                and left(url_json #>> '{}', 2) <> '//'
+              )
+              or (
+                (url_json #>> '{}') ~* '^https?://[^[:space:]/?#]+([/?#].*)?$'
+                and (url_json #>> '{}') !~* '^https?://[^/]*@'
+              )
+            )
+          )
+        )
   ) then
     raise exception 'Page document contains an unsafe link or media URL.'
       using errcode = '22023';
   end if;
 
   -- Serialize publishing for the same page, including first publication when
-  -- no CMS row exists yet. The unique constraint is still required by draft
-  -- upserts and is the final protection against duplicate page rows.
-  perform pg_advisory_xact_lock(hashtextextended(p_page, 1));
-
-  select section.id, coalesce(section.version, 0)
-    into v_section_id, v_current_version
-    from public.cms_sections as section
-   where section.page = p_page
-     and section.section_key = '__document'
-   for update;
-
-  if found then
-    if v_current_version <> p_expected_version then
-      raise exception 'This page changed since it was loaded. Reload it before publishing.'
-        using errcode = '40001';
-    end if;
-
-    v_next_version := v_current_version + 1;
-
-    update public.cms_sections
-       set content = p_content,
-           draft_content = p_content,
-           status = 'published',
-           version = v_next_version,
-           updated_at = now()
-     where id = v_section_id;
-  else
-    if p_expected_version <> 0 then
-      raise exception 'The page no longer exists. Reload it before publishing.'
-        using errcode = '40001';
-    end if;
-
-    v_next_version := 1;
-
-    begin
-      insert into public.cms_sections
-        (page, section_key, content, draft_content, status, version, updated_at)
-      values
-        (p_page, '__document', p_content, p_content, 'published', v_next_version, now())
-      returning id into v_section_id;
-    exception
-      when unique_violation then
-        raise exception 'Another editor published this page first. Reload it before publishing.'
-          using errcode = '40001';
-    end;
-  end if;
-
-  insert into public.cms_revisions (section_id, content, version)
-  values (v_section_id, p_content, v_next_version);
-
-  return v_next_version;
-end;
-$function$;
-
-revoke all on function public.publish_page_document(text, jsonb, integer) from public;
-revoke all on function public.publish_page_document(text, jsonb, integer) from anon;
-grant execute on function public.publish_page_document(text, jsonb, integer) to authenticated;
-
-               )
-               or (
-                 left(value #>> '{}', 1) = '/'
-                 and left(value #>> '{}', 2) <> '//'
-               )
-               or (
-                 (value #>> '{}') ~* '^https?://[^[:space:]/?#]+([/?#].*)?
-  ) then
-    raise exception 'Page document contains an unsafe link or media URL.'
-      using errcode = '22023';
-  end if;
-
-  -- Serialize publishing for the same page, including first publication when
-  -- no CMS row exists yet. The unique constraint is still required by draft
-  -- upserts and is the final protection against duplicate page rows.
-  perform pg_advisory_xact_lock(hashtextextended(p_page, 1));
-
-  select section.id, coalesce(section.version, 0)
-    into v_section_id, v_current_version
-    from public.cms_sections as section
-   where section.page = p_page
-     and section.section_key = '__document'
-   for update;
-
-  if found then
-    if v_current_version <> p_expected_version then
-      raise exception 'This page changed since it was loaded. Reload it before publishing.'
-        using errcode = '40001';
-    end if;
-
-    v_next_version := v_current_version + 1;
-
-    update public.cms_sections
-       set content = p_content,
-           draft_content = p_content,
-           status = 'published',
-           version = v_next_version,
-           updated_at = now()
-     where id = v_section_id;
-  else
-    if p_expected_version <> 0 then
-      raise exception 'The page no longer exists. Reload it before publishing.'
-        using errcode = '40001';
-    end if;
-
-    v_next_version := 1;
-
-    begin
-      insert into public.cms_sections
-        (page, section_key, content, draft_content, status, version, updated_at)
-      values
-        (p_page, '__document', p_content, p_content, 'published', v_next_version, now())
-      returning id into v_section_id;
-    exception
-      when unique_violation then
-        raise exception 'Another editor published this page first. Reload it before publishing.'
-          using errcode = '40001';
-    end;
-  end if;
-
-  insert into public.cms_revisions (section_id, content, version)
-  values (v_section_id, p_content, v_next_version);
-
-  return v_next_version;
-end;
-$function$;
-
-revoke all on function public.publish_page_document(text, jsonb, integer) from public;
-revoke all on function public.publish_page_document(text, jsonb, integer) from anon;
-grant execute on function public.publish_page_document(text, jsonb, integer) to authenticated;
-
-                 and (value #>> '{}') !~* '^https?://[^/]*@'
-               )
-             )
-           )
-         )
-       )
-  ) then
-    raise exception 'Page document contains an unsafe link or media URL.'
-      using errcode = '22023';
-  end if;
-
-  -- Serialize publishing for the same page, including first publication when
-  -- no CMS row exists yet. The unique constraint is still required by draft
-  -- upserts and is the final protection against duplicate page rows.
+  -- no CMS row exists yet. The unique constraint remains a final safeguard.
   perform pg_advisory_xact_lock(hashtextextended(p_page, 1));
 
   select section.id, coalesce(section.version, 0)
