@@ -16,6 +16,23 @@ export interface SupabaseConnectionConfig {
 const STORAGE_KEY = "safar.supabase.config";
 const listeners = new Set<() => void>();
 
+/**
+ * Deployment configuration is the shared source of truth for server rendering,
+ * editor writes and every visitor. A local-storage override may be used only
+ * when no deployment configuration exists (for local/manual development).
+ */
+function getEnvironmentSupabaseConfig(): SupabaseConnectionConfig | null {
+  const url =
+    import.meta.env["VITE_SAFAR_SUPABASE_URL"] ||
+    import.meta.env["VITE_SUPABASE_URL"] ||
+    "";
+  const anonKey =
+    import.meta.env["VITE_SAFAR_SUPABASE_ANON_KEY"] ||
+    import.meta.env["VITE_SUPABASE_ANON_KEY"] ||
+    "";
+  return url && anonKey ? { url: url.replace(/\/+$/, ""), anonKey } : null;
+}
+
 export function getStoredSupabaseConfig(): SupabaseConnectionConfig | null {
   if (typeof window === "undefined") return null;
 
@@ -27,7 +44,7 @@ export function getStoredSupabaseConfig(): SupabaseConnectionConfig | null {
     const anonKey = typeof parsed["anonKey"] === "string" ? parsed["anonKey"] : "";
 
     // Remove legacy fields from prior builds, including any accidentally stored
-    // serviceRoleKey. This is a one-time in-browser cleanup on the next read.
+    // serviceRoleKey. This cleanup runs even when deployment config takes priority.
     if ("serviceRoleKey" in parsed || parsed["url"] !== url) {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ url, anonKey }));
     }
@@ -44,6 +61,23 @@ export function saveStoredSupabaseConfig(config: SupabaseConnectionConfig): void
     url: config.url.replace(/\/+$/, ""),
     anonKey: config.anonKey,
   };
+  const deploymentConfig = getEnvironmentSupabaseConfig();
+
+  if (deploymentConfig) {
+    // A per-device database override would let an editor publish to one
+    // project while public SSR reads another. Clear legacy overrides and
+    // refuse mismatches when a shared deployment database is configured.
+    window.localStorage.removeItem(STORAGE_KEY);
+    resetSupabaseClient();
+    listeners.forEach((listener) => listener());
+    if (safeConfig.url !== deploymentConfig.url || safeConfig.anonKey !== deploymentConfig.anonKey) {
+      throw new Error(
+        "This deployment uses one shared Supabase project. Update the Vercel environment variables to change it; a device-only connection would not update the public website.",
+      );
+    }
+    return;
+  }
+
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(safeConfig));
   resetSupabaseClient();
   listeners.forEach((listener) => listener());
@@ -61,20 +95,10 @@ export function onSupabaseConfigChange(listener: () => void): () => void {
 }
 
 export function getSupabaseConfig(): SupabaseConnectionConfig | null {
+  // Read stored settings first only to migrate old browser values and remove
+  // any legacy serviceRoleKey property. Deployment config always wins.
   const stored = getStoredSupabaseConfig();
-  if (stored) return stored;
-
-  // Support both the original SAFAR-prefixed variables and the names in
-  // .env.example/Vercel. The values here must always be public browser keys.
-  const url =
-    import.meta.env["VITE_SAFAR_SUPABASE_URL"] ||
-    import.meta.env["VITE_SUPABASE_URL"] ||
-    "";
-  const anonKey =
-    import.meta.env["VITE_SAFAR_SUPABASE_ANON_KEY"] ||
-    import.meta.env["VITE_SUPABASE_ANON_KEY"] ||
-    "";
-  return url && anonKey ? { url, anonKey } : null;
+  return getEnvironmentSupabaseConfig() ?? stored;
 }
 
 let client: SupabaseClient | null = null;
