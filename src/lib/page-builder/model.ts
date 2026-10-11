@@ -314,6 +314,54 @@ export function defaultDocument(page: string): PageDocument {
   return b([createBlock("heading")]);
 }
 
+/**
+ * Structural boundary validation for documents loaded from local storage or the
+ * database. Component-specific props should additionally be validated by the
+ * versioned component schema registry as that registry is introduced.
+ */
 export function isPageDocument(value: unknown): value is PageDocument {
-  return !!value && typeof value === "object" && Array.isArray((value as PageDocument).blocks);
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+
+  const doc = value as Partial<PageDocument> & { blocks?: unknown };
+  if (typeof doc.page !== "string" || doc.page.length === 0 || doc.page.length > 120) return false;
+  if (!Array.isArray(doc.blocks) || doc.blocks.length > 100) return false;
+
+  const validTypes = new Set<string>([...BLOCK_LIBRARY.map((block) => block.type), "navigation"]);
+  const ids = new Set<string>();
+
+  for (const candidate of doc.blocks) {
+    if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) return false;
+    const block = candidate as Record<string, unknown>;
+    if (typeof block.id !== "string" || block.id.length === 0 || block.id.length > 120) return false;
+    if (ids.has(block.id)) return false;
+    ids.add(block.id);
+
+    if (typeof block.type !== "string" || !validTypes.has(block.type)) return false;
+    if (!block.props || typeof block.props !== "object" || Array.isArray(block.props)) return false;
+
+    const layout = block.layout;
+    if (!layout || typeof layout !== "object" || Array.isArray(layout)) return false;
+    const l = layout as Record<string, unknown>;
+    if (!["left", "center", "right"].includes(String(l.align))) return false;
+    if (!["narrow", "normal", "full"].includes(String(l.width))) return false;
+    if (!["none", "muted", "card", "primary", "accent"].includes(String(l.background))) return false;
+    if (typeof l.spaceTop !== "number" || !Number.isFinite(l.spaceTop) || l.spaceTop < 0 || l.spaceTop > 6) return false;
+    if (typeof l.spaceBottom !== "number" || !Number.isFinite(l.spaceBottom) || l.spaceBottom < 0 || l.spaceBottom > 6) return false;
+    if (typeof l.hideMobile !== "boolean" || typeof l.hideDesktop !== "boolean") return false;
+
+    if (block.anchor !== undefined && (typeof block.anchor !== "string" || block.anchor.length > 120)) return false;
+    if (block.hidden !== undefined && typeof block.hidden !== "boolean") return false;
+    if (block.locked !== undefined && typeof block.locked !== "boolean") return false;
+  }
+
+  if (doc.updatedAt !== undefined && typeof doc.updatedAt !== "string") return false;
+
+  // Stored page documents are data, not an unbounded payload channel.
+  try {
+    if (JSON.stringify(value).length > 1_000_000) return false;
+  } catch {
+    return false;
+  }
+
+  return true;
 }

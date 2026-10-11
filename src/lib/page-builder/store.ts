@@ -58,8 +58,9 @@ export async function fetchPublishedDocument(page: string): Promise<PageDocument
 }
 
 export async function fetchDocumentState(page: string): Promise<DocumentState> {
-  const localRaw = typeof window !== "undefined" ? window.localStorage.getItem(LOCAL(page)) : null;
-  const local = localRaw ? (JSON.parse(localRaw) as PageDocument) : null;
+  // Local storage is an untrusted, fallible cache: malformed JSON must not
+  // prevent the editor from opening or recovering from the cloud copy.
+  const local = readLocal(LOCAL(page));
   const supabase = getSupabase();
   if (!supabase) {
     const pub = localPublished(page);
@@ -81,6 +82,9 @@ export async function fetchDocumentState(page: string): Promise<DocumentState> {
 }
 
 export async function saveDocumentDraft(doc: PageDocument): Promise<"cloud" | "local"> {
+  if (!isPageDocument(doc)) {
+    throw new Error("This page document is invalid or unsupported. Refresh the builder and review the latest schema before saving.");
+  }
   const stamped = { ...doc, updatedAt: new Date().toISOString() };
   if (typeof window !== "undefined") window.localStorage.setItem(LOCAL(doc.page), JSON.stringify(stamped));
   const supabase = getSupabase();
@@ -96,16 +100,16 @@ export async function saveDocumentDraft(doc: PageDocument): Promise<"cloud" | "l
 }
 
 export async function publishDocument(doc: PageDocument): Promise<number> {
-  const stamped = { ...doc, updatedAt: new Date().toISOString() };
+  if (!isPageDocument(doc)) {
+    throw new Error("This page document is invalid or unsupported. Refresh the builder and review the latest schema before publishing.");
+  }
   const supabase = getSupabase();
   if (!supabase) {
-    // No database: publish on this device so the live site shows it right away.
-    const version = (Number(window.localStorage.getItem(LOCAL_VER(doc.page))) || 0) + 1;
-    window.localStorage.setItem(LOCAL_PUB(doc.page), JSON.stringify(stamped));
-    window.localStorage.setItem(LOCAL(doc.page), JSON.stringify(stamped));
-    window.localStorage.setItem(LOCAL_VER(doc.page), String(version));
-    return version;
+    // A browser-local write cannot publish to the public website. Keep local
+    // drafts available, but never report a local-only change as a live publish.
+    throw new Error("Publishing requires a connected Supabase database. Your local draft is preserved; connect the database and retry.");
   }
+  const stamped = { ...doc, updatedAt: new Date().toISOString() };
   const { data: existing } = await supabase
     .from("cms_sections")
     .select("version")
