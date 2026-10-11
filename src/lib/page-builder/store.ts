@@ -55,7 +55,7 @@ export async function fetchPublishedDocument(page: string): Promise<PageDocument
 
   if (error || !data) return null;
   const document = parsePageDocument((data as { content: unknown }).content);
-  return document && document.blocks.length > 0 ? document : null;
+  return document;
 }
 
 export async function fetchDocumentState(page: string): Promise<DocumentState> {
@@ -100,10 +100,15 @@ export async function fetchDocumentState(page: string): Promise<DocumentState> {
     version: number | null;
   };
   const storedPublished = parsePageDocument(row.content);
-  const published = row.status === "published" && storedPublished?.blocks.length
-    ? storedPublished
-    : null;
-  const draft = parsePageDocument(row.draft_content) ?? local;
+  if (row.status === "published" && row.content != null && !storedPublished) {
+    throw new Error("The published page document is invalid or uses an unsupported schema. Restore a compatible revision before editing.");
+  }
+  const storedDraft = parsePageDocument(row.draft_content);
+  if (row.draft_content != null && !storedDraft) {
+    throw new Error("The saved draft is invalid or uses an unsupported schema. Restore or migrate it before editing.");
+  }
+  const published = row.status === "published" ? storedPublished : null;
+  const draft = storedDraft ?? local;
   const version = Number.isSafeInteger(row.version) && Number(row.version) >= 0
     ? Number(row.version)
     : 0;
