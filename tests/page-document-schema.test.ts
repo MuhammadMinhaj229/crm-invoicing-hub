@@ -87,6 +87,25 @@ describe("page document contract", () => {
     expect(validatePageDocument(document).ok).toBe(false);
   });
 
+  test("preserves visibility metadata for hidden blocks", () => {
+    const document = {
+      schemaVersion: 1,
+      page: "home",
+      blocks: [
+        {
+          id: "hidden-text",
+          type: "text",
+          hidden: true,
+          props: { text: "Keep this block in the document." },
+          layout,
+        },
+      ],
+    };
+    const result = validatePageDocument(document);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.document.blocks[0]?.hidden).toBe(true);
+  });
+
   test("rejects unsupported document versions", () => {
     const document = { ...validDocument(), schemaVersion: 99 };
     expect(parsePageDocument(document)).toBeNull();
