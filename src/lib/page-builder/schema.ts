@@ -18,10 +18,17 @@ const idSchema = z.string().trim().min(1).max(128);
 const textSchema = z.string().max(20_000);
 const shortTextSchema = z.string().max(4_000);
 
+function hasControlCharacters(value: string): boolean {
+  return Array.from(value).some((character) => {
+    const code = character.charCodeAt(0);
+    return code < 32 || code === 127;
+  });
+}
+
 function safeHref(value: string): boolean {
   const href = value.trim();
   if (href === "" || href === "whatsapp" || href === "phone" || href === "email") return true;
-  if (/[\u0000-\u001f\u007f\\]/.test(href)) return false;
+  if (hasControlCharacters(href) || href.includes("\\\\")) return false;
   if (href.startsWith("#")) return /^#[A-Za-z0-9_.:-]*$/.test(href);
   if (href.startsWith("/")) return !href.startsWith("//");
   try {
@@ -35,7 +42,7 @@ function safeHref(value: string): boolean {
 function safeAssetReference(value: string): boolean {
   const source = value.trim();
   if (source === "") return true;
-  if (/[\u0000-\u001f\u007f]/.test(source)) return false;
+  if (hasControlCharacters(source) || source.includes("\\\\")) return false;
   if (source.startsWith("/")) return !source.startsWith("//");
   try {
     const url = new URL(source);
