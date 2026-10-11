@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { Puck, createUsePuck, type Data } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
 import { ArrowLeft, ExternalLink } from "lucide-react";
@@ -24,7 +23,6 @@ export const Route = createFileRoute("/_authenticated/builder")({
 });
 
 function StudioPage() {
-  const qc = useQueryClient();
   const [page, setPage] = useState("home");
   const [data, setData] = useState<Data | null>(null);
   const [version, setVersion] = useState(0);
@@ -60,7 +58,6 @@ function StudioPage() {
     try {
       const v = await publishDocument(puckToDocument(page, next), version);
       setVersion(v);
-      await qc.invalidateQueries({ queryKey: ["published-document", page] });
       toast.success(`Published version ${v}`);
     } catch (e) {
       toast.error(`Publish failed: ${(e as Error).message}`);
