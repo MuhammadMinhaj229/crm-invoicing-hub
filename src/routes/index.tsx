@@ -16,6 +16,7 @@ import {
 } from "@/lib/media";
 import { SiteHeader } from "../components/layout/site-header";
 import { PublishedOr } from "../components/page-builder/published-page";
+import { fetchPublishedDocument } from "../lib/page-builder/store";
 import { SiteFooter } from "../components/site/site-footer";
 import { StoryCarousel, type StorySlide } from "../components/site/story-carousel";
 import { InvoiceExample } from "../components/site/invoice-example";
@@ -43,6 +44,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  loader: async () => ({ publishedDocument: await fetchPublishedDocument("home") }),
   component: LandingPageRoute,
 });
 
@@ -457,5 +459,6 @@ function LandingPage() {
 }
 
 function LandingPageRoute() {
-  return <PublishedOr page="home" pageName="home"><LandingPage /></PublishedOr>;
+  const { publishedDocument } = Route.useLoaderData();
+  return <PublishedOr page="home" pageName="home" initialDocument={publishedDocument}><LandingPage /></PublishedOr>;
 }
