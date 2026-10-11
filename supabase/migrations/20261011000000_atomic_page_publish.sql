@@ -143,26 +143,160 @@ begin
     select 1
       from nodes
      where key_name in ('href', 'src', 'image', 'url')
-       and jsonb_typeof(value) = 'string'
-       and not (
-         value #>> '{}' = ''
-         or (
-           key_name = 'href'
-           and value #>> '{}' in ('whatsapp', 'phone', 'email')
-         )
-         or (
-           key_name = 'href'
-           and value #>> '{}' ~ '^#[A-Za-z0-9_.:-]*$'
-         )
-         or (
-           left(value #>> '{}', 1) = '/'
-           and left(value #>> '{}', 2) <> '//'
-         )
-         or (
-           strpos(value #>> '{}', chr(92)) = 0
-           and (value #>> '{}') !~ '[[:cntrl:]]'
-           and (value #>> '{}') ~* '^https?://[^[:space:]/?#]+([/?#].*)?$'
-           and (value #>> '{}') !~* '^https?://[^/]*@'
+       and (
+         jsonb_typeof(value) is distinct from 'string'
+         or not (
+           value #>> '{}' = ''
+           or (
+             strpos(value #>> '{}', chr(92)) = 0
+             and (value #>> '{}') !~ '[[:cntrl:]]'
+             and (
+               (
+                 key_name = 'href'
+                 and value #>> '{}' in ('whatsapp', 'phone', 'email')
+               )
+               or (
+                 key_name = 'href'
+                 and value #>> '{}' ~ '^#[A-Za-z0-9_.:-]*
+  ) then
+    raise exception 'Page document contains an unsafe link or media URL.'
+      using errcode = '22023';
+  end if;
+
+  -- Serialize publishing for the same page, including first publication when
+  -- no CMS row exists yet. The unique constraint is still required by draft
+  -- upserts and is the final protection against duplicate page rows.
+  perform pg_advisory_xact_lock(hashtextextended(p_page, 1));
+
+  select section.id, coalesce(section.version, 0)
+    into v_section_id, v_current_version
+    from public.cms_sections as section
+   where section.page = p_page
+     and section.section_key = '__document'
+   for update;
+
+  if found then
+    if v_current_version <> p_expected_version then
+      raise exception 'This page changed since it was loaded. Reload it before publishing.'
+        using errcode = '40001';
+    end if;
+
+    v_next_version := v_current_version + 1;
+
+    update public.cms_sections
+       set content = p_content,
+           draft_content = p_content,
+           status = 'published',
+           version = v_next_version,
+           updated_at = now()
+     where id = v_section_id;
+  else
+    if p_expected_version <> 0 then
+      raise exception 'The page no longer exists. Reload it before publishing.'
+        using errcode = '40001';
+    end if;
+
+    v_next_version := 1;
+
+    begin
+      insert into public.cms_sections
+        (page, section_key, content, draft_content, status, version, updated_at)
+      values
+        (p_page, '__document', p_content, p_content, 'published', v_next_version, now())
+      returning id into v_section_id;
+    exception
+      when unique_violation then
+        raise exception 'Another editor published this page first. Reload it before publishing.'
+          using errcode = '40001';
+    end;
+  end if;
+
+  insert into public.cms_revisions (section_id, content, version)
+  values (v_section_id, p_content, v_next_version);
+
+  return v_next_version;
+end;
+$function$;
+
+revoke all on function public.publish_page_document(text, jsonb, integer) from public;
+revoke all on function public.publish_page_document(text, jsonb, integer) from anon;
+grant execute on function public.publish_page_document(text, jsonb, integer) to authenticated;
+
+               )
+               or (
+                 left(value #>> '{}', 1) = '/'
+                 and left(value #>> '{}', 2) <> '//'
+               )
+               or (
+                 (value #>> '{}') ~* '^https?://[^[:space:]/?#]+([/?#].*)?
+  ) then
+    raise exception 'Page document contains an unsafe link or media URL.'
+      using errcode = '22023';
+  end if;
+
+  -- Serialize publishing for the same page, including first publication when
+  -- no CMS row exists yet. The unique constraint is still required by draft
+  -- upserts and is the final protection against duplicate page rows.
+  perform pg_advisory_xact_lock(hashtextextended(p_page, 1));
+
+  select section.id, coalesce(section.version, 0)
+    into v_section_id, v_current_version
+    from public.cms_sections as section
+   where section.page = p_page
+     and section.section_key = '__document'
+   for update;
+
+  if found then
+    if v_current_version <> p_expected_version then
+      raise exception 'This page changed since it was loaded. Reload it before publishing.'
+        using errcode = '40001';
+    end if;
+
+    v_next_version := v_current_version + 1;
+
+    update public.cms_sections
+       set content = p_content,
+           draft_content = p_content,
+           status = 'published',
+           version = v_next_version,
+           updated_at = now()
+     where id = v_section_id;
+  else
+    if p_expected_version <> 0 then
+      raise exception 'The page no longer exists. Reload it before publishing.'
+        using errcode = '40001';
+    end if;
+
+    v_next_version := 1;
+
+    begin
+      insert into public.cms_sections
+        (page, section_key, content, draft_content, status, version, updated_at)
+      values
+        (p_page, '__document', p_content, p_content, 'published', v_next_version, now())
+      returning id into v_section_id;
+    exception
+      when unique_violation then
+        raise exception 'Another editor published this page first. Reload it before publishing.'
+          using errcode = '40001';
+    end;
+  end if;
+
+  insert into public.cms_revisions (section_id, content, version)
+  values (v_section_id, p_content, v_next_version);
+
+  return v_next_version;
+end;
+$function$;
+
+revoke all on function public.publish_page_document(text, jsonb, integer) from public;
+revoke all on function public.publish_page_document(text, jsonb, integer) from anon;
+grant execute on function public.publish_page_document(text, jsonb, integer) to authenticated;
+
+                 and (value #>> '{}') !~* '^https?://[^/]*@'
+               )
+             )
+           )
          )
        )
   ) then
