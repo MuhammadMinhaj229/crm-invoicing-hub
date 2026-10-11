@@ -1,18 +1,16 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 /**
- * SAFAR N MANZIL connects to the business's OWN Supabase project
- * (external, unmanaged). Connection details are entered by the owner
- * in Settings → Connections and stored in this browser; environment
- * variables act as an optional fallback. The service-role key is kept
- * for server-side privileged jobs only and is never used by the
- * browser client — all browser queries run under RLS as the
- * signed-in team member.
+ * Browser-safe Supabase configuration.
+ *
+ * Only a project URL and public/anon key belong here. Service-role keys and
+ * database connection strings bypass normal client-side row security and must
+ * stay in server-only environment variables; they are never accepted, returned
+ * or persisted by this module.
  */
 export interface SupabaseConnectionConfig {
   url: string;
   anonKey: string;
-  serviceRoleKey?: string;
 }
 
 const STORAGE_KEY = "safar.supabase.config";
@@ -20,31 +18,33 @@ const listeners = new Set<() => void>();
 
 export function getStoredSupabaseConfig(): SupabaseConnectionConfig | null {
   if (typeof window === "undefined") return null;
+
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<SupabaseConnectionConfig>;
-    if (!parsed.url || !parsed.anonKey) return null;
-    const config: SupabaseConnectionConfig = {
-      url: parsed.url.replace(/\/+$/, ""),
-      anonKey: parsed.anonKey,
-    };
-    if (parsed.serviceRoleKey) config.serviceRoleKey = parsed.serviceRoleKey;
-    return config;
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    const url = typeof parsed.url === "string" ? parsed.url.replace(/\/+$/, "") : "";
+    const anonKey = typeof parsed.anonKey === "string" ? parsed.anonKey : "";
+
+    // Remove legacy fields from prior builds, including any accidentally stored
+    // serviceRoleKey. This is a one-time in-browser cleanup on the next read.
+    if ("serviceRoleKey" in parsed || parsed.url !== url) {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ url, anonKey }));
+    }
+
+    if (!url || !anonKey) return null;
+    return { url, anonKey };
   } catch {
     return null;
   }
 }
 
 export function saveStoredSupabaseConfig(config: SupabaseConnectionConfig): void {
-  window.localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({
-      url: config.url.replace(/\/+$/, ""),
-      anonKey: config.anonKey,
-      serviceRoleKey: config.serviceRoleKey || undefined,
-    }),
-  );
+  const safeConfig = {
+    url: config.url.replace(/\/+$/, ""),
+    anonKey: config.anonKey,
+  };
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(safeConfig));
   resetSupabaseClient();
   listeners.forEach((listener) => listener());
 }
@@ -63,8 +63,17 @@ export function onSupabaseConfigChange(listener: () => void): () => void {
 export function getSupabaseConfig(): SupabaseConnectionConfig | null {
   const stored = getStoredSupabaseConfig();
   if (stored) return stored;
-  const url = import.meta.env["VITE_SAFAR_SUPABASE_URL"] ?? "";
-  const anonKey = import.meta.env["VITE_SAFAR_SUPABASE_ANON_KEY"] ?? "";
+
+  // Support both the original SAFAR-prefixed variables and the names in
+  // .env.example/Vercel. The values here must always be public browser keys.
+  const url =
+    import.meta.env["VITE_SAFAR_SUPABASE_URL"] ||
+    import.meta.env["VITE_SUPABASE_URL"] ||
+    "";
+  const anonKey =
+    import.meta.env["VITE_SAFAR_SUPABASE_ANON_KEY"] ||
+    import.meta.env["VITE_SUPABASE_ANON_KEY"] ||
+    "";
   return url && anonKey ? { url, anonKey } : null;
 }
 
@@ -74,7 +83,7 @@ let clientFingerprint = "";
 export function getSupabase(): SupabaseClient | null {
   const config = getSupabaseConfig();
   if (!config) return null;
-  const fingerprint = `${config.url}|${config.anonKey}`;
+  const fingerprint = config.url + "|" + config.anonKey;
   if (!client || clientFingerprint !== fingerprint) {
     client = createClient(config.url, config.anonKey, {
       auth: {
@@ -99,25 +108,25 @@ export function isSupabaseConfigured(): boolean {
 
 /**
  * Health check used by Settings → Connections. Hits the Supabase Auth
- * health endpoint with the anon key; it answers without a session and
- * proves both URL and key are valid.
+ * health endpoint with the anon key; it verifies reachability and basic
+ * project/key validity, not database table permissions or RLS policies.
  */
 export async function testSupabaseConnection(
   config: SupabaseConnectionConfig,
 ): Promise<{ ok: boolean; latencyMs: number; message: string }> {
   const started = performance.now();
   try {
-    const response = await fetch(`${config.url.replace(/\/+$/, "")}/auth/v1/health`, {
+    const response = await fetch(config.url.replace(/\/+$/, "") + "/auth/v1/health", {
       headers: { apikey: config.anonKey },
     });
     const latencyMs = Math.round(performance.now() - started);
     if (response.ok) {
-      return { ok: true, latencyMs, message: `Connected in ${latencyMs} ms` };
+      return { ok: true, latencyMs, message: "Connected in " + latencyMs + " ms" };
     }
     return {
       ok: false,
       latencyMs,
-      message: `Supabase answered with status ${response.status} — check the anon key`,
+      message: "Supabase answered with status " + response.status + " — check the public key",
     };
   } catch {
     return {
