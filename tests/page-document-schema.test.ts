@@ -106,6 +106,40 @@ describe("page document contract", () => {
     if (result.ok) expect(result.document.blocks[0]?.hidden).toBe(true);
   });
 
+  test("normalizes validated URL whitespace before persistence", () => {
+    const document = {
+      schemaVersion: 1,
+      page: "home",
+      blocks: [{
+        id: "button-block",
+        type: "buttons",
+        props: {
+          items: [{
+            id: "btn-1",
+            label: "Open",
+            href: "  https://example.com/path  ",
+            style: "solid",
+            size: "md",
+          }],
+        },
+        layout,
+      }],
+    };
+
+    const result = validatePageDocument(document);
+    expect(result.ok).toBe(true);
+    if (result.ok && result.document.blocks[0]?.type === "buttons") {
+      expect(result.document.blocks[0].props.items[0]?.href).toBe("https://example.com/path");
+    }
+  });
+
+  test("enforces the document size limit in UTF-8 bytes", () => {
+    const document = { ...validDocument(), padding: "😀".repeat(600_000) };
+    const result = validatePageDocument(document);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.issues.join(" ")).toContain("2 MB limit");
+  });
+
   test("rejects unsupported document versions", () => {
     const document = { ...validDocument(), schemaVersion: 99 };
     expect(parsePageDocument(document)).toBeNull();
