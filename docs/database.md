@@ -34,6 +34,14 @@ the browser. The browser keeps using the project URL and public key.
 - Outside services: `integrations`, `social_accounts`, `social_posts`, `webhook_events`
 - Other: `automations`, `automation_runs`, `knowledge_entries`, `feedback`, `notifications`, `audit_logs`
 
+## Atomic website publishing
+
+After verifying that `cms_sections` and `cms_revisions` exist and have the documented columns, apply `supabase/migrations/20261011000000_atomic_page_publish.sql` to the same Supabase project configured in Settings → Connections.
+
+The migration adds an invoker-security RPC that updates the published document and appends its revision in one transaction. It uses the existing row-level-security policies and an expected-version check to reject stale editors. It does not create the base CMS tables and must not be run against an unrelated project.
+
+The browser can save drafts locally while disconnected, but a local draft is not shared and cannot publish the public website. If publishing reports that the RPC is missing, apply the migration and re-test permissions.
+
 ## Rules kept in the database
 
 - Row level security is on for every table. Only signed-in team members read
