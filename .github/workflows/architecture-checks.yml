@@ -31,6 +31,8 @@ jobs:
         run: git diff --exit-code -- bun.lock
       - name: Lint
         run: bun run lint
+      - name: Page document schema tests
+        run: bun test tests/page-document-schema.test.ts
       - name: Type check
         run: bunx tsc --noEmit
       - name: Production build
