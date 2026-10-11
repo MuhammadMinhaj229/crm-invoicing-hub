@@ -31,7 +31,7 @@ begin
       using errcode = '42501';
   end if;
 
-  if p_page is null or length(btrim(p_page)) = 0 or length(p_page) > 200 then
+  if p_page is null or p_page <> btrim(p_page) or length(p_page) = 0 or length(p_page) > 200 then
     raise exception 'A valid page identifier is required.'
       using errcode = '22023';
   end if;
@@ -67,9 +67,9 @@ begin
     select 1
       from jsonb_array_elements(p_content -> 'blocks') as item(block)
      where jsonb_typeof(item.block) is distinct from 'object'
-        or coalesce(item.block ->> 'id', '') = ''
+        or length(btrim(coalesce(item.block ->> 'id', ''))) = 0
         or length(item.block ->> 'id') > 128
-        or item.block ->> 'type' not in (
+        or coalesce(item.block ->> 'type', '') not in (
           'hero', 'cinematicHero', 'careJourney', 'serviceStory', 'trustDossier',
           'proofReturn', 'serviceFilm', 'storyCarousel', 'invoiceExample', 'heading',
           'text', 'image', 'buttons', 'imageText', 'cards', 'faq', 'contactStrip',
@@ -77,15 +77,19 @@ begin
         )
         or jsonb_typeof(item.block -> 'props') is distinct from 'object'
         or jsonb_typeof(item.block -> 'layout') is distinct from 'object'
-        or item.block #>> '{layout,align}' not in ('left', 'center', 'right')
-        or item.block #>> '{layout,width}' not in ('narrow', 'normal', 'full')
-        or item.block #>> '{layout,background}' not in ('none', 'muted', 'card', 'primary', 'accent')
+        or coalesce(item.block #>> '{layout,align}', '') not in ('left', 'center', 'right')
+        or coalesce(item.block #>> '{layout,width}', '') not in ('narrow', 'normal', 'full')
+        or coalesce(item.block #>> '{layout,background}', '') not in ('none', 'muted', 'card', 'primary', 'accent')
         or jsonb_typeof(item.block #> '{layout,spaceTop}') is distinct from 'number'
         or jsonb_typeof(item.block #> '{layout,spaceBottom}') is distinct from 'number'
-        or coalesce((item.block #>> '{layout,spaceTop}')::numeric, -1) < 0
-        or coalesce((item.block #>> '{layout,spaceTop}')::numeric, 7) > 6
-        or coalesce((item.block #>> '{layout,spaceBottom}')::numeric, -1) < 0
-        or coalesce((item.block #>> '{layout,spaceBottom}')::numeric, 7) > 6
+        or (case when jsonb_typeof(item.block #> '{layout,spaceTop}') = 'number'
+                 then (item.block #>> '{layout,spaceTop}')::numeric else -1 end) < 0
+        or (case when jsonb_typeof(item.block #> '{layout,spaceTop}') = 'number'
+                 then (item.block #>> '{layout,spaceTop}')::numeric else 7 end) > 6
+        or (case when jsonb_typeof(item.block #> '{layout,spaceBottom}') = 'number'
+                 then (item.block #>> '{layout,spaceBottom}')::numeric else -1 end) < 0
+        or (case when jsonb_typeof(item.block #> '{layout,spaceBottom}') = 'number'
+                 then (item.block #>> '{layout,spaceBottom}')::numeric else 7 end) > 6
         or jsonb_typeof(item.block #> '{layout,hideMobile}') is distinct from 'boolean'
         or jsonb_typeof(item.block #> '{layout,hideDesktop}') is distinct from 'boolean'
         or (
