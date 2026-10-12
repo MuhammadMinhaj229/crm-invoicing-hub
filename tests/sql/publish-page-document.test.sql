@@ -3,6 +3,7 @@
 
 set role authenticated;
 set request.jwt.claim.sub = '10000000-0000-4000-8000-000000000001';
+set request.jwt.claims = '{"sub":"10000000-0000-4000-8000-000000000001","role":"authenticated","app_metadata":{"cms_role":"owner"}}';
 
 select public.publish_page_document(
   'home',
@@ -169,6 +170,9 @@ exception
 end
 $test$;
 
+insert into public.cms_sections (page, section_key, content, draft_content, status, version, updated_at)
+values ('private-draft', '__document', null, null, 'draft', 0, now());
+
 reset role;
 
 select case
@@ -178,3 +182,38 @@ select case
 end as privilege_check
 \gset
 \echo :privilege_check
+
+set role anon;
+set request.jwt.claims = '{"role":"anon","app_metadata":{}}';
+do $test$
+begin
+  if exists (select 1 from public.cms_sections where page = 'private-draft') then
+    raise exception 'Anonymous users must not read CMS drafts';
+  end if;
+  if not exists (select 1 from public.cms_sections where page = 'home' and status = 'published') then
+    raise exception 'Anonymous users should read published pages';
+  end if;
+end
+$test$;
+reset role;
+\echo 'PASS: anonymous readers see published pages, not drafts'
+
+set role authenticated;
+set request.jwt.claim.sub = '20000000-0000-4000-8000-000000000002';
+set request.jwt.claims = '{"sub":"20000000-0000-4000-8000-000000000002","role":"authenticated","app_metadata":{}}';
+do $test$
+begin
+  if exists (select 1 from public.cms_sections where page = 'private-draft') then
+    raise exception 'Authenticated non-editors must not read drafts';
+  end if;
+  begin
+    insert into public.cms_sections (page, section_key, content, draft_content, status, version, updated_at)
+    values ('unauthorized-draft', '__document', null, null, 'draft', 0, now());
+    raise exception 'An unapproved user unexpectedly inserted a CMS draft';
+  exception when insufficient_privilege then
+    null;
+  end;
+end
+$test$;
+reset role;
+\echo 'PASS: authenticated non-editors cannot read or create drafts'
