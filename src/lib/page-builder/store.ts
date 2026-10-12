@@ -45,17 +45,15 @@ export async function fetchPublishedDocument(page: string): Promise<PageDocument
   const supabase = getSupabase();
   if (!supabase) return null;
 
-  const { data, error } = await supabase
-    .from("cms_sections")
-    .select("content, status")
-    .eq("page", page)
-    .eq("section_key", KEY)
-    .eq("status", "published")
-    .maybeSingle();
+  // Public reads go through a narrow RPC because RLS filters rows, not
+  // columns. Querying cms_sections directly could expose draft_content on a
+  // row that also contains the published version.
+  const { data, error } = await supabase.rpc("get_published_page_document", {
+    p_page: page,
+  });
 
   if (error || !data) return null;
-  const document = parsePageDocument((data as { content: unknown }).content);
-  return document;
+  return parsePageDocument(data);
 }
 
 export async function fetchDocumentState(page: string): Promise<DocumentState> {
@@ -228,13 +226,30 @@ export async function unpublishDocument(page: string): Promise<void> {
     throw new Error("Connect to the shared Supabase database before unpublishing a page.");
   }
 
-  const { error } = await supabase
-    .from("cms_sections")
-    .update({ status: "draft", updated_at: new Date().toISOString() })
-    .eq("page", page)
-    .eq("section_key", KEY);
+  const state = await fetchDocumentState(page);
+  if (!state.id || !state.published) {
+    throw new Error("This page has no published version to unpublish.");
+  }
 
-  if (error) throw new Error(error.message);
+  const { data, error } = await supabase.rpc("unpublish_page_document", {
+    p_page: page,
+    p_expected_version: state.version,
+  });
+
+  if (error) {
+    if (error.code === "40001") {
+      throw new Error("This page changed in another editor. Reload the page before unpublishing.");
+    }
+    if (/unpublish_page_document|schema cache|could not find the function/i.test(error.message)) {
+      throw new Error("The CMS security migration is not installed. Apply supabase/migrations/20261012000000_lock_down_cms_access.sql, then retry.");
+    }
+    throw new Error("Unpublishing failed: " + error.message);
+  }
+
+  const version = typeof data === "number" ? data : Number(data);
+  if (!Number.isSafeInteger(version) || version !== state.version + 1) {
+    throw new Error("The database returned an unexpected version after unpublishing. Check the page status before retrying.");
+  }
 }
 
 export async function fetchDocumentRevisions(sectionId: string): Promise<DocumentRevision[]> {
