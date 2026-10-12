@@ -143,19 +143,32 @@ export async function saveDocumentDraft(doc: PageDocument): Promise<"cloud" | "l
   const supabase = getSupabase();
   if (!supabase) return "local";
 
-  const { error } = await supabase
-    .from("cms_sections")
-    .upsert(
-      {
-        page: stamped.page,
-        section_key: KEY,
-        draft_content: stamped,
-        updated_at: stamped.updatedAt,
-      },
-      { onConflict: "page,section_key" },
-    );
+  // Draft creation and draft updates use separate least-privilege writes:
+  // editors must not need UPDATE privileges on a page's identity columns.
+  const state = await fetchDocumentState(stamped.page);
+  const { error } = state.id
+    ? await supabase
+        .from("cms_sections")
+        .update({
+          draft_content: stamped,
+          updated_at: stamped.updatedAt,
+        })
+        .eq("id", state.id)
+    : await supabase
+        .from("cms_sections")
+        .insert({
+          page: stamped.page,
+          section_key: KEY,
+          draft_content: stamped,
+          updated_at: stamped.updatedAt,
+        });
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (error.code === "23505") {
+      throw new Error("Another editor created this page while you were saving. Reload the page and retry.");
+    }
+    throw new Error(error.message);
+  }
   return "cloud";
 }
 
