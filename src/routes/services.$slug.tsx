@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PublishedOr } from "../components/page-builder/published-page";
-import { fetchPublishedDocument } from "../lib/page-builder/store";
+import { loadPublishedPage } from "../lib/page-builder/published-state";
 import { CheckCircle2, MessageCircle } from "lucide-react";
 
 import { PageShell } from "../components/layout/page-shell";
@@ -18,8 +18,9 @@ export const Route = createFileRoute("/services/$slug")({
   loader: async ({ params }) => {
     const service = findService(params.slug);
     if (!service) throw notFound();
-    const publishedDocument = await fetchPublishedDocument(`service:${params.slug}`);
-    return { service, publishedDocument };
+    const publishedPage = await loadPublishedPage(`service:${params.slug}`);
+    if (publishedPage.publishedDocumentStatus === "unpublished") throw notFound();
+    return { service, ...publishedPage };
   },
   head: ({ params, loaderData }) => {
     if (!loaderData) {
@@ -191,9 +192,9 @@ function ServiceDetail() {
 
 function ServiceDetailRoute() {
   const { slug } = Route.useParams();
-  const { publishedDocument } = Route.useLoaderData();
+  const { publishedDocument, publishedDocumentStatus } = Route.useLoaderData();
   return (
-    <PublishedOr page={`service:${slug}`} pageName={`service:${slug}`} initialDocument={publishedDocument}>
+    <PublishedOr page={`service:${slug}`} pageName={`service:${slug}`} initialDocument={publishedDocument} status={publishedDocumentStatus}>
       <ServiceDetail />
     </PublishedOr>
   );
