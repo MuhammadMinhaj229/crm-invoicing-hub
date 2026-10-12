@@ -218,7 +218,6 @@ export const Route = createFileRoute("/api/public/whatsapp/webhook")({
 
         return Response.json({ ok: true, stored });
       },
-      },
     },
   },
 });
