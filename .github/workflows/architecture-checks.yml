@@ -53,7 +53,7 @@ jobs:
       - name: Lint architecture and security modules
         run: bun run lint:architecture
       - name: Unit and security tests
-        run: bun test tests/page-document-schema.test.ts tests/access-control.test.ts tests/webhook-auth.test.ts
+        run: bun test tests/page-document-schema.test.ts tests/cms-seed.test.ts tests/access-control.test.ts tests/webhook-auth.test.ts
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
@@ -64,6 +64,8 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261010000000_cms_foundation.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261011000000_atomic_page_publish.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261012000000_lock_down_cms_access.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261012100000_seed_bootstrap_and_handshake.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/sql/cms-seed-bootstrap.test.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/sql/publish-page-document.test.sql
       - name: Type check
         run: bunx tsc --noEmit
