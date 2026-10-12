@@ -265,8 +265,10 @@ do $test$
 declare
   v_document jsonb;
 begin
-  if has_table_privilege('anon', 'public.cms_sections', 'SELECT') then
-    raise exception 'Anonymous users must not query CMS storage directly';
+  if has_table_privilege('anon', 'public.cms_sections', 'SELECT')
+     or has_column_privilege('anon', 'public.cms_sections', 'content', 'SELECT')
+     or has_column_privilege('anon', 'public.cms_sections', 'draft_content', 'SELECT') then
+    raise exception 'Anonymous users must not query CMS storage or draft columns directly';
   end if;
   if not has_function_privilege('anon', 'public.get_published_page_document(text)', 'EXECUTE') then
     raise exception 'Anonymous users must be able to call the safe published-page RPC';
