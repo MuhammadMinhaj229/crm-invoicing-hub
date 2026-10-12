@@ -50,7 +50,7 @@ jobs:
             git diff --stat -- bun.lock
           fi
       - name: Lint changed architecture modules
-        run: bunx eslint src/lib/page-builder/schema.ts src/lib/page-builder/store.ts src/lib/page-builder/model.ts src/lib/supabase.ts src/routes/_authenticated/builder.tsx tests/page-document-schema.test.ts --rule '{"prettier/prettier":"off"}'
+        run: bunx eslint src/lib/page-builder/schema.ts src/lib/page-builder/store.ts src/lib/page-builder/model.ts src/lib/page-builder/safe-url.ts src/lib/supabase.ts src/components/page-builder/block-renderer.tsx src/routes/_authenticated/builder.tsx tests/page-document-schema.test.ts --rule '{"prettier/prettier":"off"}'
       - name: Page document schema tests
         run: bun test tests/page-document-schema.test.ts
       - name: Install PostgreSQL client
