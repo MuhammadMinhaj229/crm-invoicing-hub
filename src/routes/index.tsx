@@ -457,6 +457,6 @@ function LandingPage() {
 }
 
 function LandingPageRoute() {
-  const { publishedDocument, publishedDocumentStatus } = Route.useLoaderData();
-  return <PublishedOr page="home" pageName="home" initialDocument={publishedDocument} status={publishedDocumentStatus}><LandingPage /></PublishedOr>;
+  const { publishedDocument, publishedDocumentStatus, siteConfigContent, globalDocument, usesSeedFallback } = Route.useLoaderData();
+  return <PublishedOr page="home" pageName="home" initialDocument={publishedDocument} status={publishedDocumentStatus} siteConfigContent={siteConfigContent} globalDocument={globalDocument} usesSeedFallback={usesSeedFallback}><LandingPage /></PublishedOr>;
 }

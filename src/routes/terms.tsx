@@ -83,9 +83,9 @@ function TermsPage() {
 }
 
 function TermsPageRoute() {
-  const { publishedDocument, publishedDocumentStatus } = Route.useLoaderData();
+  const { publishedDocument, publishedDocumentStatus, siteConfigContent, globalDocument, usesSeedFallback } = Route.useLoaderData();
   return (
-    <PublishedOr page="terms" pageName="terms" initialDocument={publishedDocument} status={publishedDocumentStatus}>
+    <PublishedOr page="terms" pageName="terms" initialDocument={publishedDocument} status={publishedDocumentStatus} siteConfigContent={siteConfigContent} globalDocument={globalDocument} usesSeedFallback={usesSeedFallback}>
       <TermsPage />
     </PublishedOr>
   );

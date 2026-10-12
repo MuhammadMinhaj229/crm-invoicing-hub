@@ -77,9 +77,9 @@ function PrivacyPage() {
 }
 
 function PrivacyPageRoute() {
-  const { publishedDocument, publishedDocumentStatus } = Route.useLoaderData();
+  const { publishedDocument, publishedDocumentStatus, siteConfigContent, globalDocument, usesSeedFallback } = Route.useLoaderData();
   return (
-    <PublishedOr page="privacy" pageName="privacy" initialDocument={publishedDocument} status={publishedDocumentStatus}>
+    <PublishedOr page="privacy" pageName="privacy" initialDocument={publishedDocument} status={publishedDocumentStatus} siteConfigContent={siteConfigContent} globalDocument={globalDocument} usesSeedFallback={usesSeedFallback}>
       <PrivacyPage />
     </PublishedOr>
   );

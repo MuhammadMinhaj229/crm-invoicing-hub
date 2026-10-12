@@ -316,9 +316,9 @@ function ContactPage() {
 }
 
 function ContactPageRoute() {
-  const { publishedDocument, publishedDocumentStatus } = Route.useLoaderData();
+  const { publishedDocument, publishedDocumentStatus, siteConfigContent, globalDocument, usesSeedFallback } = Route.useLoaderData();
   return (
-    <PublishedOr page="contact" pageName="contact" initialDocument={publishedDocument} status={publishedDocumentStatus}>
+    <PublishedOr page="contact" pageName="contact" initialDocument={publishedDocument} status={publishedDocumentStatus} siteConfigContent={siteConfigContent} globalDocument={globalDocument} usesSeedFallback={usesSeedFallback}>
       <ContactPage />
     </PublishedOr>
   );

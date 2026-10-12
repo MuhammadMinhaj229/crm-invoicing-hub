@@ -192,9 +192,9 @@ function ServiceDetail() {
 
 function ServiceDetailRoute() {
   const { slug } = Route.useParams();
-  const { publishedDocument, publishedDocumentStatus } = Route.useLoaderData();
+  const { publishedDocument, publishedDocumentStatus, siteConfigContent, globalDocument, usesSeedFallback } = Route.useLoaderData();
   return (
-    <PublishedOr page={`service:${slug}`} pageName={`service:${slug}`} initialDocument={publishedDocument} status={publishedDocumentStatus}>
+    <PublishedOr page={`service:${slug}`} pageName={`service:${slug}`} initialDocument={publishedDocument} status={publishedDocumentStatus} siteConfigContent={siteConfigContent} globalDocument={globalDocument} usesSeedFallback={usesSeedFallback}>
       <ServiceDetail />
     </PublishedOr>
   );

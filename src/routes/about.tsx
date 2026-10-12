@@ -153,9 +153,9 @@ function AboutPage() {
 }
 
 function AboutPageRoute() {
-  const { publishedDocument, publishedDocumentStatus } = Route.useLoaderData();
+  const { publishedDocument, publishedDocumentStatus, siteConfigContent, globalDocument, usesSeedFallback } = Route.useLoaderData();
   return (
-    <PublishedOr page="about" pageName="about" initialDocument={publishedDocument} status={publishedDocumentStatus}>
+    <PublishedOr page="about" pageName="about" initialDocument={publishedDocument} status={publishedDocumentStatus} siteConfigContent={siteConfigContent} globalDocument={globalDocument} usesSeedFallback={usesSeedFallback}>
       <AboutPage />
     </PublishedOr>
   );

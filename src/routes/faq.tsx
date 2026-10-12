@@ -119,9 +119,9 @@ function FaqPage() {
 }
 
 function FaqPageRoute() {
-  const { publishedDocument, publishedDocumentStatus } = Route.useLoaderData();
+  const { publishedDocument, publishedDocumentStatus, siteConfigContent, globalDocument, usesSeedFallback } = Route.useLoaderData();
   return (
-    <PublishedOr page="faq" pageName="faq" initialDocument={publishedDocument} status={publishedDocumentStatus}>
+    <PublishedOr page="faq" pageName="faq" initialDocument={publishedDocument} status={publishedDocumentStatus} siteConfigContent={siteConfigContent} globalDocument={globalDocument} usesSeedFallback={usesSeedFallback}>
       <FaqPage />
     </PublishedOr>
   );

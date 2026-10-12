@@ -101,9 +101,9 @@ function ServicesPage() {
 }
 
 function ServicesPageRoute() {
-  const { publishedDocument, publishedDocumentStatus } = Route.useLoaderData();
+  const { publishedDocument, publishedDocumentStatus, siteConfigContent, globalDocument, usesSeedFallback } = Route.useLoaderData();
   return (
-    <PublishedOr page="services" pageName="services" initialDocument={publishedDocument} status={publishedDocumentStatus}>
+    <PublishedOr page="services" pageName="services" initialDocument={publishedDocument} status={publishedDocumentStatus} siteConfigContent={siteConfigContent} globalDocument={globalDocument} usesSeedFallback={usesSeedFallback}>
       <ServicesPage />
     </PublishedOr>
   );
