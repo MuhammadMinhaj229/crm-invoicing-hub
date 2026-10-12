@@ -28,7 +28,9 @@ export type PublicDocumentResolution =
   | { status: "unavailable"; document: null };
 
 const seed = prepareCmsSeed(seedBlueprint as unknown);
-const bundledDocuments = new Map(seed.pages.map(({ page, document }) => [page, document]));
+const bundledDocuments = new Map<string, PageDocument>(
+  seed.pages.map(({ page, document }) => [page, document] as const),
+);
 
 export function resolvePublicDocument(
   database: PublishedDocumentRead,
