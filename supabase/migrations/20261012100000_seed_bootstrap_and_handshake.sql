@@ -339,8 +339,13 @@ as $function$
   from public.cms_published_documents as published
   where published.page <> 'global'
     and jsonb_typeof(published.content -> 'metadata') = 'object'
-    and coalesce(published.content #>> '{metadata,path}', '') ~ '^/[A-Za-z0-9/_-]*
--- fields. Secrets must never be stored in cms_site_config.
+    and coalesce(published.content #>> '{metadata,path}', '') like '/%'
+    and left(coalesce(published.content #>> '{metadata,path}', ''), 2) <> '//';
+$function$;
+
+revoke all on function public.get_published_site_manifest() from public;
+grant execute on function public.get_published_site_manifest() to anon, authenticated, service_role;
+
 create or replace function public.get_public_site_config()
 returns jsonb
 language sql
