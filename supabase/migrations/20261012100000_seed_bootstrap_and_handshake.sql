@@ -129,9 +129,9 @@ begin
     raise exception 'Site configuration must include valid site and theme objects under 1 MB.'
       using errcode = '22023';
   end if;
-  if not safar_private.is_safe_theme_color(p_site_config #>> '{theme,light,primary}')
-     or not safar_private.is_safe_theme_color(p_site_config #>> '{theme,light,background}')
-     or not safar_private.is_safe_theme_color(p_site_config #>> '{theme,light,foreground}') then
+  if coalesce(safar_private.is_safe_theme_color(p_site_config #>> '{theme,light,primary}'), false) = false
+     or coalesce(safar_private.is_safe_theme_color(p_site_config #>> '{theme,light,background}'), false) = false
+     or coalesce(safar_private.is_safe_theme_color(p_site_config #>> '{theme,light,foreground}'), false) = false then
     raise exception 'Seed contains unsafe or unsupported top-level theme colors.'
       using errcode = '22023';
   end if;
@@ -461,9 +461,9 @@ begin
       using errcode = '22023';
   end if;
 
-  if not safar_private.is_safe_theme_color(p_content #>> '{theme,light,primary}')
-     or not safar_private.is_safe_theme_color(p_content #>> '{theme,light,background}')
-     or not safar_private.is_safe_theme_color(p_content #>> '{theme,light,foreground}') then
+  if coalesce(safar_private.is_safe_theme_color(p_content #>> '{theme,light,primary}'), false) = false
+     or coalesce(safar_private.is_safe_theme_color(p_content #>> '{theme,light,background}'), false) = false
+     or coalesce(safar_private.is_safe_theme_color(p_content #>> '{theme,light,foreground}'), false) = false then
     raise exception 'Theme colors must be valid hex or OKLCH color tokens.'
       using errcode = '22023';
   end if;
