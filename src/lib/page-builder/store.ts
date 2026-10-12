@@ -38,22 +38,69 @@ export interface DocumentRevision {
 }
 
 /**
- * Return only shared, published content. A local draft or old local-only
- * publication must never be mistaken for the website seen by other visitors.
+ * A public read has three distinct outcomes. In particular, "no published row"
+ * must not be confused with a database outage: doing so could accidentally
+ * resurrect a page that an owner intentionally unpublished.
+ */
+export type PublishedDocumentRead =
+  | { status: "published"; document: PageDocument }
+  | { status: "unpublished" }
+  | { status: "unavailable"; reason: string };
+
+/**
+ * Read only through the published projection RPC. The result is runtime
+ * validated and its page identity is checked before any renderer can consume it.
+ */
+export async function readPublishedDocumentState(page: string): Promise<PublishedDocumentRead> {
+  let supabase;
+  try {
+    supabase = getSupabase();
+  } catch {
+    return { status: "unavailable", reason: "Supabase client configuration could not be loaded." };
+  }
+
+  if (!supabase) {
+    return { status: "unavailable", reason: "Supabase is not configured for this deployment." };
+  }
+
+  try {
+    const { data, error } = await supabase.rpc("get_published_page_document", {
+      p_page: page,
+    });
+
+    if (error) {
+      return { status: "unavailable", reason: error.message };
+    }
+    if (data === null || data === undefined) {
+      return { status: "unpublished" };
+    }
+
+    const document = parsePageDocument(data);
+    if (!document || document.page !== page) {
+      return {
+        status: "unavailable",
+        reason: "The published CMS document failed validation or did not match the requested page.",
+      };
+    }
+
+    return { status: "published", document };
+  } catch (error) {
+    return {
+      status: "unavailable",
+      reason: error instanceof Error ? error.message : "Unknown CMS read failure.",
+    };
+  }
+}
+
+/**
+ * Strict read API for queries that require the actual live publication.
+ * Returns null only when the database confirms that no page is published.
  */
 export async function fetchPublishedDocument(page: string): Promise<PageDocument | null> {
-  const supabase = getSupabase();
-  if (!supabase) return null;
-
-  // Public reads go through a narrow RPC because RLS filters rows, not
-  // columns. Querying cms_sections directly could expose draft_content on a
-  // row that also contains the published version.
-  const { data, error } = await supabase.rpc("get_published_page_document", {
-    p_page: page,
-  });
-
-  if (error || !data) return null;
-  return parsePageDocument(data);
+  const result = await readPublishedDocumentState(page);
+  if (result.status === "published") return result.document;
+  if (result.status === "unpublished") return null;
+  throw new Error("Published content could not be loaded from the CMS.");
 }
 
 export async function fetchDocumentState(page: string): Promise<DocumentState> {
