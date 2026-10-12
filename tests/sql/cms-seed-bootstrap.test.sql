@@ -20,6 +20,9 @@ begin
   if has_table_privilege('anon', 'public.cms_sections', 'SELECT') then
     raise exception 'Anonymous users must not query CMS storage directly';
   end if;
+  if not has_table_privilege('anon', 'public.cms_published_documents', 'SELECT') then
+    raise exception 'Anonymous users should read the public published-document projection';
+  end if;
   if has_function_privilege('anon', 'public.bootstrap_cms_seed(text,text,jsonb,jsonb)', 'EXECUTE') then
     raise exception 'Anonymous users must not invoke the seed bootstrap RPC';
   end if;
@@ -165,6 +168,12 @@ begin
   if v_home #>> '{blocks,0,props,text}' <> 'Seeded home content' then
     raise exception 'Published home document is not queryable through the safe RPC';
   end if;
+  if (select count(*) from public.cms_published_documents where page = 'home') <> 1 then
+    raise exception 'Bootstrap must create the public published-document projection';
+  end if;
+  if public.get_published_site_manifest() #>> '{0,metadata,path}' <> '/' then
+    raise exception 'Public route manifest should contain the seeded home route';
+  end if;
 end
 $test$;
 reset role;
@@ -175,6 +184,7 @@ reset role;
 truncate table
   public.cms_site_config_revisions,
   public.cms_site_config,
+  public.cms_published_documents,
   public.cms_revisions,
   public.cms_sections
 restart identity cascade;
