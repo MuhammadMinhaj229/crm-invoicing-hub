@@ -325,7 +325,7 @@ begin
     'site_seeded', v_seeded,
     'site_version', coalesce(v_site_version, 0),
     'published_page_count', coalesce(v_published_pages, 0),
-    'server_time', clock_timestamp(),
+    'server_time', statement_timestamp(),
     'seed_version', case when v_editor then v_seed_version else null end
   );
 end;
@@ -366,8 +366,150 @@ begin
      or jsonb_typeof(p_content) is distinct from 'object'
      or jsonb_typeof(p_content -> 'site') is distinct from 'object'
      or jsonb_typeof(p_content -> 'theme') is distinct from 'object'
+     or jsonb_typeof(p_content #> '{theme,light}') is distinct from 'object'
      or pg_column_size(p_content) > 1000000 then
-    raise exception 'Site settings must include site and theme objects under 1 MB.'
+    raise exception 'Site settings must include site and light-theme objects under 1 MB.'
+      using errcode = '22023';
+  end if;
+
+  -- Never trust the editor UI as a security boundary. The server accepts only
+  -- simple color tokens and cannot persist arbitrary CSS or executable markup.
+  if exists (
+    select 1
+      from (values
+        (p_content #>> '{theme,light,primary}'),
+        (p_content #>> '{theme,light,background}'),
+        (p_content #>> '{theme,light,foreground}')
+      ) as colors(value)
+     where value is null
+        or not (
+          value ~* '^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})
+
+  select version into v_current_version
+    from public.cms_site_config
+   where id = 1
+   for update;
+
+  if not found or v_current_version <> p_expected_version then
+    raise exception 'Site settings changed since they were loaded. Reload before saving.'
+      using errcode = '40001';
+  end if;
+
+  v_next_version := v_current_version + 1;
+  update public.cms_site_config
+     set content = p_content,
+         version = v_next_version,
+         updated_at = now()
+   where id = 1;
+
+  insert into public.cms_site_config_revisions (config_version, content, saved_by, saved_at)
+  values (v_next_version, p_content, auth.uid(), now());
+
+  return v_next_version;
+end;
+$function$;
+
+revoke all on function public.save_cms_site_config(jsonb, integer) from public, anon;
+grant execute on function public.save_cms_site_config(jsonb, integer) to authenticated;
+
+comment on table public.cms_site_config is
+  'Public site brand/theme settings bootstrapped from seed.json; PostgreSQL is the live source of truth.';
+comment on table public.cms_site_config_revisions is
+  'Versioned global site/theme settings history. Writes happen only through controlled RPCs.';
+
+-- Supabase Realtime is optional in local PostgreSQL integration tests. When the
+-- managed publication exists, include the two tables needed by the editor sync
+-- indicator. RLS still decides which authenticated editors can receive rows.
+do $realtime$
+begin
+  if exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
+    if not exists (
+      select 1 from pg_publication_tables
+       where pubname = 'supabase_realtime'
+         and schemaname = 'public'
+         and tablename = 'cms_sections'
+    ) then
+      execute 'alter publication supabase_realtime add table public.cms_sections';
+    end if;
+    if not exists (
+      select 1 from pg_publication_tables
+       where pubname = 'supabase_realtime'
+         and schemaname = 'public'
+         and tablename = 'cms_site_config'
+    ) then
+      execute 'alter publication supabase_realtime add table public.cms_site_config';
+    end if;
+  end if;
+end
+$realtime$;
+
+commit;
+
+          or value ~* '^oklch\([[:space:]]*[-0-9.%+]+[[:space:]]+[-0-9.%+]+[[:space:]]+[-0-9.%+]+([[:space:]]*/[[:space:]]*[-0-9.%+]+)?[[:space:]]*\)
+
+  select version into v_current_version
+    from public.cms_site_config
+   where id = 1
+   for update;
+
+  if not found or v_current_version <> p_expected_version then
+    raise exception 'Site settings changed since they were loaded. Reload before saving.'
+      using errcode = '40001';
+  end if;
+
+  v_next_version := v_current_version + 1;
+  update public.cms_site_config
+     set content = p_content,
+         version = v_next_version,
+         updated_at = now()
+   where id = 1;
+
+  insert into public.cms_site_config_revisions (config_version, content, saved_by, saved_at)
+  values (v_next_version, p_content, auth.uid(), now());
+
+  return v_next_version;
+end;
+$function$;
+
+revoke all on function public.save_cms_site_config(jsonb, integer) from public, anon;
+grant execute on function public.save_cms_site_config(jsonb, integer) to authenticated;
+
+comment on table public.cms_site_config is
+  'Public site brand/theme settings bootstrapped from seed.json; PostgreSQL is the live source of truth.';
+comment on table public.cms_site_config_revisions is
+  'Versioned global site/theme settings history. Writes happen only through controlled RPCs.';
+
+-- Supabase Realtime is optional in local PostgreSQL integration tests. When the
+-- managed publication exists, include the two tables needed by the editor sync
+-- indicator. RLS still decides which authenticated editors can receive rows.
+do $realtime$
+begin
+  if exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
+    if not exists (
+      select 1 from pg_publication_tables
+       where pubname = 'supabase_realtime'
+         and schemaname = 'public'
+         and tablename = 'cms_sections'
+    ) then
+      execute 'alter publication supabase_realtime add table public.cms_sections';
+    end if;
+    if not exists (
+      select 1 from pg_publication_tables
+       where pubname = 'supabase_realtime'
+         and schemaname = 'public'
+         and tablename = 'cms_site_config'
+    ) then
+      execute 'alter publication supabase_realtime add table public.cms_site_config';
+    end if;
+  end if;
+end
+$realtime$;
+
+commit;
+
+        )
+  ) then
+    raise exception 'Theme colors must be hex or OKLCH color tokens.'
       using errcode = '22023';
   end if;
 
