@@ -42,7 +42,7 @@ begin
   v_result := public.bootstrap_cms_seed(
     'schema-1/content-1',
     repeat('a', 64),
-    '{"site":{"brand":{"name":"SAFAR N MANZIL"}},"theme":{"light":{"primary":"#f97316"}}}'::jsonb,
+    '{"site":{"brand":{"name":"SAFAR N MANZIL"}},"theme":{"light":{"primary":"#f97316","background":"#ffffff","foreground":"#111827"}}}'::jsonb,
     '[
       {
         "page":"home",
@@ -81,7 +81,7 @@ begin
   v_retry := public.bootstrap_cms_seed(
     'schema-1/content-1',
     repeat('a', 64),
-    '{"site":{"brand":{"name":"SAFAR N MANZIL"}},"theme":{"light":{"primary":"#f97316"}}}'::jsonb,
+    '{"site":{"brand":{"name":"SAFAR N MANZIL"}},"theme":{"light":{"primary":"#f97316","background":"#ffffff","foreground":"#111827"}}}'::jsonb,
     '[
       {
         "page":"home",
@@ -120,8 +120,8 @@ begin
     perform public.bootstrap_cms_seed(
       'schema-1/content-2',
       repeat('b', 64),
-      '{"site":{"brand":{"name":"Modified"}},"theme":{"light":{}}}'::jsonb,
-      '[]'::jsonb
+      '{"site":{"brand":{"name":"Modified"}},"theme":{"light":{"primary":"#f97316","background":"#ffffff","foreground":"#111827"}}}'::jsonb,
+      '[{"page":"unused","document":{}}]'::jsonb
     );
     raise exception 'A changed seed unexpectedly overwrote the initialized CMS';
   exception
