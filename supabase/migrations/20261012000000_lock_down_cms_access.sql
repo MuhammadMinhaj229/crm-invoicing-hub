@@ -11,6 +11,18 @@ begin;
 create schema if not exists safar_private;
 revoke all on schema safar_private from public, anon, authenticated;
 
+-- Create the published-only projection before defining the SQL read function.
+-- It has no grants or permissive policies until the next migration configures
+-- the fully validated public projection. RLS is enabled immediately.
+create table if not exists public.cms_published_documents (
+  page text primary key check (length(page) between 1 and 200),
+  content jsonb not null,
+  version integer not null check (version > 0),
+  updated_at timestamptz not null default now()
+);
+alter table public.cms_published_documents enable row level security;
+revoke all privileges on table public.cms_published_documents from public, anon, authenticated;
+
 -- Keep the thoroughly validated publisher implementation private. The public
 -- RPC below is the only client-callable publication entry point.
 alter function public.publish_page_document(text, jsonb, integer)
