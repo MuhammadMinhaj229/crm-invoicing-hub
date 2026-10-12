@@ -326,6 +326,88 @@ export async function fetchCmsHandshake(): Promise<CmsHandshake> {
  * policies still restrict events to approved editors. A remote edit is surfaced
  * but never silently replaces the editor's unsaved draft.
  */
+
+export interface CmsSiteConfiguration {
+  content: Record<string, unknown>;
+  version: number;
+  updated_at: string;
+}
+
+export async function fetchCmsSiteConfiguration(): Promise<CmsSiteConfiguration> {
+  const supabase = getSupabase();
+  if (!supabase) throw new Error("Supabase is not configured for this deployment.");
+
+  const { data, error } = await supabase.rpc("get_public_site_config");
+  if (error) throw new Error("Could not load site configuration: " + error.message);
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    throw new Error("Site settings have not been bootstrapped. Run the reviewed CMS seed bootstrap.");
+  }
+
+  const result = data as Record<string, unknown>;
+  if (
+    !result["content"] ||
+    typeof result["content"] !== "object" ||
+    Array.isArray(result["content"]) ||
+    typeof result["version"] !== "number" ||
+    typeof result["updated_at"] !== "string"
+  ) {
+    throw new Error("Database returned an invalid site configuration.");
+  }
+
+  return {
+    content: result["content"] as Record<string, unknown>,
+    version: result["version"],
+    updated_at: result["updated_at"],
+  };
+}
+
+export async function saveCmsSiteConfiguration(
+  content: Record<string, unknown>,
+  expectedVersion: number,
+): Promise<number> {
+  const supabase = getSupabase();
+  if (!supabase) throw new Error("Supabase is not configured for this deployment.");
+
+  if (
+    !content ||
+    typeof content !== "object" ||
+    !content["site"] ||
+    typeof content["site"] !== "object" ||
+    Array.isArray(content["site"]) ||
+    !content["theme"] ||
+    typeof content["theme"] !== "object" ||
+    Array.isArray(content["theme"])
+  ) {
+    throw new Error("Site settings must contain valid site and theme objects.");
+  }
+
+  const serialized = JSON.stringify(content);
+  if (!serialized || new TextEncoder().encode(serialized).byteLength > 1_000_000) {
+    throw new Error("Site settings must be JSON data under 1 MB.");
+  }
+  if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 1) {
+    throw new Error("The site settings version is invalid. Reload settings before saving.");
+  }
+
+  const { data, error } = await supabase.rpc("save_cms_site_config", {
+    p_content: JSON.parse(serialized) as Record<string, unknown>,
+    p_expected_version: expectedVersion,
+  });
+
+  if (error) {
+    if (error.code === "40001") {
+      throw new Error("Site settings changed in another editor. Reload them before saving.");
+    }
+    throw new Error("Site settings could not be saved: " + error.message);
+  }
+
+  const version = typeof data === "number" ? data : Number(data);
+  if (!Number.isSafeInteger(version) || version !== expectedVersion + 1) {
+    throw new Error("Database returned an unexpected settings version.");
+  }
+  return version;
+}
+
 export function subscribeToCmsChanges(
   onStatus: (status: string) => void,
   onChange: (table: "cms_sections" | "cms_site_config") => void,
