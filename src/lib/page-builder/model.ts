@@ -97,10 +97,24 @@ export type Block =
 
 export type BlockType = Block["type"];
 
+export interface PageSeoMetadata {
+  title: string;
+  description: string;
+}
+
+export interface PageMetadata {
+  label: string;
+  /** Canonical route path for the public site. */
+  path: string;
+  seo: PageSeoMetadata;
+}
+
 export interface PageDocument {
   /** Persisted document format version; absent in legacy documents means v1. */
   schemaVersion?: number;
   page: string;
+  /** Route/SEO metadata from the seed is preserved across visual edits. */
+  metadata?: PageMetadata;
   blocks: Block[];
   updatedAt?: string;
 }
