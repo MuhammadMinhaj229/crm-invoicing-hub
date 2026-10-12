@@ -10,7 +10,15 @@ Verify the route's page identifier, the `cms_sections` row's `section_key = '__d
 
 ## Publish reports a missing function
 
-Apply `supabase/migrations/20261010000000_cms_foundation.sql`, `supabase/migrations/20261011000000_atomic_page_publish.sql` and `supabase/migrations/20261012000000_lock_down_cms_access.sql` in order, after reviewing the intended database project and RLS policies. Do not work around a missing RPC with direct writes or by disabling RLS.
+Apply `supabase/migrations/20261010000000_cms_foundation.sql`, `supabase/migrations/20261011000000_atomic_page_publish.sql`, `supabase/migrations/20261012000000_lock_down_cms_access.sql` and `supabase/migrations/20261012100000_seed_bootstrap_and_handshake.sql` in order, after reviewing the intended database project and RLS policies. Then run the one-time bootstrap command from a trusted server environment: `bun run cms:bootstrap`. Do not work around a missing RPC with direct writes or by disabling RLS.
+
+## Database handshake says seed required
+
+Check that all four migrations have been applied to the same Supabase project used by the public site and editor. Confirm that the project reference in `SUPABASE_URL` matches `SUPABASE_PROJECT_REF`, then run `bun run cms:bootstrap` from the trusted repository environment. The bootstrap uses `src/content/seed.json` only for first initialization and never overwrites live edits. If CMS records already exist but the seed marker is missing, the bootstrap refuses to proceed; inspect and reconcile those records rather than deleting them or force-seeding.
+
+## Realtime says reconnecting
+
+A successful handshake proves the database RPC responded; it does not prove Realtime is subscribed. Check the Supabase Realtime service, the `supabase_realtime` publication membership for `cms_sections` and `cms_site_config`, and the editor's approved `app_metadata.cms_role`. A remote-change indicator asks the editor to review/reload current state; it does not replace unsaved edits automatically.
 
 ## Draft saves are denied
 
