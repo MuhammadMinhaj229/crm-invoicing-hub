@@ -170,6 +170,66 @@ exception
 end
 $test$;
 
+do $test$
+declare
+  v_version integer;
+begin
+  v_version := public.unpublish_page_document('home', 2);
+  if v_version <> 3 then
+    raise exception 'Expected unpublish to advance the version to 3, got %', v_version;
+  end if;
+  if (select status from public.cms_sections where page = 'home' and section_key = '__document') <> 'draft' then
+    raise exception 'Unpublish must move the page out of public circulation';
+  end if;
+  if (select version from public.cms_sections where page = 'home' and section_key = '__document') <> 3 then
+    raise exception 'Unpublish must persist its version increment';
+  end if;
+  if (select count(*) from public.cms_revisions where section_id = (select id from public.cms_sections where page = 'home' and section_key = '__document')) <> 3 then
+    raise exception 'Unpublish must preserve a revision in the same transaction';
+  end if;
+end
+$test$;
+\echo 'PASS: unpublish is versioned and preserves a revision'
+
+do $test$
+begin
+  perform public.publish_page_document(
+    'home',
+    $json$
+    {
+      "schemaVersion": 1,
+      "page": "home",
+      "blocks": [{
+        "id": "republished-block",
+        "type": "text",
+        "props": { "text": "Republished after unpublish" },
+        "layout": {
+          "align": "left",
+          "width": "normal",
+          "spaceTop": 3,
+          "spaceBottom": 3,
+          "background": "none",
+          "hideMobile": false,
+          "hideDesktop": false
+        }
+      }]
+    }
+    $json$::jsonb,
+    3
+  );
+  if (select status from public.cms_sections where page = 'home' and section_key = '__document') <> 'published' then
+    raise exception 'Republish must restore published status';
+  end if;
+  if (select version from public.cms_sections where page = 'home' and section_key = '__document') <> 4 then
+    raise exception 'Republish must advance the version to 4';
+  end if;
+  if (select count(*) from public.cms_revisions where section_id = (select id from public.cms_sections where page = 'home' and section_key = '__document')) <> 4 then
+    raise exception 'Republish must preserve the full revision sequence';
+  end if;
+end
+$test$;
+\echo 'PASS: a page can be republished after versioned unpublication'
+
 insert into public.cms_sections (page, section_key, draft_content, updated_at)
 values ('private-draft', '__document', null, now());
 
