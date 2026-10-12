@@ -46,17 +46,17 @@ const PRINCIPLES = [
 ];
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
-      { title: `${TITLE} — ${site.brand.name}` },
-      { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
+      { title: loaderData?.publishedDocument?.metadata?.seo.title ?? `${TITLE} — ${site.brand.name}` },
+      { name: "description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? DESCRIPTION },
+      { property: "og:title", content: loaderData?.publishedDocument?.metadata?.seo.title ?? TITLE },
+      { property: "og:description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/about" },
+      { property: "og:url", content: loaderData?.publishedDocument?.metadata?.path ?? "/about" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/about" }],
+    links: [{ rel: "canonical", href: loaderData?.publishedDocument?.metadata?.path ?? "/about" }],
     scripts: [
       {
         type: "application/ld+json",

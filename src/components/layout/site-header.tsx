@@ -9,20 +9,30 @@ import { buildWhatsAppUrl } from "../../lib/whatsapp/url-builder";
 import { generalEnquiryMessage } from "../../lib/whatsapp/templates";
 import { BrandMark } from "../brand-mark";
 import { useSiteContact } from "../../hooks/use-site-contact";
+import type { PageDocument } from "../../lib/page-builder/model";
+import { isSafeHref } from "../../lib/page-builder/safe-url";
+import type { ContactChannels } from "../../types/site";
 
 /** The one site-wide header: a floating frosted navigation bar. */
 export function SiteHeader({
   brandName,
   logoUrl,
   logoStyle,
+  initialGlobalDocument,
+  fallbackNavigation,
+  canonicalContact,
 }: {
   brandName: string;
   logoUrl?: string;
   logoStyle: "lockup" | "image";
+  initialGlobalDocument?: PageDocument | null;
+  fallbackNavigation?: { label: string; href: string }[];
+  canonicalContact?: ContactChannels;
 }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const contact = useSiteContact();
+  const legacyContact = useSiteContact();
+  const contact = canonicalContact ?? legacyContact;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -31,20 +41,28 @@ export function SiteHeader({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const { data: globalDoc } = useQuery(publishedDocQuery("global"));
+  const { data: globalDoc } = useQuery({
+    ...publishedDocQuery("global"),
+    initialData: initialGlobalDocument,
+  });
   const navBlock = globalDoc?.blocks.find((b) => b.type === "navigation");
   const customLinks =
     navBlock && navBlock.type === "navigation"
-      ? navBlock.props.links.filter((l) => l.label && l.href.startsWith("/")).map((l) => ({ label: l.label, href: l.href as "/" }))
+      ? navBlock.props.links.filter((l) =>
+          l.label.trim() && l.href.startsWith("/") && !l.href.startsWith("//") && isSafeHref(l.href)
+        ).map((l) => ({ label: l.label, href: l.href as "/" }))
       : [];
+  const legacyLinks = [
+    { label: "Our Process", href: "/about" },
+    { label: "Services", href: "/services" },
+    { label: "Questions", href: "/faq" },
+    { label: "Contact", href: "/contact" },
+  ];
   const links = customLinks.length
     ? customLinks
-    : [
-        { label: "Our Process", href: "/about" as const },
-        { label: "Services", href: "/services" as const },
-        { label: "Questions", href: "/faq" as const },
-        { label: "Contact", href: "/contact" as const },
-      ];
+    : fallbackNavigation?.length
+      ? fallbackNavigation
+      : legacyLinks;
   const whatsappUrl = buildWhatsAppUrl(contact.whatsapp, generalEnquiryMessage());
   const messages = ["We do...", "We assist...", "We provide...", "We are always here...", "We are always with you..."];
 
@@ -74,13 +92,13 @@ export function SiteHeader({
 
           <nav className="ml-auto hidden items-center gap-1 lg:flex" aria-label="Main navigation">
             {links.map((link) => (
-              <Link
+              <a
                 key={`${link.href}-${link.label}`}
-                to={link.href}
+                href={link.href}
                 className="rounded-full px-4 py-2 text-sm font-semibold text-legacy-ink/70 transition-colors hover:bg-legacy-ink/5 hover:text-legacy-ink"
               >
                 {link.label}
-              </Link>
+              </a>
             ))}
           </nav>
 
@@ -132,14 +150,14 @@ export function SiteHeader({
             </div>
             <nav className="mt-6 flex flex-col" aria-label="Mobile navigation">
               {links.map((link) => (
-                <Link
+                <a
                   key={`${link.href}-${link.label}`}
-                  to={link.href}
+                  href={link.href}
                   onClick={() => setOpen(false)}
                   className="border-b border-legacy-ink/8 py-4 text-base font-semibold text-legacy-ink transition-colors hover:text-primary"
                 >
                   {link.label}
-                </Link>
+                </a>
               ))}
               {whatsappUrl ? (
                 <a

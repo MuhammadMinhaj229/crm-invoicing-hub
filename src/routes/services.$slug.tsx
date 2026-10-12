@@ -29,15 +29,15 @@ export const Route = createFileRoute("/services/$slug")({
     const { service } = loaderData;
     return {
       meta: [
-        { title: `${service.seo.title} — ${site.brand.name}` },
-        { name: "description", content: service.seo.description },
-        { property: "og:title", content: service.seo.title },
-        { property: "og:description", content: service.seo.description },
+        { title: loaderData.publishedDocument?.metadata?.seo.title ?? `${service.seo.title} — ${site.brand.name}` },
+        { name: "description", content: loaderData.publishedDocument?.metadata?.seo.description ?? service.seo.description },
+        { property: "og:title", content: loaderData.publishedDocument?.metadata?.seo.title ?? service.seo.title },
+        { property: "og:description", content: loaderData.publishedDocument?.metadata?.seo.description ?? service.seo.description },
         { property: "og:type", content: "website" },
-        { property: "og:url", content: `/services/${params.slug}` },
+        { property: "og:url", content: loaderData.publishedDocument?.metadata?.path ?? `/services/${params.slug}` },
         { name: "twitter:card", content: "summary_large_image" },
       ],
-      links: [{ rel: "canonical", href: `/services/${params.slug}` }],
+      links: [{ rel: "canonical", href: loaderData.publishedDocument?.metadata?.path ?? `/services/${params.slug}` }],
       scripts: [
         { type: "application/ld+json", children: JSON.stringify(serviceSchema(service)) },
         {

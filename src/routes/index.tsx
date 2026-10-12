@@ -27,22 +27,16 @@ import { defaultSections, loadHomeSections, type SectionContent } from "../conte
 import { submitWebsiteEnquiry } from "../lib/website-capture";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
-      { title: "Safar N manzil — Your care, carried home" },
-      {
-        name: "description",
-        content:
-          "Practical help for your family in India, coordinated while you live in the Gulf—with the plan, price and proof shared clearly.",
-      },
-      { property: "og:title", content: "Safar N manzil — Your care, carried home" },
-      {
-        property: "og:description",
-        content: "One trusted point of contact for family needs in India, from the first request to the final update.",
-      },
+      { title: loaderData?.publishedDocument?.metadata?.seo.title ?? "Safar N manzil — Your care, carried home" },
+      { name: "description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? "Practical help for your family in India, coordinated while you live in the Gulf—with the plan, price and proof shared clearly." },
+      { property: "og:title", content: loaderData?.publishedDocument?.metadata?.seo.title ?? "Safar N manzil — Your care, carried home" },
+      { property: "og:description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? "One trusted point of contact for family needs in India, from the first request to the final update." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: loaderData?.publishedDocument?.metadata?.path ?? "/" }],
   }),
   loader: async () => {
     const publishedPage = await loadPublishedPage("home");

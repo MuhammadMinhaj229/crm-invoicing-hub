@@ -29,28 +29,29 @@ export function PublishedOr({
   pageName,
   initialDocument,
   status,
+  siteConfigContent,
+  globalDocument,
+  usesSeedFallback,
   children,
 }: {
   page: string;
   pageName: string;
   initialDocument: PageDocument | null;
   status: PublishedPageStatus;
+  siteConfigContent: Record<string, unknown>;
+  globalDocument: PageDocument | null;
+  usesSeedFallback: boolean;
   children: ReactNode;
 }) {
   if ((status === "published" || status === "seed-fallback") && initialDocument) {
     return (
       <>
-        {status === "seed-fallback" ? (
-          <div
-            role="status"
-            aria-live="polite"
-            data-content-source="seed-fallback"
-            className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-950"
-          >
-            Live content sync is temporarily unavailable. Showing the saved backup version; recent edits may not appear.
-          </div>
-        ) : null}
-        <PageShell pageName={pageName}>
+        <PageShell
+          pageName={pageName}
+          siteConfigContent={siteConfigContent}
+          initialGlobalDocument={globalDocument}
+          usesSeedFallback={usesSeedFallback || status === "seed-fallback"}
+        >
           <BlockRenderer blocks={initialDocument.blocks} />
         </PageShell>
       </>

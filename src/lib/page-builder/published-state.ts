@@ -1,24 +1,25 @@
 /**
  * Publication-state boundary shared by SSR routes and the visual website engine.
- *
- * PostgreSQL remains authoritative after the one-time seed bootstrap. The
- * bundled seed is a recovery snapshot only: it is used when the database cannot
- * be reached, never when PostgreSQL confirms that a page is unpublished.
+ * PostgreSQL is authoritative after bootstrap; the seed is a recovery snapshot,
+ * never a way to revive a page explicitly reported as unpublished.
  */
 import seedBlueprint from "../../content/seed.json";
 import type { PageDocument } from "./model";
 import { prepareCmsSeed } from "./seed";
-import { readPublishedDocumentState, type PublishedDocumentRead } from "./store";
+import {
+  fetchCmsSiteConfiguration,
+  readPublishedDocumentState,
+  type PublishedDocumentRead,
+} from "./store";
 
-export type PublishedPageStatus =
-  | "published"
-  | "unpublished"
-  | "seed-fallback"
-  | "unavailable";
+export type PublishedPageStatus = "published" | "unpublished" | "seed-fallback" | "unavailable";
 
 export interface PublishedPageLoad {
   publishedDocument: PageDocument | null;
   publishedDocumentStatus: PublishedPageStatus;
+  siteConfigContent: Record<string, unknown>;
+  globalDocument: PageDocument | null;
+  usesSeedFallback: boolean;
 }
 
 export type PublicDocumentResolution =
@@ -36,37 +37,62 @@ export function resolvePublicDocument(
   database: PublishedDocumentRead,
   fallback: PageDocument | null,
 ): PublicDocumentResolution {
-  if (database.status === "published") {
-    return { status: "published", document: database.document };
-  }
-  if (database.status === "unpublished") {
-    // Do not re-publish an intentionally unpublished page from the build-time seed.
-    return { status: "unpublished", document: null };
-  }
-  if (fallback) {
-    return { status: "seed-fallback", document: fallback };
-  }
+  if (database.status === "published") return { status: "published", document: database.document };
+  if (database.status === "unpublished") return { status: "unpublished", document: null };
+  if (fallback) return { status: "seed-fallback", document: fallback };
   return { status: "unavailable", document: null };
 }
 
+function seedSiteConfiguration(): Record<string, unknown> {
+  return {
+    schemaVersion: seed.siteConfig.schemaVersion,
+    seedVersion: seed.siteConfig.seedVersion,
+    site: seed.siteConfig.site,
+    theme: seed.siteConfig.theme,
+  };
+}
+
+function logUnavailable(area: string, reason: string): void {
+  console.error("[cms] " + area + " could not be loaded.", { reason });
+}
+
 /**
- * Return a route-loader payload that can render safely even if Supabase is
- * temporarily unreachable. A valid no-row response remains an unpublished page.
+ * Load the body, global navigation and site configuration together so the
+ * initial SSR response is internally consistent. Partial failures are explicit.
  */
 export async function loadPublishedPage(page: string): Promise<PublishedPageLoad> {
-  const database = await readPublishedDocumentState(page);
-  if (database.status === "unavailable") {
-    // Keep diagnostics in server/browser logs; never serialize raw backend errors
-    // into public HTML or reveal them in a customer-facing error message.
-    console.error("[cms] Published content could not be loaded.", {
-      page,
-      reason: database.reason,
-    });
-  }
+  const [database, globalState, siteConfigResult] = await Promise.all([
+    readPublishedDocumentState(page),
+    readPublishedDocumentState("global"),
+    fetchCmsSiteConfiguration()
+      .then((configuration) => ({ ok: true as const, content: configuration.content }))
+      .catch((error: unknown) => ({
+        ok: false as const,
+        reason: error instanceof Error ? error.message : "Unknown configuration read failure.",
+      })),
+  ]);
+
+  if (database.status === "unavailable") logUnavailable("published page " + page, database.reason);
+  if (globalState.status === "unavailable") logUnavailable("global navigation", globalState.reason);
+  if (!siteConfigResult.ok) logUnavailable("site configuration", siteConfigResult.reason);
 
   const resolution = resolvePublicDocument(database, bundledDocuments.get(page) ?? null);
+  const globalDocument =
+    globalState.status === "published"
+      ? globalState.document
+      : globalState.status === "unavailable"
+        ? bundledDocuments.get("global") ?? null
+        : null;
+  const siteConfigContent = siteConfigResult.ok ? siteConfigResult.content : seedSiteConfiguration();
+
   return {
     publishedDocument: resolution.document,
     publishedDocumentStatus: resolution.status,
+    siteConfigContent,
+    globalDocument,
+    usesSeedFallback:
+      resolution.status === "seed-fallback" ||
+      globalState.status === "unavailable" ||
+      !siteConfigResult.ok,
   };
 }

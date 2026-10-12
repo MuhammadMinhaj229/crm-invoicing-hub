@@ -11,16 +11,16 @@ const DESCRIPTION =
   "What we collect when you use this website, why we keep it, and how to ask us to remove it.";
 
 export const Route = createFileRoute("/privacy")({
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
-      { title: `${TITLE} — ${site.brand.name}` },
-      { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
+      { title: loaderData?.publishedDocument?.metadata?.seo.title ?? `${TITLE} — ${site.brand.name}` },
+      { name: "description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? DESCRIPTION },
+      { property: "og:title", content: loaderData?.publishedDocument?.metadata?.seo.title ?? TITLE },
+      { property: "og:description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/privacy" },
+      { property: "og:url", content: loaderData?.publishedDocument?.metadata?.path ?? "/privacy" },
     ],
-    links: [{ rel: "canonical", href: "/privacy" }],
+    links: [{ rel: "canonical", href: loaderData?.publishedDocument?.metadata?.path ?? "/privacy" }],
   }),
   loader: async () => {
     const publishedPage = await loadPublishedPage("privacy");

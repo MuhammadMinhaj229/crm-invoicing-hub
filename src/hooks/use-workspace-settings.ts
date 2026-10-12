@@ -34,8 +34,8 @@ export function useWorkspaceSettings() {
 }
 
 /** Keeps the document palette in sync with the configured theme. */
-export function useThemeSync(settings: WorkspaceSettings): void {
+export function useThemeSync(settings: WorkspaceSettings, enabled = true): void {
   useEffect(() => {
-    applyTheme(settings);
-  }, [settings]);
+    if (enabled) applyTheme(settings);
+  }, [settings, enabled]);
 }

@@ -44,17 +44,17 @@ const enquirySchema = z.object({
 type EnquiryValues = z.infer<typeof enquirySchema>;
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
-      { title: `${TITLE} — ${site.brand.name}` },
-      { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
+      { title: loaderData?.publishedDocument?.metadata?.seo.title ?? `${TITLE} — ${site.brand.name}` },
+      { name: "description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? DESCRIPTION },
+      { property: "og:title", content: loaderData?.publishedDocument?.metadata?.seo.title ?? TITLE },
+      { property: "og:description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/contact" },
+      { property: "og:url", content: loaderData?.publishedDocument?.metadata?.path ?? "/contact" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/contact" }],
+    links: [{ rel: "canonical", href: loaderData?.publishedDocument?.metadata?.path ?? "/contact" }],
     scripts: [
       {
         type: "application/ld+json",

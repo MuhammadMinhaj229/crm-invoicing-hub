@@ -16,17 +16,17 @@ const DESCRIPTION =
   "Shopping, home repairs, hospital visits, parcels, paperwork and property checks — done by people we have checked, with photos and a price agreed first.";
 
 export const Route = createFileRoute("/services/")({
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
-      { title: `${TITLE} — ${site.brand.name}` },
-      { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
+      { title: loaderData?.publishedDocument?.metadata?.seo.title ?? `${TITLE} — ${site.brand.name}` },
+      { name: "description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? DESCRIPTION },
+      { property: "og:title", content: loaderData?.publishedDocument?.metadata?.seo.title ?? TITLE },
+      { property: "og:description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/services" },
+      { property: "og:url", content: loaderData?.publishedDocument?.metadata?.path ?? "/services" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/services" }],
+    links: [{ rel: "canonical", href: loaderData?.publishedDocument?.metadata?.path ?? "/services" }],
     scripts: [
       { type: "application/ld+json", children: JSON.stringify(serviceListSchema()) },
       {
