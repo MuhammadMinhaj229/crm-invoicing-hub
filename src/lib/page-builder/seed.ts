@@ -37,7 +37,7 @@ function nonEmptyString(value: unknown, name: string): string {
 export function prepareCmsSeed(value: unknown): CmsSeedPayload {
   if (!isRecord(value)) throw new Error("Website seed must be a JSON object.");
 
-  const schemaVersion = value.schemaVersion;
+  const schemaVersion = value["schemaVersion"];
   if (schemaVersion !== PAGE_DOCUMENT_VERSION) {
     throw new Error(
       "Website seed schema " + String(schemaVersion) +
@@ -45,7 +45,7 @@ export function prepareCmsSeed(value: unknown): CmsSeedPayload {
     );
   }
 
-  const seedContentVersion = value.version;
+  const seedContentVersion = value["version"];
   if (!(typeof seedContentVersion === "string" || typeof seedContentVersion === "number")) {
     throw new Error("Website seed is missing a version.");
   }
@@ -54,36 +54,36 @@ export function prepareCmsSeed(value: unknown): CmsSeedPayload {
     throw new Error("Website seed version is invalid.");
   }
 
-  if (!isRecord(value.site) || !isRecord(value.theme)) {
+  if (!isRecord(value["site"]) || !isRecord(value["theme"])) {
     throw new Error("Website seed must include both site settings and theme tokens.");
   }
-  if (!isRecord(value.pages) || Object.keys(value.pages).length === 0) {
+  if (!isRecord(value["pages"]) || Object.keys(value["pages"]).length === 0) {
     throw new Error("Website seed must contain at least one page.");
   }
-  if (Object.keys(value.pages).length > 100) {
+  if (Object.keys(value["pages"]).length > 100) {
     throw new Error("Website seed exceeds the 100-page bootstrap limit.");
   }
 
   const pages: CmsSeedPage[] = [];
-  for (const [page, rawPage] of Object.entries(value.pages)) {
+  for (const [page, rawPage] of Object.entries(value["pages"])) {
     if (!/^[A-Za-z0-9:_-]{1,200}$/.test(page)) {
       throw new Error("Invalid CMS page identifier: " + page);
     }
-    if (!isRecord(rawPage) || !Array.isArray(rawPage.blocks)) {
+    if (!isRecord(rawPage) || !Array.isArray(rawPage["blocks"])) {
       throw new Error("Page " + page + " must have a blocks array.");
     }
 
-    const seo = rawPage.seo;
+    const seo = rawPage["seo"];
     if (!isRecord(seo)) {
       throw new Error("Page " + page + " is missing SEO metadata.");
     }
 
     const metadata = {
-      label: nonEmptyString(rawPage.label, page + ".label"),
-      path: nonEmptyString(rawPage.path, page + ".path"),
+      label: nonEmptyString(rawPage["label"], page + ".label"),
+      path: nonEmptyString(rawPage["path"], page + ".path"),
       seo: {
-        title: nonEmptyString(seo.title, page + ".seo.title"),
-        description: typeof seo.description === "string" ? seo.description : "",
+        title: nonEmptyString(seo["title"], page + ".seo["title"]"),
+        description: typeof seo["description"] === "string" ? seo["description"] : "",
       },
     };
 
@@ -91,7 +91,7 @@ export function prepareCmsSeed(value: unknown): CmsSeedPayload {
       schemaVersion: PAGE_DOCUMENT_VERSION,
       page,
       metadata,
-      blocks: rawPage.blocks,
+      blocks: rawPage["blocks"],
     });
 
     if (!validation.ok) {
@@ -109,8 +109,8 @@ export function prepareCmsSeed(value: unknown): CmsSeedPayload {
     siteConfig: {
       schemaVersion,
       seedVersion,
-      site: value.site,
-      theme: value.theme,
+      site: value["site"],
+      theme: value["theme"],
     },
     pages,
   };
