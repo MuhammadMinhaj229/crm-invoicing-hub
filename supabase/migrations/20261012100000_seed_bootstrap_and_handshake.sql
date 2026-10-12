@@ -15,7 +15,27 @@ parallel safe
 set search_path = pg_catalog
 as $function$
   select
-    p_value ~* '^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})create table if not exists public.cms_site_config (
+    p_value ~* '^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$'
+    or p_value ~* '^oklch[(][[:space:]]*[-0-9.%+]+[[:space:]]+[-0-9.%+]+[[:space:]]+[-0-9.%+]+([[:space:]]*/[[:space:]]*[-0-9.%+]+)?[[:space:]]*[)]$'
+$function$;
+
+revoke all on function safar_private.is_safe_theme_color(text) from public, anon, authenticated;
+
+create table if not exists public.cms_published_documents (
+  page text primary key check (length(page) between 1 and 200),
+  content jsonb not null,
+  version integer not null check (version > 0),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.cms_published_documents enable row level security;
+drop policy if exists cms_published_documents_public_read on public.cms_published_documents;
+create policy cms_published_documents_public_read on public.cms_published_documents
+  for select to anon, authenticated using (true);
+revoke all privileges on table public.cms_published_documents from public, anon, authenticated;
+grant select on table public.cms_published_documents to anon, authenticated;
+
+create table if not exists public.cms_site_config (
   id smallint primary key default 1 check (id = 1),
   content jsonb not null,
   seed_version text not null,
