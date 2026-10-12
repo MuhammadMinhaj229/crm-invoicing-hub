@@ -49,14 +49,8 @@ jobs:
             echo "::warning::This Bun version refreshes bun.lock. Review and commit the normalized lockfile before enforcing frozen installs."
             git diff --stat -- bun.lock
           fi
-      - name: Report lockfile drift
-        run: |
-          if ! git diff --quiet -- bun.lock; then
-            echo "::warning::bun.lock is refreshed by this Bun version. Commit a regenerated lockfile before using frozen installs."
-            git diff --stat -- bun.lock
-          fi
       - name: Lint architecture and security modules
-        run: bunx eslint src/lib/page-builder/schema.ts src/lib/page-builder/store.ts src/lib/page-builder/model.ts src/lib/page-builder/safe-url.ts src/lib/page-builder/access.ts src/lib/supabase.ts src/components/page-builder/block-renderer.tsx src/routes/auth.tsx src/routes/_authenticated/route.tsx src/routes/_authenticated/builder.tsx src/routes/api/public/whatsapp/webhook.ts src/lib/whatsapp/webhook-auth.ts tests/page-document-schema.test.ts tests/access-control.test.ts tests/webhook-auth.test.ts --rule '{"prettier/prettier":"off"}'
+        run: bun run lint:architecture
       - name: Unit and security tests
         run: bun test tests/page-document-schema.test.ts tests/access-control.test.ts tests/webhook-auth.test.ts
       - name: Install PostgreSQL client

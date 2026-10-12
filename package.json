@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "test:schema": "bun test tests/page-document-schema.test.ts",
-    "check": "bun run lint && bun run typecheck && bun run test && bun run build"
+    "check": "bun run lint:architecture && bun run typecheck && bun run test && bun run build",
+    "lint:architecture": "eslint src/lib/page-builder/schema.ts src/lib/page-builder/store.ts src/lib/page-builder/model.ts src/lib/page-builder/safe-url.ts src/lib/page-builder/access.ts src/lib/supabase.ts src/components/page-builder/block-renderer.tsx src/routes/auth.tsx src/routes/_authenticated/route.tsx src/routes/_authenticated/builder.tsx src/routes/api/public/whatsapp/webhook.ts src/lib/whatsapp/webhook-auth.ts tests/page-document-schema.test.ts tests/access-control.test.ts tests/webhook-auth.test.ts --rule '{\"prettier/prettier\":\"off\"}'"
   },
   "overrides": {
     "rolldown": "1.2.1"

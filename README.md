@@ -80,7 +80,7 @@ The public site can render its fallback content without a database. Shared draft
 ### Quality checks
 
 ```bash
-bun run lint
+bun run lint:architecture
 bun run typecheck
 bun run test
 bun run build

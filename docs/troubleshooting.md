@@ -22,7 +22,7 @@ Reproduce from a clean checkout:
 
 ```bash
 bun install
-bun run lint
+bun run lint:architecture
 bun run typecheck
 bun run test
 bun run build

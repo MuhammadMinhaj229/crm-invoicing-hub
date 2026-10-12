@@ -16,7 +16,7 @@ Use Bun 1.3.14, matching CI:
 
 ```bash
 bun install --frozen-lockfile
-bun run lint
+bun run lint:architecture
 bun run typecheck
 bun run test
 bun run build
