@@ -73,14 +73,12 @@ stable
 security definer
 set search_path = pg_catalog, public
 as $function$
-  select section.content
-    from public.cms_sections as section
+  select published.content
+    from public.cms_published_documents as published
    where p_page is not null
      and p_page = btrim(p_page)
      and length(p_page) between 1 and 200
-     and section.page = p_page
-     and section.section_key = '__document'
-     and section.status = 'published'
+     and published.page = p_page
    limit 1;
 $function$;
 
@@ -194,6 +192,9 @@ begin
          version = v_next_version,
          updated_at = now()
    where id = v_section_id;
+
+  delete from public.cms_published_documents
+   where page = p_page;
 
   insert into public.cms_revisions (section_id, content, version)
   values (v_section_id, v_content, v_next_version);
