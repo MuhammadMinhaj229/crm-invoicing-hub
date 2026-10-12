@@ -8,16 +8,16 @@
 -- app_metadata.cms_role before using elevated privileges.
 begin;
 
-create schema if not exists app_private;
-revoke all on schema app_private from public, anon, authenticated;
+create schema if not exists safar_private;
+revoke all on schema safar_private from public, anon, authenticated;
 
 -- Keep the thoroughly validated publisher implementation private. The public
 -- RPC below is the only client-callable publication entry point.
 alter function public.publish_page_document(text, jsonb, integer)
   rename to publish_page_document_internal;
 alter function public.publish_page_document_internal(text, jsonb, integer)
-  set schema app_private;
-revoke all on function app_private.publish_page_document_internal(text, jsonb, integer)
+  set schema safar_private;
+revoke all on function safar_private.publish_page_document_internal(text, jsonb, integer)
   from public, anon, authenticated;
 
 -- The base table is editor-only. Public visitors use the limited read RPC.
@@ -112,7 +112,7 @@ begin
       using errcode = '42501';
   end if;
 
-  return app_private.publish_page_document_internal(
+  return safar_private.publish_page_document_internal(
     p_page, p_content, p_expected_version
   );
 end;
