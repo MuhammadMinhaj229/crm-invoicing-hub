@@ -194,7 +194,7 @@ function updateSetting(root: SiteSettingsRecord, path: string[], value: string):
 function isSafeThemeColor(value: string): boolean {
   const token = value.trim();
   return /^#[0-9a-f]{3,8}$/i.test(token) ||
-    /^oklch\(\s*[0-9.%+\-]+[[:space:]]+[0-9.%+\-]+[[:space:]]+[0-9.%+\-]+(?:[[:space:]]*\/[[:space:]]*[0-9.%+\-]+)?[[:space:]]*\)$/i.test(token);
+    /^oklch\(\s*[0-9.%+-]+\s+[0-9.%+-]+\s+[0-9.%+-]+(?:\s*\/\s*[0-9.%+-]+)?\s*\)$/i.test(token);
 }
 
 function SiteSettingsEditor() {
