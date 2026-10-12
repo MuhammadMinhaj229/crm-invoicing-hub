@@ -1,46 +1,140 @@
-# SAFAR N MANZIL — Dynamic Website Engine
+# Safar Studio
 
-A schema-driven website and authenticated visual editing studio for SAFAR N MANZIL.
+**The visual website publishing platform for SAFAR N MANZIL.**
 
-The product's current scope is the public website plus the Puck-based studio at /builder. The goal is to make page composition, copy, assets, navigation, themes and reusable content editable without a code deployment, while keeping interactive behaviour in trusted, version-controlled components.
+[![Architecture checks](https://github.com/MuhammadMinhaj229/crm-invoicing-hub/actions/workflows/architecture-checks.yml/badge.svg?branch=main)](https://github.com/MuhammadMinhaj229/crm-invoicing-hub/actions/workflows/architecture-checks.yml)
+[![Production hosting](https://img.shields.io/badge/hosting-Vercel-black)](https://vercel.com/mohammed-minhajs-projects-8071d846)
 
-## Stack
+Safar Studio combines the public SAFAR N MANZIL website with an authenticated visual page studio. Website content is saved as bounded, validated documents; rendering and interactive behavior remain in reviewed application code. That lets editors manage page structure without making arbitrary HTML or JavaScript part of the content database.
 
-- TanStack Start, TanStack Router, React and TypeScript
-- Puck visual editor and a shared page-block renderer
-- Tailwind CSS
-- Supabase Auth/PostgreSQL for shared editing and publication state
-- Supabase Storage for the planned managed-asset layer
-- Vercel for hosting and cacheable public delivery
+> **Current release scope:** public marketing pages and the Puck-based website studio. The former CRM, finance, inbox, social-publishing and automation workspaces are not part of the current route tree and should not be treated as shipped modules.
+
+## Capabilities
+
+- Server-rendered public pages powered by TanStack Start and TanStack Router.
+- Drag-and-drop content editing with Puck and the same block renderer used by the public website.
+- Runtime document validation using Zod, strict per-block properties, schema versioning and size limits.
+- Link and asset allow-lists that reject unsafe schemes and credential-bearing URLs.
+- Supabase-backed drafts, published documents and revision history.
+- Transactional publishing with expected-version checks to reject stale editor writes.
+- RLS-enforced separation between anonymous public readers and provisioned CMS editors.
+- Vercel deployment with GitHub Actions quality gates.
+
+## Architecture
+
+```text
+Public visitor ──> TanStack Start route loader ──> Published page renderer
+                              │
+                              ▼
+                       Supabase/Postgres
+                              ▲
+                              │
+Approved editor ──> Supabase Auth ──> Puck Studio
+                                           │
+                                           ▼
+                                   Validate document
+                                           │
+                                           ▼
+                                   Atomic publish RPC
+                                           │
+                                           ▼
+                                 Revision + page version
+```
+
+The application is a modular monolith. Keep content as structured data and behavior as version-controlled code; introduce new infrastructure only when measured scaling requirements justify it.
+
+## Technology
+
+| Layer | Technology |
+| --- | --- |
+| Web application | React, TypeScript, TanStack Start and TanStack Router |
+| Visual authoring | Puck |
+| Content validation | Zod |
+| Styling | Tailwind CSS |
+| Identity and database | Supabase Auth and PostgreSQL |
+| Deployment | Vercel |
+| Package manager | Bun |
 
 ## Local development
 
-Requirements: Bun and a supported Node.js runtime.
+### Requirements
 
-- bun install
-- bun run dev
+- Bun 1.3.14 (the CI version)
+- Node.js 22 or newer; production currently uses Node.js 24
+- A Supabase project for shared editing and publication
 
-Quality checks:
-- bun run lint
-- bun run build
-- bunx tsgo --noEmit
+### Install and run
 
-## Content and publishing
+```bash
+bun install --frozen-lockfile
+cp .env.example .env
+# Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY for shared content.
+bun run dev
+```
 
-Pages are structured documents rendered through a controlled block registry. The editor and the public site must share this registry; page data must never execute arbitrary JavaScript or HTML.
+The public site can render its fallback content without a database. Shared drafts and publishing require the CMS migrations and a provisioned editor account.
 
-The seed.json direction is intended for bootstrap/default content and fixtures. After initialization, the shared database is the source of truth for drafts and publications. A local draft is a convenience, not a publication.
+### Quality checks
 
-The runtime document contract lives in src/lib/page-builder/schema.ts. Architecture and migration decisions are documented in docs/architecture/website-engine.md.
+```bash
+bun run lint
+bun run typecheck
+bun run test
+bun run build
+```
 
-### Database prerequisites
+For the full release gate, run `bun run check`. GitHub Actions also tests publication against an isolated PostgreSQL service; never point that test fixture at a production database.
 
-For production, configure `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel to identify the one shared Supabase project. Deployment configuration is authoritative for server-rendered public pages and editor writes. A browser-local connection link is only a local/manual fallback when deployment variables are absent; it must not be used to switch production databases. The anon key is designed for public use, but row-level-security policies are still mandatory. Verify the CMS tables and policies before migrating.
+## Supabase setup
 
-The atomic publisher migration is supabase/migrations/20261011000000_atomic_page_publish.sql. Apply it only after confirming that cms_sections and cms_revisions exist with the expected columns and policies. Do not run it against an unrelated Supabase project.
+The CMS migrations are version-controlled and must be applied in this order, after verifying the target project and taking a recoverable backup:
 
-Environment names supported by the browser client include VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY and the legacy SAFAR-prefixed alternatives. These must be public project details only. Service-role keys and direct database connection strings belong exclusively in server-side environment configuration and must never be stored in browser local storage or any VITE_* variable.
+1. `supabase/migrations/20261010000000_cms_foundation.sql` — CMS tables, indexes, grants and restrictive RLS policy guards.
+2. `supabase/migrations/20261011000000_atomic_page_publish.sql` — transactional publication and revision creation.
 
-## Deployment principle
+These migrations are **only for the website CMS**. They do not recreate the old CRM business schema or the optional inbound WhatsApp adapter's tables. See [Database setup](docs/database.md) and [Integration boundaries](docs/integrations.md) before enabling those paths.
 
-Deploy code and migrations separately. Verify the preview build, apply reviewed database migrations, test authentication and publication against the intended Supabase project, then promote the deployment. Public pages may be cached; editor pages, drafts and previews must remain private and uncacheable.
+### Provision an editor
+
+After the account exists in Supabase Auth, grant its server-controlled `app_metadata.cms_role` using the owner procedure in [Database setup](docs/database.md). Supported roles are `owner`, `admin` and `editor`. Sign out and back in after changing the role to refresh the token. The public studio no longer exposes self-service sign-up.
+
+## Vercel configuration
+
+Connect the repository to Vercel, deploy `main`, and use the detected TanStack Start build configuration with `bun run build`. Production uses Node.js 24.
+
+Required public project settings:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
+The Supabase anon key is public by design; it is not authorization. Row-level security remains mandatory. `DATABASE_URL`, `META_APP_SECRET` and `WHATSAPP_WEBHOOK_SECRET` are server-only and should only be configured if the optional inbound webhook is deliberately enabled. Never prefix secrets with `VITE_`.
+
+Follow the [Production deployment runbook](docs/deployment.md) for migration order, environment separation, smoke tests, backup and rollback.
+
+## Security principles
+
+- Only published documents are readable by anonymous visitors; drafts and revisions require a CMS editor role.
+- Editor access uses Supabase Auth's server-controlled `app_metadata`, not user-editable metadata.
+- RLS and the publication RPC protect database operations even if the UI is bypassed.
+- Content is schema-validated and cannot execute arbitrary HTML or JavaScript.
+- Inbound webhooks fail closed when credentials are missing and verify signatures/secrets before writing messages.
+- Code deployment and database migrations are separate release operations.
+
+## Production status
+
+The existing Vercel production project is connected to `main`. A successful Vercel build is not proof that the target Supabase database has the expected schema, migrations or an owner account. Complete the production smoke tests in the deployment runbook before enabling shared publishing.
+
+## Documentation
+
+- [Architecture overview](docs/architecture.md)
+- [Website engine specification](docs/architecture/website-engine.md)
+- [Database and access control](docs/database.md)
+- [Security model](docs/security.md)
+- [Deployment runbook](docs/deployment.md)
+- [Integration boundaries](docs/integrations.md)
+- [Day-to-day operations](docs/operations.md)
+- [Troubleshooting](docs/troubleshooting.md)
+
+## License
+
+No open-source license is currently declared. All rights remain with the repository owner unless a license is added.

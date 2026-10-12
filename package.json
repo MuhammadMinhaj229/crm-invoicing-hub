@@ -1,5 +1,5 @@
 {
-  "name": "tanstack_start_ts",
+  "name": "safar-studio",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -9,7 +9,11 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "test:schema": "bun test tests/page-document-schema.test.ts",
+    "check": "bun run lint && bun run typecheck && bun run test && bun run build"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -92,5 +96,9 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
+  },
+  "description": "Schema-driven visual website editor and publishing platform for SAFAR N MANZIL.",
+  "engines": {
+    "node": ">=22"
   }
 }

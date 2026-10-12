@@ -1,57 +1,45 @@
-# Keeping it safe
+# Security model
 
-## Keys
+Safar Studio has two trust domains: anonymous readers of published website content and explicitly provisioned CMS editors. The browser can see a Supabase project URL and public anon key; it must never see a database password, service-role key or webhook secret.
 
-- Database keys are pasted by the owner in Settings and stay in that
-  browser. They are not in the code and not in the repositories.
-- Keys for WhatsApp and social accounts live only in server environment
-  variables. The browser never receives them.
-- **Important:** a service-role key was once committed in the `invofy`
-  repository. Rotate that key in Supabase and remove it from the repository
-  history before going live.
+## Authentication and authorization
 
-## Browser configuration and publishing
+- The studio sign-in flow is provisioning-based; it does not offer self-service account creation.
+- A user must have server-controlled Supabase Auth `app_metadata.cms_role` of `owner`, `admin` or `editor`.
+- User-editable `user_metadata` is not trusted.
+- PostgreSQL RLS is the enforcement boundary. Anonymous visitors can select published content only; drafts, revisions and mutations require the editor role.
+- Publishing is an invoker-security transaction. It relies on the existing grant/RLS rules rather than bypassing them.
+- Restrictive policy guards keep an older permissive policy from making draft rows public.
+- Never disable RLS to work around authentication or deployment issues.
 
-The client module stores only the Supabase project URL and public/anon key, and removes any legacy `serviceRoleKey` field from browser storage when read. In production, the deployment-level Supabase configuration takes precedence so the server-rendered website, editor and every visitor use the same database. Per-device overrides are development fallbacks only; the public key is not a substitute for row-level security.
+## Secrets and configuration
 
-Never enter or persist a service-role key in the visual editor, browser local storage, seed data, or any VITE-prefixed environment variable. Keep service-role keys and direct PostgreSQL connection strings in server-only environment variables. Rotate a privileged key if it may have been exposed; deleting a value from the current file does not remove it from Git history.
+- Only `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` belong in the browser bundle.
+- `DATABASE_URL`, `META_APP_SECRET`, `WHATSAPP_WEBHOOK_SECRET` and other integration credentials are server-only.
+- Local `.env` files are excluded from Git; only the empty `.env.example` is tracked.
+- Prefer a dedicated least-privilege DB role for server-side direct SQL instead of default database-owner credentials.
+- A privileged key that may have been committed to any previous repository/history must be treated as exposed: rotate it with the provider and follow the provider's history-cleanup procedure. Deleting a current file is not sufficient to revoke a leaked credential.
 
-Page documents are validated before saving and publishing. The database publishing RPC runs as the caller and relies on the existing RLS policies; verify those policies explicitly for the intended editor/publisher roles before production use. Local-only drafts are never an authoritative public publication.
+## Page document safety
 
-## Who can do what
+- Persisted content is normalized and validated before saving or publishing.
+- Supported block types and per-block properties are allow-listed.
+- Link and media validation rejects unsafe schemes, protocol-relative links, backslashes and credential-bearing HTTP(S) URLs.
+- The renderer repeats URL checks for card links.
+- Page content never executes arbitrary HTML, JavaScript or CSS.
+- Block-count, array, text and document-size limits bound input size.
 
-Roles are kept in `user_roles`, never on the person's profile row. A
-security-definer function `has_role()` is used in every policy, so a person
-cannot give themselves a higher role.
+## Inbound webhook safety
 
-| Role | Typical rights |
-| --- | --- |
-| super_admin | Everything, including deletions and role changes |
-| admin | Everything except changing super admins |
-| manager | Read and write all business records |
-| sales | Leads, customers, conversations |
-| operations | Service requests, partners |
-| support | Conversations, feedback |
-| marketing | Website content, campaigns, social |
-| analyst | Read only, plus reports |
-| view_only | Read only |
+- Meta POSTs must include a valid `X-Hub-Signature-256` HMAC for the exact raw body using `META_APP_SECRET`.
+- Evolution POSTs must carry `x-webhook-secret`; secrets in query strings are not accepted.
+- Missing credentials fail closed; request bodies have a hard size limit.
+- Event deduplication, conversation changes and message inserts share a transaction.
+- The optional adapter requires pre-existing business tables; CMS migration alone does not provision them.
 
-## Requests from outside
+## Release discipline
 
-Webhooks check a shared secret, record the provider's event id, and skip
-anything already seen. Every call is written to `webhook_events` with its
-result, so a failure can be found and replayed.
-
-## Records
-
-`audit_logs` keeps who did what, to which record, when, and the value
-before and after — for price changes, deletions, role changes, integration
-changes and messages sent.
-
-## Privacy
-
-- Only what is needed is collected.
-- Marketing consent is stored on the lead.
-- Anonymous website activity is joined to a person only after a real
-  signal from that person.
-- No private accounts from Google or any other service are read.
+- Separate preview and production Supabase projects where practical.
+- Review migrations and verify the target project before execution.
+- Take backups and test restoration.
+- Use CI and Vercel build checks as release gates, but also validate real-world RLS, authentication and publication against the target Supabase project.

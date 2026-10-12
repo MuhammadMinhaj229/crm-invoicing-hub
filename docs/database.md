@@ -1,52 +1,56 @@
-# The database
+# Supabase database and access control
 
-Your own Supabase project holds everything. Nothing is stored anywhere else.
+Safar Studio uses Supabase Auth and PostgreSQL for shared website drafts, publication state and revision history. The browser receives only the project URL and public anon key. PostgreSQL row-level security (RLS), not the UI, is the authorization boundary.
 
-## Setting it up
+## CMS migrations
 
-1. Open the team console, go to **Settings → Connections**.
-2. Paste your project URL and public (anon) key. Press **Test**.
-3. Press **Copy setup script** and run the whole script in the Supabase
-   SQL editor.
-4. Run the script again after any update here — it only adds, never drops.
+Apply the tracked SQL files in chronological order to the **intended** Supabase project:
 
-The script is `src/lib/foundation.sql`.
+1. `supabase/migrations/20261010000000_cms_foundation.sql` creates or validates the CMS tables, indexes, grants and editor RLS boundaries.
+2. `supabase/migrations/20261011000000_atomic_page_publish.sql` installs the transactional publisher. It advances the page version and appends a revision in one transaction.
 
-5. Sign up at `/auth`, then make yourself the owner:
-   `insert into public.user_roles (user_id, role) select id, 'super_admin' from auth.users where email = 'YOUR@EMAIL.COM' on conflict do nothing;`
+Before applying to an existing project:
 
-## Faster direct link
+1. Verify its Supabase project URL/reference matches Vercel's production configuration.
+2. Take a recoverable backup.
+3. Inspect `cms_sections` and `cms_revisions`, including duplicates on `(page, section_key)` and `(section_id, version)`.
+4. Review the existing RLS policies and grants. The foundation adds restrictive gates so old permissive policies cannot reveal drafts. Schema mismatches or duplicate rows are release blockers; do not solve them by disabling RLS.
 
-Server jobs can use the Supabase **Transaction pooler** string (Connect →
-Transaction pooler, port 6543) set as `DATABASE_URL` in the hosting
-environment. It skips row security, so it is server-only and never pasted in
-the browser. The browser keeps using the project URL and public key.
+The migrations cover the website CMS only. They do **not** provision the legacy CRM schema or the optional WhatsApp adapter's business tables (`webhook_events`, `conversations`, `contacts`, `messages`).
 
-## Main tables
+## Provision the owner and editors
 
-- People and access: `profiles`, `user_roles`, `organizations`
-- Sales: `leads`, `contacts`, `identity_links`, `identity_review_queue`, `tasks`
-- Work: `service_requests`, `providers`, `provider_categories`, `provider_payables`
-- Money: `invoices`, `invoice_items`, `payments`, `expenses`
-- Website: `cms_sections`, `cms_revisions`, `app_settings`
-- Visits: `visitors`, `visitor_sessions`, `events`, `campaigns`, `attribution_touches`, `lead_events`
-- Messages: `conversations`, `messages`, `message_templates`
-- Outside services: `integrations`, `social_accounts`, `social_posts`, `webhook_events`
-- Other: `automations`, `automation_runs`, `knowledge_entries`, `feedback`, `notifications`, `audit_logs`
+The studio admits only users with a server-controlled Supabase Auth `app_metadata.cms_role` set to `owner`, `admin` or `editor`. Do not use `user_metadata`, which is user-editable.
 
-## Atomic website publishing
+Once the intended user account exists in Supabase Auth, run the following in the SQL editor as a database administrator, replacing the example email:
 
-After verifying that `cms_sections` and `cms_revisions` exist and have the documented columns, apply `supabase/migrations/20261011000000_atomic_page_publish.sql` to the same Supabase project configured in Settings → Connections.
+```sql
+update auth.users
+set raw_app_meta_data =
+  coalesce(raw_app_meta_data, '{}'::jsonb) || '{"cms_role":"owner"}'::jsonb
+where lower(email) = lower('owner@example.com');
 
-The migration adds an invoker-security RPC that updates the published document and appends its revision in one transaction. It uses the existing row-level-security policies and an expected-version check to reject stale editors. It does not create the base CMS tables and must not be run against an unrelated project.
+select email, raw_app_meta_data ->> 'cms_role' as cms_role
+from auth.users
+where lower(email) = lower('owner@example.com');
+```
 
-The browser can save drafts locally while disconnected, but a local draft is not shared and cannot publish the public website. If publishing reports that the RPC is missing, apply the migration and re-test permissions.
+Confirm the query updates exactly one intended account and the role is `owner`. Provision other trusted users with `editor` or `admin` as appropriate. Sign out and back in after a role change so the new token contains the updated claim. In production, disable public self-service sign-up unless it is a deliberate requirement.
 
-## Rules kept in the database
+## Environment variables
 
-- Row level security is on for every table. Only signed-in team members read
-  business data.
-- The public can insert a website lead and feedback, and read published
-  website content and public knowledge entries. Nothing else.
-- Money is stored as `numeric(14,2)`. Never a float, never inside a note.
-- Notes are never the source of truth for a fact that has its own column.
+- `VITE_SUPABASE_URL`: public Supabase project URL.
+- `VITE_SUPABASE_ANON_KEY`: public/anon client key. This is visible in the browser and is safe only with correct RLS policies.
+- `DATABASE_URL`: optional server-only direct PostgreSQL connection for the inbound webhook adapter. Prefer a dedicated least-privilege database role and the Supabase transaction pooler; a direct connection bypasses RLS.
+- `WHATSAPP_VERIFY_TOKEN`, `META_APP_SECRET`: optional Meta webhook challenge and signature verification.
+- `WHATSAPP_WEBHOOK_SECRET`: optional Evolution webhook header secret.
+
+Never define database passwords, service-role keys or webhook secrets with a `VITE_` prefix. See [.env.example](../.env.example).
+
+## Operational guarantees
+
+- Anonymous visitors may read published CMS documents only; drafts and revisions are editor-restricted.
+- Publishing requires the atomic RPC migration and rejects stale expected versions.
+- Page writes and revision inserts run in the same transaction.
+- A missing migration or missing editor role is a blocked publish—not a reason to write around RLS.
+- CI runs migration tests against disposable PostgreSQL. The test setup is not a production schema.
