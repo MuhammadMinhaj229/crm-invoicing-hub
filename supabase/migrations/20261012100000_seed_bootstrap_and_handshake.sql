@@ -318,7 +318,16 @@ begin
     (1, p_site_config, p_seed_version, p_seed_checksum, 1, now(), now());
 
   insert into public.cms_public_site_config (id, content, version, updated_at)
-  values (1, p_site_config, 1, now());
+  values (
+    1,
+    jsonb_build_object(
+      'schemaVersion', p_site_config -> 'schemaVersion',
+      'site', p_site_config -> 'site',
+      'theme', p_site_config -> 'theme'
+    ),
+    1,
+    now()
+  );
 
   insert into public.cms_site_config_revisions (config_version, content, saved_by, saved_at)
   values (1, p_site_config, null, now());
@@ -554,7 +563,11 @@ begin
    where id = 1;
 
   update public.cms_public_site_config
-     set content = v_next_content,
+     set content = jsonb_build_object(
+           'schemaVersion', v_next_content -> 'schemaVersion',
+           'site', v_next_content -> 'site',
+           'theme', v_next_content -> 'theme'
+         ),
          version = v_next_version,
          updated_at = now()
    where id = 1;
