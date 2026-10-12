@@ -336,6 +336,21 @@ grant execute on function public.get_cms_handshake(integer) to anon, authenticat
 
 -- Optimistic, role-checked global site/theme settings updates. The browser must
 -- not write cms_site_config directly, and every change creates a revision.
+create or replace function safar_private.is_safe_theme_color(p_value text)
+returns boolean
+language sql
+immutable
+strict
+parallel safe
+set search_path = pg_catalog
+as $function$
+  select
+    p_value ~* '^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$'
+    or p_value ~* '^oklch\([[:space:]]*[-0-9.%+]+[[:space:]]+[-0-9.%+]+[[:space:]]+[-0-9.%+]+([[:space:]]*/[[:space:]]*[-0-9.%+]+)?[[:space:]]*\)$'
+$function$;
+
+revoke all on function safar_private.is_safe_theme_color(text) from public, anon, authenticated;
+
 create or replace function public.save_cms_site_config(
   p_content jsonb,
   p_expected_version integer
@@ -343,11 +358,13 @@ create or replace function public.save_cms_site_config(
 returns integer
 language plpgsql
 security definer
-set search_path = pg_catalog, public
+set search_path = pg_catalog, public, safar_private
 as $function$
 declare
+  v_current_content jsonb;
   v_current_version integer;
   v_next_version integer;
+  v_next_content jsonb;
 begin
   if auth.uid() is null then
     raise exception 'Authentication is required to update site settings.'
@@ -362,30 +379,47 @@ begin
     raise exception 'A valid expected settings version is required.'
       using errcode = '22023';
   end if;
+
   if p_content is null
      or jsonb_typeof(p_content) is distinct from 'object'
-     or jsonb_typeof(p_content -> 'site') is distinct from 'object'
-     or jsonb_typeof(p_content -> 'theme') is distinct from 'object'
+     or jsonb_typeof(p_content #> '{site,brand}') is distinct from 'object'
+     or jsonb_typeof(p_content #> '{site,contact}') is distinct from 'object'
      or jsonb_typeof(p_content #> '{theme,light}') is distinct from 'object'
      or pg_column_size(p_content) > 1000000 then
-    raise exception 'Site settings must include site and light-theme objects under 1 MB.'
+    raise exception 'Site settings must include brand, contact and light-theme objects under 1 MB.'
       using errcode = '22023';
   end if;
 
-  -- Never trust the editor UI as a security boundary. The server accepts only
-  -- simple color tokens and cannot persist arbitrary CSS or executable markup.
-  if exists (
-    select 1
-      from (values
-        (p_content #>> '{theme,light,primary}'),
-        (p_content #>> '{theme,light,background}'),
-        (p_content #>> '{theme,light,foreground}')
-      ) as colors(value)
-     where value is null
-        or not (
-          value ~* '^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})
+  if jsonb_typeof(p_content #> '{site,brand,name}') is distinct from 'string'
+     or length(btrim(coalesce(p_content #>> '{site,brand,name}', ''))) = 0
+     or length(p_content #>> '{site,brand,name}') > 200
+     or jsonb_typeof(p_content #> '{site,brand,tagline}') is distinct from 'string'
+     or length(p_content #>> '{site,brand,tagline}') > 500
+     or jsonb_typeof(p_content #> '{site,brand,description}') is distinct from 'string'
+     or length(p_content #>> '{site,brand,description}') > 4000
+     or jsonb_typeof(p_content #> '{site,brand,motto}') is distinct from 'string'
+     or length(p_content #>> '{site,brand,motto}') > 500
+     or jsonb_typeof(p_content #> '{site,contact,whatsapp}') is distinct from 'string'
+     or length(p_content #>> '{site,contact,whatsapp}') > 32
+     or jsonb_typeof(p_content #> '{site,contact,phone}') is distinct from 'string'
+     or length(p_content #>> '{site,contact,phone}') > 64
+     or jsonb_typeof(p_content #> '{site,contact,email}') is distinct from 'string'
+     or length(p_content #>> '{site,contact,email}') > 254
+     or jsonb_typeof(p_content #> '{site,hours}') is distinct from 'string'
+     or length(p_content #>> '{site,hours}') > 1000 then
+    raise exception 'One or more editable site fields are missing or exceed their allowed length.'
+      using errcode = '22023';
+  end if;
 
-  select version into v_current_version
+  if not safar_private.is_safe_theme_color(p_content #>> '{theme,light,primary}')
+     or not safar_private.is_safe_theme_color(p_content #>> '{theme,light,background}')
+     or not safar_private.is_safe_theme_color(p_content #>> '{theme,light,foreground}') then
+    raise exception 'Theme colors must be valid hex or OKLCH color tokens.'
+      using errcode = '22023';
+  end if;
+
+  select content, version
+    into v_current_content, v_current_version
     from public.cms_site_config
    where id = 1
    for update;
@@ -395,15 +429,30 @@ begin
       using errcode = '40001';
   end if;
 
+  -- Merge only explicitly editable fields. A client cannot smuggle arbitrary
+  -- theme tokens, nested config or extra properties through this RPC.
+  v_next_content := v_current_content;
+  v_next_content := jsonb_set(v_next_content, '{site,brand,name}', to_jsonb(btrim(p_content #>> '{site,brand,name}')), true);
+  v_next_content := jsonb_set(v_next_content, '{site,brand,tagline}', to_jsonb(p_content #>> '{site,brand,tagline}'), true);
+  v_next_content := jsonb_set(v_next_content, '{site,brand,description}', to_jsonb(p_content #>> '{site,brand,description}'), true);
+  v_next_content := jsonb_set(v_next_content, '{site,brand,motto}', to_jsonb(p_content #>> '{site,brand,motto}'), true);
+  v_next_content := jsonb_set(v_next_content, '{site,contact,whatsapp}', to_jsonb(p_content #>> '{site,contact,whatsapp}'), true);
+  v_next_content := jsonb_set(v_next_content, '{site,contact,phone}', to_jsonb(p_content #>> '{site,contact,phone}'), true);
+  v_next_content := jsonb_set(v_next_content, '{site,contact,email}', to_jsonb(p_content #>> '{site,contact,email}'), true);
+  v_next_content := jsonb_set(v_next_content, '{site,hours}', to_jsonb(p_content #>> '{site,hours}'), true);
+  v_next_content := jsonb_set(v_next_content, '{theme,light,primary}', to_jsonb(btrim(p_content #>> '{theme,light,primary}')), true);
+  v_next_content := jsonb_set(v_next_content, '{theme,light,background}', to_jsonb(btrim(p_content #>> '{theme,light,background}')), true);
+  v_next_content := jsonb_set(v_next_content, '{theme,light,foreground}', to_jsonb(btrim(p_content #>> '{theme,light,foreground}')), true);
+
   v_next_version := v_current_version + 1;
   update public.cms_site_config
-     set content = p_content,
+     set content = v_next_content,
          version = v_next_version,
          updated_at = now()
    where id = 1;
 
   insert into public.cms_site_config_revisions (config_version, content, saved_by, saved_at)
-  values (v_next_version, p_content, auth.uid(), now());
+  values (v_next_version, v_next_content, auth.uid(), now());
 
   return v_next_version;
 end;
