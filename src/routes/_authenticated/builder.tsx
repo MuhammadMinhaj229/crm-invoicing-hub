@@ -26,6 +26,7 @@ function StudioPage() {
   const [page, setPage] = useState("home");
   const [data, setData] = useState<Data | null>(null);
   const [version, setVersion] = useState(0);
+  const [pageMetadata, setPageMetadata] = useState<ReturnType<typeof defaultDocument>["metadata"]>();
   const [loadError, setLoadError] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
 
@@ -34,11 +35,13 @@ function StudioPage() {
     setData(null);
     setLoadError(null);
     setVersion(0);
+    setPageMetadata(undefined);
     fetchDocumentState(page)
       .then((s) => {
         if (!alive) return;
         const doc = s.draft ?? s.published ?? defaultDocument(page);
         setVersion(s.version);
+        setPageMetadata(doc.metadata);
         setData(documentToPuck(doc));
       })
       .catch((e: Error) => {
@@ -56,7 +59,7 @@ function StudioPage() {
 
   const publish = async (next: Data) => {
     try {
-      const v = await publishDocument(puckToDocument(page, next), version);
+      const v = await publishDocument(puckToDocument(page, next, pageMetadata), version);
       setVersion(v);
       toast.success(`Published version ${v}`);
     } catch (e) {
@@ -66,7 +69,7 @@ function StudioPage() {
 
   const saveDraft = async (next: Data) => {
     try {
-      const where = await saveDocumentDraft(puckToDocument(page, next));
+      const where = await saveDocumentDraft(puckToDocument(page, next, pageMetadata));
       toast.success(where === "cloud" ? "Draft saved" : "Draft saved on this device");
     } catch (e) {
       toast.error(`Save failed: ${(e as Error).message}`);
