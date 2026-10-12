@@ -1,8 +1,19 @@
 -- Disposable PostgreSQL fixture for the atomic page-publication migration.
 -- This is an isolated CI database, not a production schema migration.
 
-create role anon nologin;
-create role authenticated nologin;
+do $roles$
+begin
+  if not exists (select 1 from pg_roles where rolname = 'anon') then
+    create role anon nologin;
+  end if;
+  if not exists (select 1 from pg_roles where rolname = 'authenticated') then
+    create role authenticated nologin;
+  end if;
+  if not exists (select 1 from pg_roles where rolname = 'service_role') then
+    create role service_role nologin;
+  end if;
+end
+$roles$;
 
 create schema auth;
 create function auth.uid()
@@ -21,10 +32,10 @@ as $function$
   select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb
 $function$;
 
-grant usage on schema auth to anon, authenticated;
+grant usage on schema auth to anon, authenticated, service_role;
 grant execute on function auth.uid() to authenticated;
-grant execute on function auth.jwt() to anon, authenticated;
-grant usage on schema public to authenticated;
+grant execute on function auth.jwt() to anon, authenticated, service_role;
+grant usage on schema public to anon, authenticated, service_role;
 
 create table public.cms_sections (
   id uuid primary key default gen_random_uuid(),
