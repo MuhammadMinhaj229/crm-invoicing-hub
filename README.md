@@ -3,7 +3,10 @@
 **The visual website publishing platform for SAFAR N MANZIL.**
 
 [![Architecture checks](https://github.com/MuhammadMinhaj229/crm-invoicing-hub/actions/workflows/architecture-checks.yml/badge.svg?branch=main)](https://github.com/MuhammadMinhaj229/crm-invoicing-hub/actions/workflows/architecture-checks.yml)
-[![Production hosting](https://img.shields.io/badge/hosting-Vercel-black)](https://vercel.com/mohammed-minhajs-projects-8071d846)
+[![Production hosting](https://img.shields.io/badge/hosting-Vercel-black)](https://vercel.com/mohammed-minhajs-projects-8071d846/safar-studio)
+
+**Live site:** [safar-studio-snm.vercel.app](https://safar-studio-snm.vercel.app)  
+**Repository:** [GitHub source](https://github.com/MuhammadMinhaj229/crm-invoicing-hub)
 
 Safar Studio combines the public SAFAR N MANZIL website with an authenticated visual page studio. Website content is saved as bounded, validated documents; rendering and interactive behavior remain in reviewed application code. That lets editors manage page structure without making arbitrary HTML or JavaScript part of the content database.
 
