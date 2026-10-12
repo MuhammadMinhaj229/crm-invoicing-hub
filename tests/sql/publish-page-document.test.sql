@@ -171,6 +171,34 @@ end
 $test$;
 
 do $test$
+begin
+  perform public.publish_page_document(
+    'home',
+    $json$
+    {
+      "schemaVersion": 1,
+      "page": "home",
+      "metadata": {
+        "label": "Home",
+        "path": "//malicious.example",
+        "seo": {
+          "title": "Unsafe route",
+          "description": "The database must reject external route metadata."
+        }
+      },
+      "blocks": []
+    }
+    $json$::jsonb,
+    2
+  );
+  raise exception 'Unsafe page metadata unexpectedly succeeded';
+exception
+  when sqlstate '22023' then
+    raise notice 'PASS: unsafe page metadata rejected by database';
+end
+$test$;
+
+do $test$
 declare
   v_version integer;
 begin
