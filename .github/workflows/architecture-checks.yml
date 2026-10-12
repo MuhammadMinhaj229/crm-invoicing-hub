@@ -69,5 +69,7 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/sql/publish-page-document.test.sql
       - name: Type check
         run: bunx tsc --noEmit
-      - name: Production build
+      - name: Studio production build
         run: bun run build
+      - name: Public website production build
+        run: bun run build:public
