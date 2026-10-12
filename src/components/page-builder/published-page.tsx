@@ -1,14 +1,15 @@
 import type { ReactNode } from "react";
 
 import type { PageDocument } from "../../lib/page-builder/model";
+import type { PublishedPageStatus } from "../../lib/page-builder/published-state";
 import { fetchPublishedDocument } from "../../lib/page-builder/store";
 import { PageShell } from "../layout/page-shell";
 import { BlockRenderer } from "./block-renderer";
 
 /**
  * Query descriptor for shared global content consumed by client-side chrome
- * (for example, the editable site navigation). Page bodies are supplied by
- * their route loaders through PublishedOr to preserve server rendering.
+ * (for example, the editable site navigation). Errors are kept distinct from
+ * a confirmed missing publication so callers cannot silently hide sync failures.
  */
 export const publishedDocQuery = (page: string) => ({
   queryKey: ["published-document", page],
@@ -17,26 +18,64 @@ export const publishedDocQuery = (page: string) => ({
 });
 
 /**
- * Render a published page document supplied by the route loader. This keeps
- * public content in the initial server-rendered response and avoids a browser
- * query replacing hardcoded fallback markup after hydration.
+ * Render the exact page state resolved by the server loader:
+ * - published: use the authoritative database document;
+ * - seed-fallback: temporarily use the validated bundled recovery snapshot;
+ * - unpublished: never resurrect content from the seed or legacy components;
+ * - unavailable: show a clear failure state rather than misleading hard-coded UI.
  */
 export function PublishedOr({
   page,
   pageName,
   initialDocument,
+  status,
   children,
 }: {
   page: string;
   pageName: string;
   initialDocument: PageDocument | null;
+  status: PublishedPageStatus;
   children: ReactNode;
 }) {
-  if (!initialDocument) return <>{children}</>;
+  if ((status === "published" || status === "seed-fallback") && initialDocument) {
+    return (
+      <>
+        {status === "seed-fallback" ? (
+          <div
+            role="status"
+            aria-live="polite"
+            data-content-source="seed-fallback"
+            className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-950"
+          >
+            Live content sync is temporarily unavailable. Showing the saved backup version; recent edits may not appear.
+          </div>
+        ) : null}
+        <PageShell pageName={pageName}>
+          <BlockRenderer blocks={initialDocument.blocks} />
+        </PageShell>
+      </>
+    );
+  }
+
+  if (import.meta.env.DEV && status === "unavailable") {
+    // Keep the hand-authored design useful during local development only.
+    return <>{children}</>;
+  }
+
+  const title = status === "unpublished" ? "This page is not published" : "Website content is temporarily unavailable";
+  const detail = status === "unpublished"
+    ? "This page is not currently available. Visit the homepage to continue."
+    : "The published content could not be loaded, and no validated backup is available for this page.";
 
   return (
-    <PageShell pageName={pageName}>
-      <BlockRenderer blocks={initialDocument.blocks} />
-    </PageShell>
+    <main className="grid min-h-[60vh] place-items-center bg-background px-5 py-16 text-foreground">
+      <section className="max-w-xl rounded-2xl border border-border bg-card p-8 text-center">
+        <h1 className="font-display text-2xl font-semibold">{title}</h1>
+        <p role="status" className="mt-3 text-sm leading-6 text-muted-foreground">{detail}</p>
+        <a href="/" className="mt-6 inline-flex min-h-11 items-center rounded-full bg-primary px-5 font-semibold text-primary-foreground">
+          Return home
+        </a>
+      </section>
+    </main>
   );
 }
