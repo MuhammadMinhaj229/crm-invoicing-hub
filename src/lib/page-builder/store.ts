@@ -498,7 +498,7 @@ export function subscribeToCmsChanges(
 /** Public site subscriptions only use tables that intentionally contain public data. */
 export function subscribeToPublicCmsChanges(
   onStatus: (status: string) => void,
-  onChange: (table: "cms_site_config" | "cms_published_documents") => void,
+  onChange: (table: "cms_public_site_config" | "cms_published_documents") => void,
 ): () => void {
   const supabase = getSupabase();
   if (!supabase) {
@@ -510,8 +510,8 @@ export function subscribeToPublicCmsChanges(
     .channel("safar-public-cms-sync")
     .on(
       "postgres_changes",
-      { event: "*", schema: "public", table: "cms_site_config" },
-      () => onChange("cms_site_config"),
+      { event: "*", schema: "public", table: "cms_public_site_config" },
+      () => onChange("cms_public_site_config"),
     )
     .on(
       "postgres_changes",
