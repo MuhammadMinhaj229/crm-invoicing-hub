@@ -14,7 +14,7 @@ function hasControlCharacters(value: string): boolean {
 export function isSafeHref(value: string): boolean {
   const href = value.trim();
   if (href === "" || href === "whatsapp" || href === "phone" || href === "email") return true;
-  if (hasControlCharacters(href) || href.includes("\\\\")) return false;
+  if (hasControlCharacters(href) || href.includes(String.fromCharCode(92))) return false;
   if (href.startsWith("#")) return /^#[A-Za-z0-9_.:-]*$/.test(href);
   if (href.startsWith("/")) return !href.startsWith("//");
   try {
@@ -28,7 +28,7 @@ export function isSafeHref(value: string): boolean {
 export function isSafeAssetReference(value: string): boolean {
   const source = value.trim();
   if (source === "") return true;
-  if (hasControlCharacters(source) || source.includes("\\\\")) return false;
+  if (hasControlCharacters(source) || source.includes(String.fromCharCode(92))) return false;
   if (source.startsWith("/")) return !source.startsWith("//");
   try {
     const url = new URL(source);
