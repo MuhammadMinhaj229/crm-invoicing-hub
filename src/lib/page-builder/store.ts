@@ -495,6 +495,36 @@ export function subscribeToCmsChanges(
   };
 }
 
+/** Public site subscriptions only use tables that intentionally contain public data. */
+export function subscribeToPublicCmsChanges(
+  onStatus: (status: string) => void,
+  onChange: (table: "cms_site_config" | "cms_published_documents") => void,
+): () => void {
+  const supabase = getSupabase();
+  if (!supabase) {
+    onStatus("UNCONFIGURED");
+    return () => undefined;
+  }
+
+  const channel = supabase
+    .channel("safar-public-cms-sync")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "cms_site_config" },
+      () => onChange("cms_site_config"),
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "cms_published_documents" },
+      () => onChange("cms_published_documents"),
+    )
+    .subscribe((status) => onStatus(status));
+
+  return () => {
+    void supabase.removeChannel(channel);
+  };
+}
+
 export async function fetchDocumentRevisions(sectionId: string): Promise<DocumentRevision[]> {
   const supabase = getSupabase();
   if (!supabase) return [];
