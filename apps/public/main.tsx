@@ -99,7 +99,10 @@ function applyRuntimeTheme(theme: JsonRecord): void {
   ]);
   for (const [key, value] of Object.entries(theme)) {
     if (!allowed.has(key) || typeof value !== "string" || value.length > 600) continue;
-    if (/[\u0000-\u001f\u007f]/.test(value)) continue;
+    if ([...value].some((character) => {
+      const code = character.charCodeAt(0);
+      return code < 32 || code === 127;
+    })) continue;
     document.documentElement.style.setProperty("--" + key, value);
   }
 }
