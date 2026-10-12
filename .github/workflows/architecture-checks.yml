@@ -53,7 +53,7 @@ jobs:
       - name: Lint architecture and security modules
         run: bun run lint:architecture
       - name: Unit and security tests
-        run: bun test tests/page-document-schema.test.ts tests/cms-seed.test.ts tests/access-control.test.ts tests/webhook-auth.test.ts
+        run: bun test tests/page-document-schema.test.ts tests/cms-seed.test.ts tests/published-state.test.ts tests/access-control.test.ts tests/webhook-auth.test.ts
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
