@@ -215,6 +215,9 @@ begin
   if (select count(*) from public.cms_revisions where section_id = (select id from public.cms_sections where page = 'home' and section_key = '__document')) <> 3 then
     raise exception 'Unpublish must preserve a revision in the same transaction';
   end if;
+  if exists (select 1 from public.cms_published_documents where page = 'home') then
+    raise exception 'Unpublish must remove the document from the public projection';
+  end if;
 end
 $test$;
 \echo 'PASS: unpublish is versioned and preserves a revision'
@@ -253,6 +256,9 @@ begin
   end if;
   if (select count(*) from public.cms_revisions where section_id = (select id from public.cms_sections where page = 'home' and section_key = '__document')) <> 4 then
     raise exception 'Republish must preserve the full revision sequence';
+  end if;
+  if (select version from public.cms_published_documents where page = 'home') <> 4 then
+    raise exception 'Republish must recreate the public projection at the latest version';
   end if;
 end
 $test$;
@@ -300,6 +306,9 @@ begin
   end if;
   if not has_function_privilege('anon', 'public.get_published_page_document(text)', 'EXECUTE') then
     raise exception 'Anonymous users must be able to call the safe published-page RPC';
+  end if;
+  if not has_table_privilege('anon', 'public.cms_published_documents', 'SELECT') then
+    raise exception 'Anonymous users must read the public published-document projection';
   end if;
 
   v_document := public.get_published_page_document('home');
