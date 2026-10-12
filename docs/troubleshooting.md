@@ -21,7 +21,7 @@ Check the current auth token's `app_metadata.cms_role`, table grants and every p
 Reproduce from a clean checkout:
 
 ```bash
-bun install --frozen-lockfile
+bun install
 bun run lint
 bun run typecheck
 bun run test

@@ -66,7 +66,7 @@ The application is a modular monolith. Keep content as structured data and behav
 ### Install and run
 
 ```bash
-bun install --frozen-lockfile
+bun install
 cp .env.example .env
 # Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY for shared content.
 bun run dev

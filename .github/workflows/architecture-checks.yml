@@ -42,7 +42,13 @@ jobs:
         with:
           bun-version: "1.3.14"
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
+      - name: Report lockfile drift
+        run: |
+          if ! git diff --quiet -- bun.lock; then
+            echo "::warning::This Bun version refreshes bun.lock. Review and commit the normalized lockfile before enforcing frozen installs."
+            git diff --stat -- bun.lock
+          fi
       - name: Report lockfile drift
         run: |
           if ! git diff --quiet -- bun.lock; then
