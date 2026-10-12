@@ -6,7 +6,7 @@
  * advanced by a transactional RPC using optimistic concurrency.
  */
 import { getSupabase } from "../supabase";
-import type { PageDocument } from "./model";
+import type { PageDocument, PageMetadata } from "./model";
 import { PAGE_DOCUMENT_VERSION, parsePageDocument, validatePageDocument } from "./schema";
 
 const KEY = "__document";
@@ -327,6 +327,59 @@ export async function fetchCmsHandshake(): Promise<CmsHandshake> {
  * but never silently replaces the editor's unsaved draft.
  */
 
+export interface CmsPublishedPage {
+  page: string;
+  metadata: PageMetadata;
+  version: number;
+  updated_at: string;
+}
+
+/** Public route manifest; contains only route/SEO metadata for published pages. */
+export async function fetchCmsPublishedManifest(): Promise<CmsPublishedPage[]> {
+  const supabase = getSupabase();
+  if (!supabase) throw new Error("Supabase is not configured for this deployment.");
+
+  const { data, error } = await supabase.rpc("get_published_site_manifest");
+  if (error) throw new Error("Could not load the published route manifest: " + error.message);
+  if (!Array.isArray(data)) throw new Error("Database returned an invalid published route manifest.");
+
+  return data.flatMap((entry): CmsPublishedPage[] => {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) return [];
+    const row = entry as Record<string, unknown>;
+    const rawMetadata = row["metadata"];
+    if (!rawMetadata || typeof rawMetadata !== "object" || Array.isArray(rawMetadata)) return [];
+    const metadata = rawMetadata as Record<string, unknown>;
+    const seo = metadata["seo"];
+    if (!seo || typeof seo !== "object" || Array.isArray(seo)) return [];
+    const seoData = seo as Record<string, unknown>;
+
+    if (
+      typeof row["page"] !== "string" ||
+      typeof row["version"] !== "number" ||
+      typeof row["updated_at"] !== "string" ||
+      typeof metadata["label"] !== "string" ||
+      typeof metadata["path"] !== "string" ||
+      !/^\/(?!\/)[A-Za-z0-9/_-]*$/.test(metadata["path"]) ||
+      typeof seoData["title"] !== "string" ||
+      typeof seoData["description"] !== "string"
+    ) return [];
+
+    return [{
+      page: row["page"],
+      version: row["version"],
+      updated_at: row["updated_at"],
+      metadata: {
+        label: metadata["label"],
+        path: metadata["path"],
+        seo: {
+          title: seoData["title"],
+          description: seoData["description"],
+        },
+      },
+    }];
+  });
+}
+
 export interface CmsSiteConfiguration {
   content: Record<string, unknown>;
   version: number;
@@ -410,7 +463,7 @@ export async function saveCmsSiteConfiguration(
 
 export function subscribeToCmsChanges(
   onStatus: (status: string) => void,
-  onChange: (table: "cms_sections" | "cms_site_config") => void,
+  onChange: (table: "cms_sections" | "cms_site_config" | "cms_published_documents") => void,
 ): () => void {
   const supabase = getSupabase();
   if (!supabase) {
@@ -429,6 +482,11 @@ export function subscribeToCmsChanges(
       "postgres_changes",
       { event: "*", schema: "public", table: "cms_site_config" },
       () => onChange("cms_site_config"),
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "cms_published_documents" },
+      () => onChange("cms_published_documents"),
     )
     .subscribe((status) => onStatus(status));
 
