@@ -265,6 +265,96 @@ export async function unpublishDocument(page: string): Promise<void> {
   }
 }
 
+
+export interface CmsHandshake {
+  ok: boolean;
+  status: "ready" | "seed_required" | "no_published_pages" | "protocol_mismatch" | string;
+  protocol_version: number;
+  schema_version: number;
+  site_seeded: boolean;
+  site_version: number;
+  published_page_count: number;
+  server_time: string;
+  seed_version?: string | null;
+}
+
+/**
+ * A real database round-trip used by the editor and the public renderer.
+ * The /auth/v1/health endpoint only proves that Auth can answer; this RPC
+ * validates that the CMS schema and initial seed exist as well.
+ */
+export async function fetchCmsHandshake(): Promise<CmsHandshake> {
+  const supabase = getSupabase();
+  if (!supabase) throw new Error("Supabase is not configured for this deployment.");
+
+  const { data, error } = await supabase.rpc("get_cms_handshake", {
+    p_protocol_version: 1,
+  });
+  if (error) throw new Error("Database handshake failed: " + error.message);
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    throw new Error("Database returned an invalid CMS handshake response.");
+  }
+
+  const result = data as Record<string, unknown>;
+  if (
+    typeof result["status"] !== "string" ||
+    typeof result["ok"] !== "boolean" ||
+    typeof result["schema_version"] !== "number" ||
+    typeof result["protocol_version"] !== "number" ||
+    typeof result["site_seeded"] !== "boolean" ||
+    typeof result["published_page_count"] !== "number" ||
+    typeof result["server_time"] !== "string"
+  ) {
+    throw new Error("Database handshake is missing required protocol fields.");
+  }
+
+  return {
+    ok: result["ok"],
+    status: result["status"],
+    protocol_version: result["protocol_version"],
+    schema_version: result["schema_version"],
+    site_seeded: result["site_seeded"],
+    site_version: typeof result["site_version"] === "number" ? result["site_version"] : 0,
+    published_page_count: result["published_page_count"],
+    server_time: result["server_time"],
+    seed_version: typeof result["seed_version"] === "string" ? result["seed_version"] : null,
+  };
+}
+
+/**
+ * Realtime is a status signal, not an authorization mechanism. The table RLS
+ * policies still restrict events to approved editors. A remote edit is surfaced
+ * but never silently replaces the editor's unsaved draft.
+ */
+export function subscribeToCmsChanges(
+  onStatus: (status: string) => void,
+  onChange: (table: "cms_sections" | "cms_site_config") => void,
+): () => void {
+  const supabase = getSupabase();
+  if (!supabase) {
+    onStatus("UNCONFIGURED");
+    return () => undefined;
+  }
+
+  const channel = supabase
+    .channel("safar-cms-sync-status")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "cms_sections" },
+      () => onChange("cms_sections"),
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "cms_site_config" },
+      () => onChange("cms_site_config"),
+    )
+    .subscribe((status) => onStatus(status));
+
+  return () => {
+    void supabase.removeChannel(channel);
+  };
+}
+
 export async function fetchDocumentRevisions(sectionId: string): Promise<DocumentRevision[]> {
   const supabase = getSupabase();
   if (!supabase) return [];
