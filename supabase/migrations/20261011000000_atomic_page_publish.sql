@@ -220,6 +220,15 @@ begin
     end;
   end if;
 
+  -- Keep a public-safe projection in sync inside the same transaction. This
+  -- table contains only live published documents; drafts remain private.
+  insert into public.cms_published_documents (page, content, version, updated_at)
+  values (p_page, p_content, v_next_version, now())
+  on conflict (page) do update
+    set content = excluded.content,
+        version = excluded.version,
+        updated_at = excluded.updated_at;
+
   insert into public.cms_revisions (section_id, content, version)
   values (v_section_id, p_content, v_next_version);
 
