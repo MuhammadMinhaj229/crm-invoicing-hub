@@ -81,13 +81,16 @@ export function useResolveHref() {
   const contact = useSiteContact();
   return (href: string): { url: string; external: boolean } => {
     const h = href.trim();
+    // Editor previews render user-authored props before publication validation.
+    // Reject unsafe schemes here too, rather than relying only on the save path.
+    if (!isSafeHref(h)) return { url: "#", external: false };
     if (h === "whatsapp") {
       const url = buildWhatsAppUrl(contact.whatsapp, generalEnquiryMessage());
       return url ? { url, external: true } : { url: "/contact", external: false };
     }
     if (h === "phone") return { url: buildTelUrl(contact.phone) ?? "/contact", external: false };
     if (h === "email") return { url: buildMailUrl(contact.email, "Help for my family") ?? "/contact", external: false };
-    if (/^https?:\/\//.test(h)) return { url: h, external: true };
+    if (h.toLowerCase().startsWith("http://") || h.toLowerCase().startsWith("https://")) return { url: h, external: true };
     return { url: h || "#", external: false };
   };
 }
