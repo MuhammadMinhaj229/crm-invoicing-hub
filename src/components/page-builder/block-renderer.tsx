@@ -474,7 +474,7 @@ function BlockBody({ block }: { block: Block }) {
               const cls = "soft-card block p-6";
               const href = c.href?.trim() ?? "";
               const safeHref = href && isSafeHref(href) ? href : null;
-              const external = Boolean(safeHref && /^https?:\\/\\//i.test(safeHref));
+              const external = Boolean(safeHref && (safeHref.toLowerCase().startsWith("http://") || safeHref.toLowerCase().startsWith("https://")));
               return safeHref && !editing ? (
                 <a
                   key={c.id}
