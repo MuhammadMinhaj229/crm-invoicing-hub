@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - "architecture/**"
+      - "hardening/**"
   pull_request:
     branches:
       - main
