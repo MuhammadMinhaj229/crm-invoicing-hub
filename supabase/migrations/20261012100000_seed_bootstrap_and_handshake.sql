@@ -6,23 +6,61 @@ begin;
 
 create or replace function safar_private.is_safe_theme_color(p_value text)
 returns boolean
-language sql
+language plpgsql
 immutable
 strict
 parallel safe
 set search_path = pg_catalog
 as $function$
-  select
-    p_value ~* '^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$'
-    or (
-      right(btrim(p_value), 1) = ')'
-      and length(btrim(p_value)) <= 100
-      and length(regexp_replace(
-        btrim(p_value),
-        '^oklch[(][[:space:]]*[0-9.%+-]+[[:space:]]+[0-9.%+-]+[[:space:]]+[0-9.%+-]+([[:space:]]*/[[:space:]]*[0-9.%+-]+)?[[:space:]]*[)]',
-        ''
-      )) = 0
-    )
+declare
+  v_color text := btrim(p_value);
+  v_inner text;
+  v_parts text[];
+  v_count integer;
+  i integer;
+begin
+  if v_color ~* '^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$' then
+    return true;
+  end if;
+
+  if length(v_color) > 100
+     or lower(left(v_color, 6)) <> 'oklch('
+     or right(v_color, 1) <> ')' then
+    return false;
+  end if;
+
+  v_inner := btrim(substr(v_color, 7, length(v_color) - 7));
+  if v_inner = '' then
+    return false;
+  end if;
+
+  v_parts := regexp_split_to_array(v_inner, '[[:space:]]+');
+  v_count := coalesce(array_length(v_parts, 1), 0);
+  if v_count not in (3, 5) then
+    return false;
+  end if;
+  if v_count = 5 and v_parts[4] <> '/' then
+    return false;
+  end if;
+
+  for i in 1..3 loop
+    if v_parts[i] = ''
+       or translate(v_parts[i], '0123456789.%+-', '') <> ''
+       or v_parts[i] !~ '[0-9]' then
+      return false;
+    end if;
+  end loop;
+
+  if v_count = 5 and (
+    v_parts[5] = ''
+    or translate(v_parts[5], '0123456789.%+-', '') <> ''
+    or v_parts[5] !~ '[0-9]'
+  ) then
+    return false;
+  end if;
+
+  return true;
+end;
 $function$;
 
 revoke all on function safar_private.is_safe_theme_color(text) from public, anon, authenticated;
