@@ -59,7 +59,7 @@ revoke insert (id, section_id, content, version, saved_at)
 grant select on table public.cms_sections to authenticated;
 grant insert (page, section_key, draft_content, updated_at)
   on table public.cms_sections to authenticated;
-grant update (page, section_key, draft_content, updated_at)
+grant update (draft_content, updated_at)
   on table public.cms_sections to authenticated;
 grant select on table public.cms_revisions to authenticated;
 
