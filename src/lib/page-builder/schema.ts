@@ -131,6 +131,8 @@ const propsSchemas: Record<BlockType, z.ZodTypeAny> = {
     eyebrow: shortTextSchema,
     title: shortTextSchema,
     text: textSchema,
+    src: assetSchema.default("/media/safar-brand-film.mp4"),
+    poster: assetSchema.default("/media/safar-brand-film-poster.jpg"),
     items: cardList,
   }).strict(),
   storyCarousel: z.object({
