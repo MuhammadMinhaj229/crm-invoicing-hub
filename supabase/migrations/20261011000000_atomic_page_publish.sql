@@ -57,7 +57,19 @@ begin
          or jsonb_typeof(p_content #> '{metadata,label}') is distinct from 'string'
          or length(btrim(coalesce(p_content #>> '{metadata,label}', ''))) = 0
          or length(p_content #>> '{metadata,label}') > 4000
-         or coalesce(p_content #>> '{metadata,path}', '') !~ '^/[A-Za-z0-9/_-]*
+         or coalesce(p_content #>> '{metadata,path}', '') !~ '^/[A-Za-z0-9/_-]*$'
+         or left(coalesce(p_content #>> '{metadata,path}', ''), 2) = '//' 
+         or jsonb_typeof(p_content #> '{metadata,seo}') is distinct from 'object'
+         or jsonb_typeof(p_content #> '{metadata,seo,title}') is distinct from 'string'
+         or length(btrim(coalesce(p_content #>> '{metadata,seo,title}', ''))) = 0
+         or length(p_content #>> '{metadata,seo,title}') > 500
+         or jsonb_typeof(p_content #> '{metadata,seo,description}') is distinct from 'string'
+         or length(p_content #>> '{metadata,seo,description}') > 2000
+       )
+     ) then
+    raise exception 'Page document shape, version, page identifier or route metadata is invalid.'
+      using errcode = '22023';
+  end if;
 
   if jsonb_array_length(p_content -> 'blocks') > 150 then
     raise exception 'Page document contains more than 150 blocks.'
