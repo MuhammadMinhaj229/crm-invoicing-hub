@@ -9,6 +9,7 @@
 import { z } from "zod";
 
 import type { BlockType, PageDocument } from "./model";
+import { isSafeAssetReference, isSafeHref } from "./safe-url";
 
 export const PAGE_DOCUMENT_VERSION = 1;
 const MAX_DOCUMENT_BYTES = 2_000_000;
@@ -18,44 +19,10 @@ const idSchema = z.string().trim().min(1).max(128);
 const textSchema = z.string().max(20_000);
 const shortTextSchema = z.string().max(4_000);
 
-function hasControlCharacters(value: string): boolean {
-  return Array.from(value).some((character) => {
-    const code = character.charCodeAt(0);
-    return code < 32 || code === 127;
-  });
-}
-
-function safeHref(value: string): boolean {
-  const href = value.trim();
-  if (href === "" || href === "whatsapp" || href === "phone" || href === "email") return true;
-  if (hasControlCharacters(href) || href.includes("\\")) return false;
-  if (href.startsWith("#")) return /^#[A-Za-z0-9_.:-]*$/.test(href);
-  if (href.startsWith("/")) return !href.startsWith("//");
-  try {
-    const url = new URL(href);
-    return (url.protocol === "https:" || url.protocol === "http:") && !url.username && !url.password;
-  } catch {
-    return false;
-  }
-}
-
-function safeAssetReference(value: string): boolean {
-  const source = value.trim();
-  if (source === "") return true;
-  if (hasControlCharacters(source) || source.includes("\\")) return false;
-  if (source.startsWith("/")) return !source.startsWith("//");
-  try {
-    const url = new URL(source);
-    return (url.protocol === "https:" || url.protocol === "http:") && !url.username && !url.password;
-  } catch {
-    return false;
-  }
-}
-
-const hrefSchema = z.string().trim().max(2_048).refine(safeHref, {
+const hrefSchema = z.string().trim().max(2_048).refine(isSafeHref, {
   message: "Use a site path, a section anchor, a supported contact action, or an HTTP(S) URL.",
 });
-const assetSchema = z.string().trim().max(2_048).refine(safeAssetReference, {
+const assetSchema = z.string().trim().max(2_048).refine(isSafeAssetReference, {
   message: "Use a relative asset path or an HTTP(S) media URL.",
 });
 
