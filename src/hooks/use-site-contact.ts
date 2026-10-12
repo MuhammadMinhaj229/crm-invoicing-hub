@@ -16,12 +16,14 @@ function str(source: Record<string, unknown> | undefined, key: string, fallback:
  * override them from the console, and nothing is rendered when a channel is
  * still empty.
  */
-export function useSiteContact(): ContactChannels {
-  const { settings } = useWorkspaceSettings();
+export function useSiteContact(options: { enabled?: boolean } = {}): ContactChannels {
+  const enabled = options.enabled ?? true;
+  const { settings } = useWorkspaceSettings({ loadShared: enabled });
   const { data } = useQuery({
     queryKey: ["published-content"],
     queryFn: loadHomeSections,
     staleTime: 5 * 60 * 1000,
+    enabled,
   });
 
   const contact = data?.['contact'];
@@ -30,7 +32,8 @@ export function useSiteContact(): ContactChannels {
     queryKey: ["cms-site-config"],
     queryFn: fetchCmsSiteConfiguration,
     staleTime: 15_000,
-    refetchInterval: 15_000,
+    refetchInterval: enabled ? 15_000 : false,
+    enabled,
   });
   const cmsSite = cmsConfiguration?.content["site"];
   const cmsContact = cmsSite && typeof cmsSite === "object" && !Array.isArray(cmsSite)

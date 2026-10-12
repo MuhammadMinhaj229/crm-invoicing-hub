@@ -31,7 +31,7 @@ export function SiteHeader({
 }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const legacyContact = useSiteContact();
+  const legacyContact = useSiteContact({ enabled: !canonicalContact });
   const contact = canonicalContact ?? legacyContact;
 
   useEffect(() => {

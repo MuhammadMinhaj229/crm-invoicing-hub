@@ -20,7 +20,7 @@ export function FloatingActions({
   canonicalContact?: ContactChannels | undefined;
   labels?: { whatsapp: string; call: string } | undefined;
 }) {
-  const legacyContact = useSiteContact();
+  const legacyContact = useSiteContact({ enabled: !canonicalContact });
   const contact = canonicalContact ?? legacyContact;
   const whatsappUrl = buildWhatsAppUrl(contact.whatsapp, generalEnquiryMessage());
   const telUrl = buildTelUrl(contact.phone);

@@ -93,8 +93,8 @@ export function PageShell({
   initialGlobalDocument?: PageDocument | null;
   usesSeedFallback?: boolean;
 }) {
-  const { settings } = useWorkspaceSettings();
   const hasCanonicalConfig = Boolean(siteConfigContent);
+  const { settings } = useWorkspaceSettings({ loadShared: !hasCanonicalConfig });
   useThemeSync(settings, !hasCanonicalConfig);
 
   const { data } = useQuery({
