@@ -30,9 +30,9 @@ function stableJson(value: unknown): string {
 }
 
 async function main(): Promise<void> {
-  const url = process.env.SUPABASE_URL?.trim() ?? "";
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ?? "";
-  const expectedProjectRef = process.env.SUPABASE_PROJECT_REF?.trim() ?? "";
+  const url = process.env["SUPABASE_URL"]?.trim() ?? "";
+  const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"]?.trim() ?? "";
+  const expectedProjectRef = process.env["SUPABASE_PROJECT_REF"]?.trim() ?? "";
 
   if (!url || !serviceKey || !expectedProjectRef) {
     throw new Error(
