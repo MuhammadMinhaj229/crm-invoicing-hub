@@ -174,9 +174,14 @@ export function documentToPuck(doc: PageDocument): Data {
   } as Data;
 }
 
-export function puckToDocument(page: string, data: Data): PageDocument {
+export function puckToDocument(
+  page: string,
+  data: Data,
+  metadata?: PageDocument["metadata"],
+): PageDocument {
   return {
     page,
+    ...(metadata ? { metadata } : {}),
     blocks: data.content.map((c) => propsToBlock(c.type as BlockType, c.props as Record<string, unknown>)),
   };
 }
