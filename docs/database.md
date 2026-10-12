@@ -54,7 +54,7 @@ Never define database passwords, service-role keys or webhook secrets with a `VI
 
 - Anonymous visitors cannot query CMS storage tables directly. They can call `get_published_page_document`, which returns only the published document body.
 - Base-table reads are restricted to approved editors; row-level security is paired with least-privilege column grants.
-- Editors can directly write only `page`, `section_key`, `draft_content` and `updated_at`. They cannot directly change `content`, `status` or `version`.
+- Editors can create drafts using `page` and `section_key`, but existing rows can only be updated through `draft_content` and `updated_at`. They cannot rename an existing page key or directly change `content`, `status` or `version`.
 - Revision history is read-only to editors. Revision inserts happen only inside the controlled publication/unpublication transactions.
 - Publish and unpublish operations validate `auth.uid()` and the server-controlled `app_metadata.cms_role`, use optimistic version checks, and append revisions transactionally.
 - A missing migration or missing editor role is a blocked operation—not a reason to write around RLS.
