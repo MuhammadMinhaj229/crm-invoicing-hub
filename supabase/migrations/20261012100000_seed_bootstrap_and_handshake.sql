@@ -95,10 +95,18 @@ begin
      or jsonb_typeof(p_site_config) is distinct from 'object'
      or jsonb_typeof(p_site_config -> 'site') is distinct from 'object'
      or jsonb_typeof(p_site_config -> 'theme') is distinct from 'object'
+     or jsonb_typeof(p_site_config #> '{theme,light}') is distinct from 'object'
      or pg_column_size(p_site_config) > 1000000 then
     raise exception 'Site configuration must include valid site and theme objects under 1 MB.'
       using errcode = '22023';
   end if;
+  if not safar_private.is_safe_theme_color(p_site_config #>> '{theme,light,primary}')
+     or not safar_private.is_safe_theme_color(p_site_config #>> '{theme,light,background}')
+     or not safar_private.is_safe_theme_color(p_site_config #>> '{theme,light,foreground}') then
+    raise exception 'Seed contains unsafe or unsupported top-level theme colors.'
+      using errcode = '22023';
+  end if;
+
   if p_pages is null or jsonb_typeof(p_pages) is distinct from 'array'
      or jsonb_array_length(p_pages) < 1 or jsonb_array_length(p_pages) > 100
      or pg_column_size(p_pages) > 10000000 then
