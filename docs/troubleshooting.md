@@ -6,15 +6,15 @@ Confirm the production deployment has `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANO
 
 ## Published content does not show
 
-Verify the route's page identifier, the `cms_sections` row's `section_key = '__document'` and `status = 'published'`. Inspect Vercel runtime logs for PostgREST or schema errors. A local browser draft is never public content.
+Verify the route's page identifier, the `cms_sections` row's `section_key = '__document'` and `status = 'published'`. The public website reads through `get_published_page_document(text)`; it should not query `cms_sections` directly. Inspect Vercel runtime logs for PostgREST or schema errors. A local browser draft is never public content.
 
 ## Publish reports a missing function
 
-Apply `supabase/migrations/20261010000000_cms_foundation.sql` first and `supabase/migrations/20261011000000_atomic_page_publish.sql` second, after reviewing the intended database project and RLS policies. Do not work around the missing RPC by direct writes or by disabling RLS.
+Apply `supabase/migrations/20261010000000_cms_foundation.sql`, `supabase/migrations/20261011000000_atomic_page_publish.sql` and `supabase/migrations/20261012000000_lock_down_cms_access.sql` in order, after reviewing the intended database project and RLS policies. Do not work around a missing RPC with direct writes or by disabling RLS.
 
 ## Draft saves are denied
 
-Check the current auth token's `app_metadata.cms_role`, table grants and every policy on `cms_sections`. The restrictive policies intentionally prevent an old broad permissive rule from exposing drafts. Being signed in alone does not grant editor access.
+Check the current auth token's `app_metadata.cms_role`, the draft-only column grants and every policy on `cms_sections`. Public reads use a narrow RPC; editors cannot write `content`, `status` or `version` directly. Being signed in alone does not grant editor access.
 
 ## Build or CI fails
 
