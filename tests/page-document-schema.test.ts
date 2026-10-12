@@ -159,7 +159,7 @@ describe("page document contract", () => {
     expect(isSafeHref("javascript:alert(1)")).toBe(false);
     expect(isSafeHref("data:text/html,alert(1)")).toBe(false);
     expect(isSafeHref("//evil.example")).toBe(false);
-    expect(isSafeHref("\\\\evil.example")).toBe(false);
+    expect(isSafeHref(String.fromCharCode(92) + "evil.example")).toBe(false);
     expect(isSafeHref("https://user:password@example.com")).toBe(false);
   });
 
