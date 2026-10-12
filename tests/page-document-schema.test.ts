@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import { parsePageDocument, validatePageDocument } from "../src/lib/page-builder/schema";
+import { isSafeHref } from "../src/lib/page-builder/safe-url";
 
 const layout = {
   align: "left",
@@ -150,4 +151,16 @@ describe("page document contract", () => {
     circular["self"] = circular;
     expect(validatePageDocument(circular).ok).toBe(false);
   });
+  test("shares a safe URL allow-list between validation and rendering", () => {
+    expect(isSafeHref("/about")).toBe(true);
+    expect(isSafeHref("#contact")).toBe(true);
+    expect(isSafeHref("https://example.com/path")).toBe(true);
+    expect(isSafeHref("whatsapp")).toBe(true);
+    expect(isSafeHref("javascript:alert(1)")).toBe(false);
+    expect(isSafeHref("data:text/html,alert(1)")).toBe(false);
+    expect(isSafeHref("//evil.example")).toBe(false);
+    expect(isSafeHref("\\\\evil.example")).toBe(false);
+    expect(isSafeHref("https://user:password@example.com")).toBe(false);
+  });
+
 });
