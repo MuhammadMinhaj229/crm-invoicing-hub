@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PublishedOr } from "../components/page-builder/published-page";
-import { fetchPublishedDocument } from "../lib/page-builder/store";
+import { loadPublishedPage } from "../lib/page-builder/published-state";
 
 import { PageShell } from "../components/layout/page-shell";
 import { PageIntro } from "../components/layout/page-intro";
@@ -22,7 +22,11 @@ export const Route = createFileRoute("/terms")({
     ],
     links: [{ rel: "canonical", href: "/terms" }],
   }),
-  loader: async () => ({ publishedDocument: await fetchPublishedDocument("terms") }),
+  loader: async () => {
+    const publishedPage = await loadPublishedPage("terms");
+    if (publishedPage.publishedDocumentStatus === "unpublished") throw notFound();
+    return publishedPage;
+  },
   component: TermsPageRoute,
 });
 
@@ -79,9 +83,9 @@ function TermsPage() {
 }
 
 function TermsPageRoute() {
-  const { publishedDocument } = Route.useLoaderData();
+  const { publishedDocument, publishedDocumentStatus } = Route.useLoaderData();
   return (
-    <PublishedOr page="terms" pageName="terms" initialDocument={publishedDocument}>
+    <PublishedOr page="terms" pageName="terms" initialDocument={publishedDocument} status={publishedDocumentStatus}>
       <TermsPage />
     </PublishedOr>
   );
