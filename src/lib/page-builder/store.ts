@@ -52,7 +52,7 @@ export type PublishedDocumentRead =
  * validated and its page identity is checked before any renderer can consume it.
  */
 export async function readPublishedDocumentState(page: string): Promise<PublishedDocumentRead> {
-  let supabase;
+  let supabase: ReturnType<typeof getSupabase>;
   try {
     supabase = getSupabase();
   } catch {
