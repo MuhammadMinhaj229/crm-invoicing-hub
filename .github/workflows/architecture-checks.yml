@@ -49,10 +49,10 @@ jobs:
             echo "::warning::bun.lock is refreshed by this Bun version. Commit a regenerated lockfile before using frozen installs."
             git diff --stat -- bun.lock
           fi
-      - name: Lint changed architecture modules
-        run: bunx eslint src/lib/page-builder/schema.ts src/lib/page-builder/store.ts src/lib/page-builder/model.ts src/lib/page-builder/safe-url.ts src/lib/supabase.ts src/components/page-builder/block-renderer.tsx src/routes/_authenticated/builder.tsx tests/page-document-schema.test.ts --rule '{"prettier/prettier":"off"}'
-      - name: Page document schema tests
-        run: bun test tests/page-document-schema.test.ts
+      - name: Lint architecture and security modules
+        run: bunx eslint src/lib/page-builder/schema.ts src/lib/page-builder/store.ts src/lib/page-builder/model.ts src/lib/page-builder/safe-url.ts src/lib/page-builder/access.ts src/lib/supabase.ts src/components/page-builder/block-renderer.tsx src/routes/auth.tsx src/routes/_authenticated/route.tsx src/routes/_authenticated/builder.tsx src/routes/api/public/whatsapp/webhook.ts src/lib/whatsapp/webhook-auth.ts tests/page-document-schema.test.ts tests/access-control.test.ts tests/webhook-auth.test.ts --rule '{"prettier/prettier":"off"}'
+      - name: Unit and security tests
+        run: bun test tests/page-document-schema.test.ts tests/access-control.test.ts tests/webhook-auth.test.ts
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
@@ -60,6 +60,7 @@ jobs:
       - name: SQL publication migration integration test
         run: |
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/sql/publish-page-document.setup.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261010000000_cms_foundation.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261011000000_atomic_page_publish.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/sql/publish-page-document.test.sql
       - name: Type check
