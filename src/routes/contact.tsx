@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PublishedOr } from "../components/page-builder/published-page";
-import { fetchPublishedDocument } from "../lib/page-builder/store";
+import { loadPublishedPage } from "../lib/page-builder/published-state";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -67,7 +67,11 @@ export const Route = createFileRoute("/contact")({
       },
     ],
   }),
-  loader: async () => ({ publishedDocument: await fetchPublishedDocument("contact") }),
+  loader: async () => {
+    const publishedPage = await loadPublishedPage("contact");
+    if (publishedPage.publishedDocumentStatus === "unpublished") throw notFound();
+    return publishedPage;
+  },
   component: ContactPageRoute,
 });
 
@@ -312,9 +316,9 @@ function ContactPage() {
 }
 
 function ContactPageRoute() {
-  const { publishedDocument } = Route.useLoaderData();
+  const { publishedDocument, publishedDocumentStatus } = Route.useLoaderData();
   return (
-    <PublishedOr page="contact" pageName="contact" initialDocument={publishedDocument}>
+    <PublishedOr page="contact" pageName="contact" initialDocument={publishedDocument} status={publishedDocumentStatus}>
       <ContactPage />
     </PublishedOr>
   );
