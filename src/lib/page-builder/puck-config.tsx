@@ -31,8 +31,9 @@ const ENUMS: Record<string, string[]> = {
 const LABELS: Record<string, string> = {
   href: "Link (/page, whatsapp, phone, email or https://…)",
   imageAlt: "Picture description",
-  src: "Picture",
+  src: "Media file URL or site path",
   image: "Picture",
+  poster: "Video poster image",
 };
 
 const human = (key: string) =>
