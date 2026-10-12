@@ -23,11 +23,11 @@ export function SiteHeader({
   canonicalContact,
 }: {
   brandName: string;
-  logoUrl?: string;
+  logoUrl?: string | undefined;
   logoStyle: "lockup" | "image";
-  initialGlobalDocument?: PageDocument | null;
-  fallbackNavigation?: { label: string; href: string }[];
-  canonicalContact?: ContactChannels;
+  initialGlobalDocument?: PageDocument | null | undefined;
+  fallbackNavigation?: { label: string; href: string }[] | undefined;
+  canonicalContact?: ContactChannels | undefined;
 }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -43,7 +43,7 @@ export function SiteHeader({
 
   const { data: globalDoc } = useQuery({
     ...publishedDocQuery("global"),
-    initialData: initialGlobalDocument,
+    ...(initialGlobalDocument !== undefined ? { initialData: initialGlobalDocument } : {}),
   });
   const navBlock = globalDoc?.blocks.find((b) => b.type === "navigation");
   const customLinks =

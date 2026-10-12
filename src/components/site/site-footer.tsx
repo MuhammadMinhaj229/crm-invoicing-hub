@@ -32,9 +32,9 @@ export function SiteFooter({
   footer: SectionContent;
   contact: SectionContent;
   brandName: string;
-  logoUrl?: string;
+  logoUrl?: string | undefined;
   logoStyle?: "lockup" | "image";
-  canonicalSite?: CanonicalFooterSite;
+  canonicalSite?: CanonicalFooterSite | undefined;
 }) {
   const { settings } = useWorkspaceSettings();
   const configuredContact = useSiteContact();

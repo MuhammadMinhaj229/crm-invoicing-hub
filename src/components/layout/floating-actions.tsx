@@ -17,8 +17,8 @@ export function FloatingActions({
   labels,
 }: {
   context: string;
-  canonicalContact?: ContactChannels;
-  labels?: { whatsapp: string; call: string };
+  canonicalContact?: ContactChannels | undefined;
+  labels?: { whatsapp: string; call: string } | undefined;
 }) {
   const legacyContact = useSiteContact();
   const contact = canonicalContact ?? legacyContact;
