@@ -1,43 +1,35 @@
-# When something is not right
+# Troubleshooting
 
-## "Connect your database in Settings first"
+## Studio redirects me to sign in
 
-The browser has no database keys. Open **Settings → Connections**, paste
-your project URL and public key, press Test, then reload.
+Confirm the production deployment has `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Then verify the account exists in the same Supabase Auth project and its server-controlled `app_metadata.cms_role` is `owner`, `admin` or `editor`. Sign out and back in after changing roles so the token refreshes.
 
-## A page says a table is missing
+## Published content does not show
 
-The setup script has not been run, or a newer version has not been run yet.
-Open **Settings → Connections**, press **Copy setup script**, and run the
-whole thing in your Supabase SQL editor. It only adds, so it is safe to run
-again.
+Verify the route's page identifier, the `cms_sections` row's `section_key = '__document'` and `status = 'published'`. Inspect Vercel runtime logs for PostgREST or schema errors. A local browser draft is never public content.
 
-## A message shows "not delivered"
+## Publish reports a missing function
 
-The messaging service is not connected. Check the Connections panel on the
-Dashboard. It tells you exactly which settings are missing. The message is
-kept, so you can send it again once the service is connected.
+Apply `supabase/migrations/20261010000000_cms_foundation.sql` first and `supabase/migrations/20261011000000_atomic_page_publish.sql` second, after reviewing the intended database project and RLS policies. Do not work around the missing RPC by direct writes or by disabling RLS.
 
-## Incoming WhatsApp messages do not arrive
+## Draft saves are denied
 
-1. The webhook must point to `https://YOUR-SITE/api/public/whatsapp/webhook`.
-2. The call must carry the shared secret that matches `WHATSAPP_WEBHOOK_SECRET`.
-3. `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` must be set on the host.
+Check the current auth token's `app_metadata.cms_role`, table grants and every policy on `cms_sections`. The restrictive policies intentionally prevent an old broad permissive rule from exposing drafts. Being signed in alone does not grant editor access.
 
-Every attempt, good or bad, is written to `webhook_events` with the reason.
+## Build or CI fails
 
-## A social account says "not connected"
+Reproduce from a clean checkout:
 
-Its keys are not set on the host. The Social page lists exactly which ones
-each platform needs, and what that platform does and does not allow.
+```bash
+bun install --frozen-lockfile
+bun run lint
+bun run typecheck
+bun run test
+bun run build
+```
 
-## The website shows old text
+Read the first compiler/parser error in GitHub Actions or Vercel logs, not only the final generic build failure.
 
-Website content has a draft and a published version. Open **Website**,
-check the section, and press **Publish**.
+## WhatsApp webhook is unavailable
 
-## Numbers look wrong
-
-Every number on the Dashboard is counted from real records. If one looks
-wrong, open the matching page (Customers, Finance, Inbox) and check the
-records behind it. Nothing is estimated or filled in.
+The webhook adapter is optional and expects pre-existing `webhook_events`, `conversations`, `contacts` and `messages` tables. It requires server-only `DATABASE_URL`; Meta additionally requires `WHATSAPP_VERIFY_TOKEN` and `META_APP_SECRET`, while Evolution requires `WHATSAPP_WEBHOOK_SECRET` delivered in `x-webhook-secret`. Missing signatures, credentials or payload prerequisites fail closed. The CMS migration does not create those business tables.

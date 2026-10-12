@@ -1,156 +1,45 @@
-# Schema-driven website engine
+# Safar Studio — schema-driven website platform
 
-Status: architecture baseline for the website-plus-builder application  
-Decision date: 11 October 2026
+Status: architecture and release baseline for the public website and visual page studio.
 
-## Goal
+## Product goal
 
-Every customer-facing part of the site should be editable through the visual studio without requiring a code deployment for routine content changes. The platform must still be type-safe, secure, accessible, observable, versioned and fast to render.
+Enable routine page composition and content changes through a visual editor without allowing content to define executable behavior. Keep rendering, forms and integration handlers in reviewed TypeScript code.
 
-The design is a **modular monolith** built on TanStack Start, React, Puck, Supabase/PostgreSQL and Vercel. Do not split it into microservices until measured operational constraints justify that complexity.
-
-## Core decisions
-
-### 1. Dynamic content is data; behaviour is trusted code
-
-Persist page structure, text, asset references, design tokens, navigation, SEO fields, visibility and reusable-content references as structured data. Keep rendering, forms, interaction logic, external integrations and permitted actions in version-controlled React/server code.
-
-Never evaluate arbitrary JavaScript or inject untrusted HTML/CSS from a page document. Add new behaviour by shipping a reviewed component or action handler, then make its supported options editable.
-
-### 2. One component registry
-
-The block registry is the contract between the editor, document validator, preview and public renderer. Each block type needs:
-- A stable type name and versioned data schema.
-- Explicit defaults and editor fields.
-- A shared renderer.
-- Accessibility and responsive-layout rules.
-- Document migration behaviour.
-- Unit and round-trip tests.
-
-Avoid inferring all fields from sample values indefinitely. Explicit definitions preserve semantic differences between plain text, URLs, assets, references, rich text and numeric design tokens.
-
-### 3. One page-document format
-
-A page is a bounded JSON document with a schema version, stable page identifier and ordered block list. Each block has a stable ID, type, typed properties, layout and optional visibility/anchor settings.
-
-Keep independently managed entities—media assets, service catalogue entries, FAQs, navigation models and reusable sections—separate from page documents. The document references their IDs instead of copying their data into many pages.
-
-The seed.json direction is a reviewed bootstrap and development fixture. Import it explicitly and idempotently. It is not a runtime override of owner-edited database content and must never silently replace published content during deployment.
-
-### 4. Drafts and publications have different lifecycles
-
-- Drafts are mutable, private and editor-only.
-- Published versions are immutable snapshots.
-- Each publication records actor, time, page, version and document.
-- Publishing is an atomic database transaction.
-- Optimistic concurrency rejects a stale editor instead of overwriting another editor's publication.
-- Rollback switches the published pointer to a prior valid snapshot or republishes its content as a new version.
-- Local storage may preserve offline drafts, but must never claim to publish a shared website.
-
-The first implementation uses the existing cms_sections and cms_revisions tables. The atomic publishing function in supabase/migrations/20261011000000_atomic_page_publish.sql must be applied to the connected Supabase project after confirming those tables and their RLS policies exist.
-
-### 5. Database access and authorization
-
-Browser code may receive only the project URL and public/anon key. Privileged service-role keys and direct PostgreSQL connection strings are server-only secrets; never place them in client state, local storage, seed files or VITE_* variables.
-
-All mutation entry points require authentication and authorization. Existing row-level-security policies remain in force for the invoker-security publishing function. Confirm that the deployed RLS rules limit draft updates and publication to intended editor/publisher roles before production use.
-
-### 6. Asset references are managed data
-
-Uploads go through an authenticated media workflow. Persist an asset ID and metadata (MIME type, dimensions, alt text, ownership, variants), not a transient upload session. The renderer resolves the ID to a validated delivery URL. Immutable/versioned asset URLs can use long-lived CDN caching.
-
-### 7. Fast public rendering
-
-Public route loaders resolve the shared published document on the server and pass it to `PublishedOr`, so dynamic blocks are part of the initial HTML rather than being swapped in by a browser-only query after hydration. The public renderer uses the same block registry as Puck and must not issue one database request per block.
-
-The Vercel deployment's `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are the canonical project configuration for SSR, the editor and all visitors. A browser-local configuration cannot be the production source of truth: it is invisible to other visitors and to the server. The application therefore prefers deployment configuration and refuses per-device database switching when deployment config exists.
-
-Cache only published, visitor-independent output. Editor routes and previews are private and uncacheable. Publish events invalidate the affected page and dependent reusable-content paths. A database failure must produce a clear fallback or error; it must not substitute a visitor's local draft as public content.
-
-## Logical architecture
-
-Puck Studio / Preview / Public routes
-                 |
-                 v
-       TanStack Start boundary
- auth · permission checks · validation
-                 |
-                 v
- Page-document application services
- schema registry · migrations · drafts
- versioning · publish orchestration
-          /                \
-         v                  v
- Supabase/Postgres     Supabase Storage
- content + revisions  versioned media
-         |
-         v
- Published snapshot -> renderer -> Vercel cache/CDN
+The stack is TanStack Start, React, Puck, Zod, Supabase/PostgreSQL and Vercel. It remains a modular monolith until measured operational needs justify further decomposition.
 
 ## Document contract
 
-The runtime validator currently enforces:
-- Supported document format version.
-- Known block types and a bounded number of blocks.
-- Stable, bounded IDs and a strict layout shape.
-- A per-block property schema.
-- Safe URL schemes for links and media.
-- JSON serializability and a 2 MB document limit.
-- Bounded arrays and text fields.
+A page is a bounded JSON document with a schema version, page identifier and ordered block list. Every block has a stable ID, supported type, validated properties and shared responsive/layout settings. The runtime schema enforces a block allow-list, property-specific contracts, safe URL rules, maximum array/string/document sizes and JSON serializability.
 
-When a component shape changes, bump its schema/version and provide a migration from supported prior documents. Never silently discard properties while loading and resaving a document. Maintain fixtures for published pages so every release can prove legacy content still renders.
+When a block changes shape, provide a deliberate schema migration and test older stored fixtures. Never silently discard authored content on load/resave. Content is data; arbitrary HTML/JavaScript is not a supported document feature.
+
+## Editor and renderers
+
+Puck edits supported block definitions. The public route loader resolves the shared published document and passes it to the same controlled renderer, preserving server rendering. Drafts and revisions are private; a local browser draft is a recovery convenience, not a publication.
+
+The registry should gradually move from fields inferred from sample values to explicit typed definitions, so text, URLs, assets, references and tokens retain their semantic types.
+
+## Database and authorization
+
+The shared Supabase project is the source of truth across visitors and editors. Vercel's public `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` configure the browser-safe client. Server-only database credentials never enter a browser bundle.
+
+The editor requires Supabase Auth `app_metadata.cms_role` of `owner`, `admin` or `editor`. The PostgreSQL RLS policies enforce the same role allow-list. User-editable metadata is not trusted. The publishing RPC uses invoker security and relies on the table policies; do not bypass RLS to resolve deployment failures.
 
 ## Publication protocol
 
-1. Load draft and current published version.
-2. Edit locally; autosave the draft to the shared database when connected.
-3. Validate the complete document before save/publish.
-4. Call the transactional publish function with the expected version.
-5. In one transaction, verify the expected version, write the published document, advance the version and append its revision.
-6. Update the client state only after the database confirms success.
-7. Invalidate caches and record a publish event.
-8. If the expected version is stale, keep the draft and ask the editor to reload or reconcile changes.
+1. Load the shared document and current published version.
+2. Edit a private draft and validate the complete document.
+3. Save the draft to shared storage when the database is available.
+4. Publish with the expected current version.
+5. In one transaction, verify the version, update the publication and insert a revision snapshot.
+6. Reject stale edits instead of silently overwriting another editor's work.
+7. Verify the public route after publication.
 
-A missing database or publishing migration is a blocked publication, not a local-only success.
-
-## Recommended evolution
-
-### Phase A — correctness and safety
-- Validate every document read from local storage or the database.
-- Prevent browser persistence of privileged credentials and remove old persisted secret fields.
-- Reconcile environment-variable names.
-- Stop treating local-only content as live.
-- Make publication transactional and concurrency-aware.
-
-### Phase B — content platform
-- Add explicit typed registry definitions and migration fixtures.
-- Introduce managed media assets and a reusable-content collection model.
-- Add draft autosave status, dirty-state protection and stale-edit handling.
-- Add a real preview mode that reads draft content without public cache exposure.
-
-### Phase C — publication and delivery
-- Make publication events and cache invalidation observable and retryable.
-- Add rollback, scheduled publishing and approval workflows only when required.
-- Add metadata-aware SSR/SEO and static generation for stable public pages.
-- Add performance budgets and load tests before introducing extra infrastructure.
-
-### Phase D — operating maturity
-- Separate local, preview and production Supabase projects.
-- Apply migrations through reviewed, repeatable deployment steps.
-- Use least-privilege database roles and verified RLS policies.
-- Enable backups and rehearse recovery.
-- Add metrics for route latency, rendering errors, validation errors and failed publications.
+Production migrations are applied separately from Vercel builds. Take a backup and verify the existing CMS table shapes, keys and RLS policies before applying the CMS foundation and atomic publisher migrations.
 
 ## Release gates
 
-A release is not ready until these are demonstrated:
-- bun run build succeeds on a clean checkout.
-- Valid current documents parse; malformed, oversized, unsafe-link and unknown-block documents are rejected.
-- A page can be loaded from the database, edited, saved, reloaded and published without data loss.
-- Concurrent publishers cannot silently overwrite each other.
-- Published documents are visible to another browser; local-only drafts are not.
-- An unauthenticated or unauthorized user cannot publish or edit content.
-- RLS blocks unauthorized direct table operations.
-- Rollback restores a known-good document.
-- Public caching never leaks drafts or crosses site/page boundaries.
-- All supported blocks render accessibly at mobile and desktop sizes.
+Before enabling production editing, demonstrate that anonymous users can read published documents but not drafts/revisions, unapproved users cannot edit, an owner can load/save/publish/reload from a second browser, stale writes are rejected, revisions are written transactionally and the public site never serves a local draft.
+
+Follow-up capabilities include revision restoration UI, managed asset uploads, cache invalidation events, scheduled publishing if needed, browser-level testing, observability and performance budgets.

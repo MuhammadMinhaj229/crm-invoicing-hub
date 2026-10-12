@@ -1,37 +1,52 @@
-# How the system is put together
+# Safar Studio architecture
 
-One business system, not separate tools. The same database, the same
-customer record, the same timeline everywhere.
+Safar Studio is the public SAFAR N MANZIL website and the authenticated visual page editor. The platform is a modular monolith: one deployed application, one reviewed component registry and one shared CMS database. Do not split it into services unless observed traffic or operational boundaries justify that complexity.
 
-## Parts
+## Runtime responsibilities
 
-| Part | Where it lives | What it does |
-| --- | --- | --- |
-| Public website | `src/routes/index.tsx` | Everything on it comes from the Website content editor. No text is fixed in the code. |
-| Website content | `src/lib/cms.ts`, `cms_sections`, `cms_revisions` | Draft, publish, history, restore. |
-| Visitor tracking | `src/lib/analytics.ts`, `visitors`, `visitor_sessions`, `events` | First-party only. No outside tracker, no private identity. |
-| Lead capture | `src/lib/website-capture.ts`, `leads`, `attribution_touches` | A form or a WhatsApp click creates a real lead with where it came from. |
-| Customers | `src/lib/crm.ts`, `contacts`, `identity_links` | One person, one record. Phone and email are cleaned before matching. |
-| Messages | `src/lib/messaging.ts`, `conversations`, `messages` | WhatsApp and social chats in one inbox, tied to the customer. |
-| Money | `src/lib/finance.ts`, `invoices`, `invoice_items`, `payments`, `expenses`, `provider_payables` | Every amount comes from a record, never from a note. |
-| Knowledge | `src/lib/knowledge.ts`, `knowledge_entries` | Services, prices, areas, hours, questions — written once. |
-| Automations | `src/lib/automation.ts`, `automations`, `automation_runs` | When this happens, do that. Every run is saved. |
-| Settings | `src/lib/workspace-settings.ts`, `app_settings` | Look, menu, currency, stages, retention rules, lead points. |
+| Layer | Responsibility |
+| --- | --- |
+| TanStack Start routes | Resolve public pages and render published documents on the server. |
+| Page document model | Stable block IDs, ordered components, layout metadata and format version. |
+| Zod schema | Validate imported, browser-stored and database content against a bounded contract. |
+| Puck studio | Compose supported blocks using the same registry and renderers as the public site. |
+| Supabase Auth | Establish identity and provide a server-controlled CMS editor role. |
+| PostgreSQL CMS | Store shared page documents, drafts, publication state and revision snapshots. |
+| Publishing RPC | Validate the publish envelope, compare expected versions and atomically write a publication and revision. |
+| Vercel | Build and host server-rendered public routes and the editor UI. |
 
-## The journey
+## Data flow
 
 ```text
-visit -> session -> events -> form or WhatsApp click -> lead
-      -> conversation -> customer -> service request -> invoice
-      -> payment -> feedback -> returning customer
+Public visitor -> route loader -> published CMS document -> server-rendered page
+                                                    |
+Approved editor -> Supabase Auth -> Puck Studio -> Zod validation
+                                                    |
+                                                    v
+                                  publish_page_document(page, content, version)
+                                                    |
+                                                    v
+                                PostgreSQL transaction + revision snapshot
 ```
 
-Anonymous activity and known people stay apart until the person gives a
-real signal: a form, a phone number, an email, a WhatsApp message or a
-booking. Nothing is joined on a guess.
+## Security boundaries
 
-## Secrets
+- Public loaders query only records whose status is `published`.
+- Browser-local drafts are never used as authoritative public content.
+- The studio gate checks `app_metadata.cms_role`; PostgreSQL RLS remains the final data boundary.
+- Public visitors may select published CMS content but cannot read drafts or revisions.
+- Content documents do not execute arbitrary HTML, JavaScript or CSS.
+- The database publisher runs as invoker, requires authentication, validates a bounded envelope and rejects stale versions.
+- The browser receives only the Supabase URL and anon key.
 
-Keys for outside services live only on the server, in environment
-variables. The browser never sees them. Database keys are pasted by the
-owner in Settings and stay in that browser.
+## Scale and reliability
+
+Page documents are limited by schema version, block count, array sizes, field lengths and serialized size. Queries use stable natural keys and revisions are indexed by page section/version. Publication serializes per-page changes through a transaction and returns a version the editor can reconcile.
+
+Avoid overbuilding infrastructure before it is justified. The next scale steps are observed-query indexes, route performance budgets, publish-event/cache invalidation, managed media storage, browser smoke tests and measured load tests.
+
+## Current scope and limitations
+
+This repository currently ships the public website and Puck visual studio. CRM, invoicing, finance, inbox, social publishing and automation workspaces from earlier plans are not present in the current route tree.
+
+The tracked CMS migration tests run against a disposable PostgreSQL fixture. The production Supabase project's schema, grants and RLS policies must still be verified before applying migrations. Revision data is persisted, but a dedicated revision-restore workflow, managed media pipeline and publish-triggered cache invalidation remain follow-up work.
