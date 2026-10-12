@@ -318,10 +318,12 @@ reset role;
 -- Column privileges prevent an editor from bypassing the atomic publisher.
 do $test$
 begin
-  if has_column_privilege('authenticated', 'public.cms_sections', 'content', 'UPDATE')
+  if has_column_privilege('authenticated', 'public.cms_sections', 'page', 'UPDATE')
+     or has_column_privilege('authenticated', 'public.cms_sections', 'section_key', 'UPDATE')
+     or has_column_privilege('authenticated', 'public.cms_sections', 'content', 'UPDATE')
      or has_column_privilege('authenticated', 'public.cms_sections', 'status', 'UPDATE')
      or has_column_privilege('authenticated', 'public.cms_sections', 'version', 'UPDATE') then
-    raise exception 'Editors must not have direct UPDATE privilege on published fields';
+    raise exception 'Editors must not have direct UPDATE privilege on page identity or published fields';
   end if;
   if has_table_privilege('authenticated', 'public.cms_revisions', 'INSERT') then
     raise exception 'Editors must not have direct INSERT privilege on revision history';
