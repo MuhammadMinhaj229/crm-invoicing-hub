@@ -9,8 +9,13 @@ Apply the tracked SQL files in chronological order to the **intended** Supabase 
 1. `supabase/migrations/20261010000000_cms_foundation.sql` creates or validates the CMS tables, indexes, initial grants and RLS boundaries.
 2. `supabase/migrations/20261011000000_atomic_page_publish.sql` installs the validated transactional publisher.
 3. `supabase/migrations/20261012000000_lock_down_cms_access.sql` removes direct public table reads, limits editor table writes to draft fields, and exposes narrow RPCs for published reads, publish and unpublish.
+4. `supabase/migrations/20261012100000_seed_bootstrap_and_handshake.sql` creates versioned site/theme settings, a safe public configuration RPC, the database handshake, and a one-time service-role seed bootstrap.
 
-The third migration intentionally moves the validated publisher implementation into the non-exposed `app_private` schema. The public publishing wrapper checks `auth.uid()` and server-controlled `app_metadata.cms_role` before calling it with elevated privileges. The public read RPC returns only the published `content` JSON—not draft fields, internal IDs or revision history.
+The third migration moves the validated publisher implementation into the non-exposed `safar_private` schema. The public publishing wrapper checks `auth.uid()` and server-controlled `app_metadata.cms_role` before calling it with elevated privileges. The public read RPC returns only the published `content` JSON—not draft fields, internal IDs or revision history.
+
+The fourth migration keeps the global brand/theme configuration in `cms_site_config`; it does not put service credentials or other secrets into website content. `get_cms_handshake(1)` checks that the expected protocol is accepted, the seed is initialized, and published documents exist. `scripts/bootstrap-cms.ts` invokes the service-role-only `bootstrap_cms_seed` RPC, which validates the complete `src/content/seed.json` payload and commits the seed marker, site/theme configuration, published documents and initial revisions in one transaction. Running it again with the same checksum is a no-op. A different seed or non-empty unmarked CMS is refused; intentional content updates should use the editor or a reviewed migration, not reseed over live edits.
+
+Run bootstrap from a trusted local shell or CI job using `SUPABASE_URL`, `SUPABASE_PROJECT_REF` and `SUPABASE_SERVICE_ROLE_KEY`. Never add the service-role key to `VITE_*` variables, browser code, or client-visible logs. The command is `bun run cms:bootstrap`.
 
 Before applying to an existing project:
 
