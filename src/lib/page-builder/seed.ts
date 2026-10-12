@@ -82,7 +82,7 @@ export function prepareCmsSeed(value: unknown): CmsSeedPayload {
       label: nonEmptyString(rawPage["label"], page + ".label"),
       path: nonEmptyString(rawPage["path"], page + ".path"),
       seo: {
-        title: nonEmptyString(seo["title"], page + ".seo["title"]"),
+        title: nonEmptyString(seo["title"], page + ".seo.title"),
         description: typeof seo["description"] === "string" ? seo["description"] : "",
       },
     };
