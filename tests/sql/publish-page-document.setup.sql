@@ -16,6 +16,9 @@ end
 $roles$;
 
 create schema auth;
+create table auth.users (
+  id uuid primary key
+);
 create function auth.uid()
 returns uuid
 language sql
