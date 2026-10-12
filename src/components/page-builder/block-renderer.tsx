@@ -7,6 +7,7 @@ import { generalEnquiryMessage } from "../../lib/whatsapp/templates";
 import { submitWebsiteEnquiry } from "../../lib/website-capture";
 import { track } from "../../lib/analytics";
 import type { Block, BlockLayout, ButtonItem } from "../../lib/page-builder/model";
+import { isSafeHref } from "../../lib/page-builder/safe-url";
 import { cn } from "../../lib/utils";
 import { StoryCarousel } from "../site/story-carousel";
 import { InvoiceExample } from "../site/invoice-example";
@@ -471,8 +472,17 @@ function BlockBody({ block }: { block: Block }) {
                 </>
               );
               const cls = "soft-card block p-6";
-              return c.href && !editing ? (
-                <a key={c.id} href={c.href} className={cn(cls, "transition hover:-translate-y-0.5")}>
+              const href = c.href?.trim() ?? "";
+              const safeHref = href && isSafeHref(href) ? href : null;
+              const external = Boolean(safeHref && /^https?:\\/\\//i.test(safeHref));
+              return safeHref && !editing ? (
+                <a
+                  key={c.id}
+                  href={safeHref}
+                  {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  onClick={() => track("cta.clicked", { label: c.title, href: safeHref })}
+                  className={cn(cls, "transition hover:-translate-y-0.5")}
+                >
                   {inner}
                 </a>
               ) : (
