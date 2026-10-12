@@ -14,7 +14,15 @@ set search_path = pg_catalog
 as $function$
   select
     p_value ~* '^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$'
-    or p_value ~* '^oklch[(][[:space:]]*[0-9.%+-]+[[:space:]]+[0-9.%+-]+[[:space:]]+[0-9.%+-]+([[:space:]]*/[[:space:]]*[0-9.%+-]+)?[[:space:]]*[)]
+    or (
+      right(btrim(p_value), 1) = ')'
+      and length(btrim(p_value)) <= 100
+      and length(regexp_replace(
+        btrim(p_value),
+        '^oklch[(][[:space:]]*[0-9.%+-]+[[:space:]]+[0-9.%+-]+[[:space:]]+[0-9.%+-]+([[:space:]]*/[[:space:]]*[0-9.%+-]+)?[[:space:]]*[)]',
+        ''
+      )) = 0
+    )
 $function$;
 
 revoke all on function safar_private.is_safe_theme_color(text) from public, anon, authenticated;
