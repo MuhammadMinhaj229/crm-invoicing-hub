@@ -67,6 +67,9 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261012100000_seed_bootstrap_and_handshake.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/sql/cms-seed-bootstrap.test.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/sql/publish-page-document.test.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/sql/legacy-schema-reset.setup.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/migrations/20261014090000_reset_legacy_public_schema.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f tests/sql/legacy-schema-reset.test.sql
       - name: Type check
         run: bunx tsc --noEmit
       - name: Studio production build

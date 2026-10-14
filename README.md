@@ -97,6 +97,7 @@ The CMS migrations are version-controlled and must be applied in this order, aft
 
 3. `supabase/migrations/20261012000000_lock_down_cms_access.sql` — published-only read RPC, editor-only base-table access, draft-only column grants and role-checked publish/unpublish.
 4. `supabase/migrations/20261012100000_seed_bootstrap_and_handshake.sql` — versioned site/theme configuration, public route manifest, CMS handshake and atomic one-time seed bootstrap.
+5. `supabase/migrations/20261014090000_reset_legacy_public_schema.sql` — archives former public-table rows privately, removes legacy CRM/inbox/automation tables, functions and enum types, and preserves Supabase Auth plus the six CMS tables.
 
 These migrations are **only for the website CMS**. They are additive to the existing project schema and do not recreate the CRM business schema or the optional inbound WhatsApp adapter's tables. Review [Database setup](docs/database.md), [Integration boundaries](docs/integrations.md) and the [Production deployment runbook](docs/deployment.md) before enabling those paths. The production schema must be inspected and backed up first; never replay migrations blindly.
 
