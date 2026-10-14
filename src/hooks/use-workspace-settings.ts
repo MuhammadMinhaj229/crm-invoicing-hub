@@ -13,7 +13,8 @@ import {
 } from "../lib/workspace-settings";
 
 /** Reactive access to the workspace configuration. */
-export function useWorkspaceSettings() {
+export function useWorkspaceSettings(options: { loadShared?: boolean } = {}) {
+  const loadShared = options.loadShared ?? true;
   const settings = useSyncExternalStore(
     onWorkspaceSettingsChange,
     getWorkspaceSettings,
@@ -21,8 +22,8 @@ export function useWorkspaceSettings() {
   );
 
   useEffect(() => {
-    void loadSharedWorkspaceSettings();
-  }, []);
+    if (loadShared) void loadSharedWorkspaceSettings();
+  }, [loadShared]);
 
   const update = useCallback((patch: Partial<WorkspaceSettings>) => {
     const next = { ...getWorkspaceSettings(), ...patch };
@@ -34,8 +35,8 @@ export function useWorkspaceSettings() {
 }
 
 /** Keeps the document palette in sync with the configured theme. */
-export function useThemeSync(settings: WorkspaceSettings): void {
+export function useThemeSync(settings: WorkspaceSettings, enabled = true): void {
   useEffect(() => {
-    applyTheme(settings);
-  }, [settings]);
+    if (enabled) applyTheme(settings);
+  }, [settings, enabled]);
 }

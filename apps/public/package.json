@@ -1,0 +1,8 @@
+{
+  "name": "safar-public",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "cd ../.. && bun run build:public"
+  }
+}

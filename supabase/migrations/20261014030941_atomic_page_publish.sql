@@ -49,8 +49,25 @@ begin
      or jsonb_typeof(p_content -> 'schemaVersion') is distinct from 'number'
      or p_content ->> 'schemaVersion' is distinct from '1'
      or jsonb_typeof(p_content -> 'blocks') is distinct from 'array'
-     or p_content ->> 'page' is distinct from p_page then
-    raise exception 'Page document shape, version or page identifier is invalid.'
+     or p_content ->> 'page' is distinct from p_page
+     or (
+       p_content ? 'metadata'
+       and (
+         jsonb_typeof(p_content -> 'metadata') is distinct from 'object'
+         or jsonb_typeof(p_content #> '{metadata,label}') is distinct from 'string'
+         or length(btrim(coalesce(p_content #>> '{metadata,label}', ''))) = 0
+         or length(p_content #>> '{metadata,label}') > 4000
+         or coalesce(p_content #>> '{metadata,path}', '') !~ '^/[A-Za-z0-9/_-]*$'
+         or left(coalesce(p_content #>> '{metadata,path}', ''), 2) = '//' 
+         or jsonb_typeof(p_content #> '{metadata,seo}') is distinct from 'object'
+         or jsonb_typeof(p_content #> '{metadata,seo,title}') is distinct from 'string'
+         or length(btrim(coalesce(p_content #>> '{metadata,seo,title}', ''))) = 0
+         or length(p_content #>> '{metadata,seo,title}') > 500
+         or jsonb_typeof(p_content #> '{metadata,seo,description}') is distinct from 'string'
+         or length(p_content #>> '{metadata,seo,description}') > 2000
+       )
+     ) then
+    raise exception 'Page document shape, version, page identifier or route metadata is invalid.'
       using errcode = '22023';
   end if;
 
@@ -214,6 +231,15 @@ begin
           using errcode = '40001';
     end;
   end if;
+
+  -- Keep a public-safe projection in sync inside the same transaction. This
+  -- table contains only live published documents; drafts remain private.
+  insert into public.cms_published_documents (page, content, version, updated_at)
+  values (p_page, p_content, v_next_version, now())
+  on conflict (page) do update
+    set content = excluded.content,
+        version = excluded.version,
+        updated_at = excluded.updated_at;
 
   insert into public.cms_revisions (section_id, content, version)
   values (v_section_id, p_content, v_next_version);

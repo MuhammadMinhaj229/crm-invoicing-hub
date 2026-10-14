@@ -31,8 +31,9 @@ const ENUMS: Record<string, string[]> = {
 const LABELS: Record<string, string> = {
   href: "Link (/page, whatsapp, phone, email or https://…)",
   imageAlt: "Picture description",
-  src: "Picture",
+  src: "Media file URL or site path",
   image: "Picture",
+  poster: "Video poster image",
 };
 
 const human = (key: string) =>
@@ -174,9 +175,14 @@ export function documentToPuck(doc: PageDocument): Data {
   } as Data;
 }
 
-export function puckToDocument(page: string, data: Data): PageDocument {
+export function puckToDocument(
+  page: string,
+  data: Data,
+  metadata?: PageDocument["metadata"],
+): PageDocument {
   return {
     page,
+    ...(metadata ? { metadata } : {}),
     blocks: data.content.map((c) => propsToBlock(c.type as BlockType, c.props as Record<string, unknown>)),
   };
 }

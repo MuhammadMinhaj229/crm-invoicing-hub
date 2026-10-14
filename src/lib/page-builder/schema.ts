@@ -131,6 +131,8 @@ const propsSchemas: Record<BlockType, z.ZodTypeAny> = {
     eyebrow: shortTextSchema,
     title: shortTextSchema,
     text: textSchema,
+    src: assetSchema.default("/media/safar-brand-film.mp4"),
+    poster: assetSchema.default("/media/safar-brand-film-poster.jpg"),
     items: cardList,
   }).strict(),
   storyCarousel: z.object({
@@ -205,9 +207,19 @@ const blockEnvelopeSchema = z.object({
   anchor: z.string().max(120).optional(),
 }).strict();
 
+const pageMetadataSchema = z.object({
+  label: shortTextSchema,
+  path: z.string().trim().min(1).max(500).regex(/^\/(?!\/)[A-Za-z0-9/_-]*$/, "Use a local absolute route path."),
+  seo: z.object({
+    title: z.string().trim().min(1).max(500),
+    description: z.string().trim().max(2_000),
+  }).strict(),
+}).strict();
+
 const pageDocumentSchema = z.object({
   schemaVersion: z.literal(PAGE_DOCUMENT_VERSION).default(PAGE_DOCUMENT_VERSION),
   page: z.string().trim().min(1).max(200),
+  metadata: pageMetadataSchema.optional(),
   blocks: z.array(blockEnvelopeSchema).max(MAX_BLOCKS),
   updatedAt: z.string().datetime({ offset: true }).optional(),
 }).strict();

@@ -6,7 +6,8 @@
       "name": "SAFAR N MANZIL",
       "tagline": "Help for your family in India, while you work in the Gulf",
       "description": "We do the shopping, parcels, home repairs, hospital visits and paperwork for your family back home in India — with photos, updates and a clear price agreed before we start.",
-      "motto": "We do. We assist. We connect."
+      "motto": "We do. We assist. We connect.",
+      "logoUrl": "/media/safar-logo.png"
     },
     "contact": {
       "whatsapp": "917207071874",
@@ -192,7 +193,9 @@
                 "title": "Photo proof after every task",
                 "text": ""
               }
-            ]
+            ],
+            "src": "/media/safar-brand-film.mp4",
+            "poster": "/media/safar-brand-film-poster.jpg"
           },
           "anchor": "film"
         },

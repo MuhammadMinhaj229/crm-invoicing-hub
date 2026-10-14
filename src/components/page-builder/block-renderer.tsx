@@ -12,7 +12,6 @@ import { cn } from "../../lib/utils";
 import { StoryCarousel } from "../site/story-carousel";
 import { InvoiceExample } from "../site/invoice-example";
 import { ServiceFilm } from "../site/service-film";
-import { brandFilm, brandFilmPoster } from "../../lib/media";
 
 
 /* ---------- editing context ---------- */
@@ -397,8 +396,8 @@ function BlockBody({ block }: { block: Block }) {
       const p = block.props;
       return (
         <ServiceFilm
-          src={brandFilm.url}
-          poster={brandFilmPoster.url}
+          src={p.src}
+          poster={p.poster}
           eyebrow={p.eyebrow}
           title={p.title}
           text={p.text}

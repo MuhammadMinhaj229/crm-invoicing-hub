@@ -110,13 +110,14 @@ export function getSupabase(): SupabaseClient | null {
   const fingerprint = config.url + "|" + config.anonKey;
   if (!client || clientFingerprint !== fingerprint) {
     const isBrowser = typeof window !== "undefined";
+    // The dedicated public-site bundle is read-only and must never persist an
+    // editor login/session. The studio build leaves VITE_APP_ROLE unset.
+    const isPublicRuntime = import.meta.env["VITE_APP_ROLE"] === "public";
     client = createClient(config.url, config.anonKey, {
       auth: {
-        // Public route loaders run on the server; only browser clients should
-        // persist a user session in local storage.
-        persistSession: isBrowser,
-        autoRefreshToken: isBrowser,
-        detectSessionInUrl: isBrowser,
+        persistSession: isBrowser && !isPublicRuntime,
+        autoRefreshToken: isBrowser && !isPublicRuntime,
+        detectSessionInUrl: isBrowser && !isPublicRuntime,
       },
     });
     clientFingerprint = fingerprint;
