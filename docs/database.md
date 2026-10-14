@@ -6,10 +6,11 @@ Safar Studio uses Supabase Auth and PostgreSQL for shared website drafts, public
 
 Apply the tracked SQL files in chronological order to the **intended** Supabase project:
 
-1. `supabase/migrations/20261010000000_cms_foundation.sql` creates or validates the CMS tables, indexes, initial grants and RLS boundaries.
-2. `supabase/migrations/20261011000000_atomic_page_publish.sql` installs the validated transactional publisher.
-3. `supabase/migrations/20261012000000_lock_down_cms_access.sql` removes direct public table reads, limits editor table writes to draft fields, and exposes narrow RPCs for published reads, publish and unpublish.
-4. `supabase/migrations/20261012100000_seed_bootstrap_and_handshake.sql` creates versioned site/theme settings, a safe public configuration RPC, the database handshake, and a one-time service-role seed bootstrap.
+1. `supabase/migrations/20261014030938_cms_foundation.sql` creates or validates the CMS tables, indexes, initial grants and RLS boundaries.
+2. `supabase/migrations/20261014030941_atomic_page_publish.sql` installs the validated transactional publisher.
+3. `supabase/migrations/20261014030945_lock_down_cms_access.sql` removes direct public table reads, limits editor table writes to draft fields, and exposes narrow RPCs for published reads, publish and unpublish.
+4. `supabase/migrations/20261014030947_seed_bootstrap_and_handshake.sql` creates versioned site/theme settings, a safe public configuration RPC, the database handshake, and a one-time service-role seed bootstrap.
+5. `supabase/migrations/20261014030950_reset_legacy_public_schema.sql` archives legacy public-table rows in a restricted `safar_private` snapshot and removes the previous CRM/business objects. It must run after the four CMS migrations and before initial seed bootstrap.
 
 The third migration moves the validated publisher implementation into the non-exposed `safar_private` schema. The public publishing wrapper checks `auth.uid()` and server-controlled `app_metadata.cms_role` before calling it with elevated privileges. The public read RPC returns only the published `content` JSON—not draft fields, internal IDs or revision history.
 

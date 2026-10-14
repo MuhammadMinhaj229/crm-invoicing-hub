@@ -6,7 +6,7 @@ Safar Studio runs on Vercel and uses Supabase for shared content. Deploy code an
 
 - Confirm the GitHub repository, Vercel project and production Supabase project reference.
 - Verify the production owner account and its recovery path.
-- Take a recoverable database backup before any schema change.
+- Take a recoverable database backup before any schema change. The reset migration is destructive to legacy public app objects; retain its restricted row snapshot until editor/public sync smoke tests pass.
 - Review the tracked migration diff and current database state.
 - Check GitHub Actions for the exact commit that will be released.
 
@@ -42,11 +42,11 @@ Only if the optional inbound WhatsApp adapter is enabled, configure server-only 
 
 On a new or verified CMS schema, apply in filename order:
 
-1. `supabase/migrations/20261010000000_cms_foundation.sql`
-2. `supabase/migrations/20261011000000_atomic_page_publish.sql`
-3. `supabase/migrations/20261012000000_lock_down_cms_access.sql`
-4. `supabase/migrations/20261012100000_seed_bootstrap_and_handshake.sql`
-5. `supabase/migrations/20261014090000_reset_legacy_public_schema.sql` — archives legacy table rows in the restricted `safar_private` schema and removes the previous public CRM/business schema. It must run after the four CMS migrations and before the first seed bootstrap.
+1. `supabase/migrations/20261014030938_cms_foundation.sql`
+2. `supabase/migrations/20261014030941_atomic_page_publish.sql`
+3. `supabase/migrations/20261014030945_lock_down_cms_access.sql`
+4. `supabase/migrations/20261014030947_seed_bootstrap_and_handshake.sql`
+5. `supabase/migrations/20261014030950_reset_legacy_public_schema.sql` — archives legacy table rows in the restricted `safar_private` schema and removes the previous public CRM/business schema. It must run after the four CMS migrations and before the first seed bootstrap.
 
 Review the SQL, confirm the target project reference, inspect old CMS policies/uniqueness and take a backup. If the old schema differs or contains duplicate keys, stop and reconcile it instead of disabling RLS or deleting rows opportunistically.
 

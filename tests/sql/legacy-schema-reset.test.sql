@@ -1,4 +1,4 @@
--- Run only after 20261014090000_reset_legacy_public_schema.sql in disposable CI PostgreSQL.
+-- Run only after 20261014030950_reset_legacy_public_schema.sql in disposable CI PostgreSQL.
 \set ON_ERROR_STOP on
 
 do $test$

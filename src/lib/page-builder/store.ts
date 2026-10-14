@@ -223,7 +223,7 @@ export async function saveDocumentDraft(doc: PageDocument): Promise<"cloud" | "l
  * Publish through a single PostgreSQL transaction. The expected version stops
  * a stale editor from silently replacing a newer published page.
  *
- * Requires supabase/migrations/20261011000000_atomic_page_publish.sql to be
+ * Requires supabase/migrations/20261014030941_atomic_page_publish.sql to be
  * applied to the connected Supabase project. It intentionally fails closed if
  * the database connection or migration is missing.
  */
@@ -255,7 +255,7 @@ export async function publishDocument(doc: PageDocument, expectedVersion: number
 
   if (error) {
     if (/publish_page_document|schema cache|could not find the function/i.test(error.message)) {
-      throw new Error("The atomic publishing migration is not installed on this Supabase project. Apply supabase/migrations/20261011000000_atomic_page_publish.sql, then retry.");
+      throw new Error("The atomic publishing migration is not installed on this Supabase project. Apply supabase/migrations/20261014030941_atomic_page_publish.sql, then retry.");
     }
     if (error.code === "40001") {
       throw new Error("This page changed in another editor. Reload the page to review the latest version before publishing.");
@@ -301,7 +301,7 @@ export async function unpublishDocument(page: string): Promise<void> {
       throw new Error("This page changed in another editor. Reload the page before unpublishing.");
     }
     if (/unpublish_page_document|schema cache|could not find the function/i.test(error.message)) {
-      throw new Error("The CMS security migration is not installed. Apply supabase/migrations/20261012000000_lock_down_cms_access.sql, then retry.");
+      throw new Error("The CMS security migration is not installed. Apply supabase/migrations/20261014030945_lock_down_cms_access.sql, then retry.");
     }
     throw new Error("Unpublishing failed: " + error.message);
   }

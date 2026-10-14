@@ -10,7 +10,7 @@ Verify the route's page identifier, the `cms_sections` row's `section_key = '__d
 
 ## Publish reports a missing function
 
-Apply `supabase/migrations/20261010000000_cms_foundation.sql`, `supabase/migrations/20261011000000_atomic_page_publish.sql`, `supabase/migrations/20261012000000_lock_down_cms_access.sql` and `supabase/migrations/20261012100000_seed_bootstrap_and_handshake.sql` in order, after reviewing the intended database project and RLS policies. Then run the one-time bootstrap command from a trusted server environment: `bun run cms:bootstrap`. Do not work around a missing RPC with direct writes or by disabling RLS.
+Apply `supabase/migrations/20261014030938_cms_foundation.sql`, `supabase/migrations/20261014030941_atomic_page_publish.sql`, `supabase/migrations/20261014030945_lock_down_cms_access.sql` and `supabase/migrations/20261014030947_seed_bootstrap_and_handshake.sql` in order, after reviewing the intended database project and RLS policies. Then run the one-time bootstrap command from a trusted server environment: `bun run cms:bootstrap`. Do not work around a missing RPC with direct writes or by disabling RLS.
 
 ## Database handshake says seed required
 
