@@ -95,7 +95,10 @@ The CMS migrations are version-controlled and must be applied in this order, aft
 1. `supabase/migrations/20261010000000_cms_foundation.sql` — CMS tables, indexes, grants and restrictive RLS policy guards.
 2. `supabase/migrations/20261011000000_atomic_page_publish.sql` — transactional publication and revision creation.
 
-These migrations are **only for the website CMS**. They do not recreate the old CRM business schema or the optional inbound WhatsApp adapter's tables. See [Database setup](docs/database.md) and [Integration boundaries](docs/integrations.md) before enabling those paths.
+3. `supabase/migrations/20261012000000_lock_down_cms_access.sql` — published-only read RPC, editor-only base-table access, draft-only column grants and role-checked publish/unpublish.
+4. `supabase/migrations/20261012100000_seed_bootstrap_and_handshake.sql` — versioned site/theme configuration, public route manifest, CMS handshake and atomic one-time seed bootstrap.
+
+These migrations are **only for the website CMS**. They are additive to the existing project schema and do not recreate the CRM business schema or the optional inbound WhatsApp adapter's tables. Review [Database setup](docs/database.md), [Integration boundaries](docs/integrations.md) and the [Production deployment runbook](docs/deployment.md) before enabling those paths. The production schema must be inspected and backed up first; never replay migrations blindly.
 
 ### Provision an editor
 
