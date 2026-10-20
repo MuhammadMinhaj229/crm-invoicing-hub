@@ -1,0 +1,17 @@
+# Safar Studio's schema is maintained in supabase/migrations/.
+# The complete media/content bootstrap is intentionally run through scripts/bootstrap-cms.ts,
+# not the CLI's seed.sql hook, because it must call an atomic service-role-only RPC.
+project_id = "uzpnvylarbfttzhjqduj"
+
+[api]
+enabled = true
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+major_version = 17
+
+[db.seed]
+enabled = false
+sql_paths = ["./seed.sql"]

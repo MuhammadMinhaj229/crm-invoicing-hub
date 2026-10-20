@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PublishedOr } from "../components/page-builder/published-page";
+import { loadPublishedPage } from "../lib/page-builder/published-state";
 import { CheckCircle2, MessageCircle } from "lucide-react";
 
 import { PageShell } from "../components/layout/page-shell";
@@ -14,10 +15,12 @@ import { serviceEnquiryMessage } from "../lib/whatsapp/templates";
 import { useSiteContact } from "../hooks/use-site-contact";
 
 export const Route = createFileRoute("/services/$slug")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const service = findService(params.slug);
     if (!service) throw notFound();
-    return { service };
+    const publishedPage = await loadPublishedPage(`service:${params.slug}`);
+    if (publishedPage.publishedDocumentStatus === "unpublished") throw notFound();
+    return { service, ...publishedPage };
   },
   head: ({ params, loaderData }) => {
     if (!loaderData) {
@@ -26,15 +29,15 @@ export const Route = createFileRoute("/services/$slug")({
     const { service } = loaderData;
     return {
       meta: [
-        { title: `${service.seo.title} — ${site.brand.name}` },
-        { name: "description", content: service.seo.description },
-        { property: "og:title", content: service.seo.title },
-        { property: "og:description", content: service.seo.description },
+        { title: loaderData.publishedDocument?.metadata?.seo.title ?? `${service.seo.title} — ${site.brand.name}` },
+        { name: "description", content: loaderData.publishedDocument?.metadata?.seo.description ?? service.seo.description },
+        { property: "og:title", content: loaderData.publishedDocument?.metadata?.seo.title ?? service.seo.title },
+        { property: "og:description", content: loaderData.publishedDocument?.metadata?.seo.description ?? service.seo.description },
         { property: "og:type", content: "website" },
-        { property: "og:url", content: `/services/${params.slug}` },
+        { property: "og:url", content: loaderData.publishedDocument?.metadata?.path ?? `/services/${params.slug}` },
         { name: "twitter:card", content: "summary_large_image" },
       ],
-      links: [{ rel: "canonical", href: `/services/${params.slug}` }],
+      links: [{ rel: "canonical", href: loaderData.publishedDocument?.metadata?.path ?? `/services/${params.slug}` }],
       scripts: [
         { type: "application/ld+json", children: JSON.stringify(serviceSchema(service)) },
         {
@@ -189,8 +192,9 @@ function ServiceDetail() {
 
 function ServiceDetailRoute() {
   const { slug } = Route.useParams();
+  const { publishedDocument, publishedDocumentStatus, siteConfigContent, globalDocument, usesSeedFallback } = Route.useLoaderData();
   return (
-    <PublishedOr page={`service:${slug}`} pageName={`service:${slug}`}>
+    <PublishedOr page={`service:${slug}`} pageName={`service:${slug}`} initialDocument={publishedDocument} status={publishedDocumentStatus} siteConfigContent={siteConfigContent} globalDocument={globalDocument} usesSeedFallback={usesSeedFallback}>
       <ServiceDetail />
     </PublishedOr>
   );

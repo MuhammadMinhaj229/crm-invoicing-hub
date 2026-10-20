@@ -1,15 +1,22 @@
 {
-  "name": "tanstack_start_ts",
+  "name": "safar-studio",
   "private": true,
   "sideEffects": false,
   "type": "module",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
+    "build:public": "vite build --config vite.public.config.ts --mode public",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "test:schema": "bun test tests/page-document-schema.test.ts",
+    "cms:bootstrap": "bun run scripts/bootstrap-cms.ts",
+    "check": "bun run lint:architecture && bun run typecheck && bun run test && bun run build && bun run build:public",
+    "lint:architecture": "eslint apps/public/main.tsx vite.public.config.ts src/lib/page-builder/schema.ts src/lib/page-builder/store.ts src/lib/page-builder/model.ts src/lib/page-builder/seed.ts src/lib/page-builder/safe-url.ts src/lib/page-builder/access.ts src/lib/supabase.ts src/components/page-builder/block-renderer.tsx src/routes/auth.tsx src/routes/_authenticated/route.tsx src/routes/_authenticated/builder.tsx src/routes/api/public/whatsapp/webhook.ts src/lib/whatsapp/webhook-auth.ts scripts/bootstrap-cms.ts tests/page-document-schema.test.ts tests/cms-seed.test.ts tests/access-control.test.ts tests/webhook-auth.test.ts --rule '{\"prettier/prettier\":\"off\"}'"
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -92,5 +99,9 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
+  },
+  "description": "Schema-driven visual website editor and publishing platform for SAFAR N MANZIL.",
+  "engines": {
+    "node": ">=22"
   }
 }

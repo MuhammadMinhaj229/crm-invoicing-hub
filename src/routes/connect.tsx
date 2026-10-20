@@ -42,7 +42,14 @@ function ConnectDevicePage() {
         setMessage(test.message);
         return;
       }
-      saveStoredSupabaseConfig(config);
+      try {
+        saveStoredSupabaseConfig(config);
+      } catch (error) {
+        if (cancelled) return;
+        setFailed(true);
+        setMessage(error instanceof Error ? error.message : "This deployment's shared database could not be changed.");
+        return;
+      }
       window.location.hash = "";
       setMessage("This device is connected. Taking you to sign in…");
       setTimeout(() => navigate({ to: "/auth", replace: true }), 900);

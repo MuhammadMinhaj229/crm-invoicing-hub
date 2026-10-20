@@ -5,13 +5,23 @@ import { buildTelUrl, buildWhatsAppUrl } from "../../lib/whatsapp/url-builder";
 import { generalEnquiryMessage } from "../../lib/whatsapp/templates";
 import { useSiteContact } from "../../hooks/use-site-contact";
 import { site } from "../../content/site";
+import type { ContactChannels } from "../../types/site";
 
 /**
  * Persistent conversion actions. Each pill is a real link with a 44px+ target
  * and only renders when that channel is actually configured.
  */
-export function FloatingActions({ context }: { context: string }) {
-  const contact = useSiteContact();
+export function FloatingActions({
+  context,
+  canonicalContact,
+  labels,
+}: {
+  context: string;
+  canonicalContact?: ContactChannels | undefined;
+  labels?: { whatsapp: string; call: string } | undefined;
+}) {
+  const legacyContact = useSiteContact({ enabled: !canonicalContact });
+  const contact = canonicalContact ?? legacyContact;
   const whatsappUrl = buildWhatsAppUrl(contact.whatsapp, generalEnquiryMessage());
   const telUrl = buildTelUrl(contact.phone);
 
@@ -31,7 +41,7 @@ export function FloatingActions({ context }: { context: string }) {
           className="inline-flex min-h-[48px] items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-95"
         >
           <MessageCircle className="h-5 w-5" aria-hidden="true" />
-          {site.cta.whatsapp}
+          {labels?.whatsapp ?? site.cta.whatsapp}
         </a>
       ) : null}
       {telUrl ? (
@@ -41,7 +51,7 @@ export function FloatingActions({ context }: { context: string }) {
           className="inline-flex min-h-[48px] items-center gap-2 rounded-full border border-foreground/15 bg-card px-5 text-sm font-semibold text-foreground shadow-md transition-transform hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:scale-95"
         >
           <Phone className="h-5 w-5" aria-hidden="true" />
-          {site.cta.call}
+          {labels?.call ?? site.cta.call}
         </a>
       ) : null}
     </aside>

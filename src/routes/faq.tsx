@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PublishedOr } from "../components/page-builder/published-page";
+import { loadPublishedPage } from "../lib/page-builder/published-state";
 import { useEffect } from "react";
 
 import { PageShell } from "../components/layout/page-shell";
@@ -28,17 +29,17 @@ const GROUPS: { key: string; label: string }[] = [
 ];
 
 export const Route = createFileRoute("/faq")({
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
-      { title: `${TITLE} — ${site.brand.name}` },
-      { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
+      { title: loaderData?.publishedDocument?.metadata?.seo.title ?? `${TITLE} — ${site.brand.name}` },
+      { name: "description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? DESCRIPTION },
+      { property: "og:title", content: loaderData?.publishedDocument?.metadata?.seo.title ?? TITLE },
+      { property: "og:description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/faq" },
+      { property: "og:url", content: loaderData?.publishedDocument?.metadata?.path ?? "/faq" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/faq" }],
+    links: [{ rel: "canonical", href: loaderData?.publishedDocument?.metadata?.path ?? "/faq" }],
     scripts: [
       { type: "application/ld+json", children: JSON.stringify(faqSchema()) },
       {
@@ -52,6 +53,11 @@ export const Route = createFileRoute("/faq")({
       },
     ],
   }),
+  loader: async () => {
+    const publishedPage = await loadPublishedPage("faq");
+    if (publishedPage.publishedDocumentStatus === "unpublished") throw notFound();
+    return publishedPage;
+  },
   component: FaqPageRoute,
 });
 
@@ -113,8 +119,9 @@ function FaqPage() {
 }
 
 function FaqPageRoute() {
+  const { publishedDocument, publishedDocumentStatus, siteConfigContent, globalDocument, usesSeedFallback } = Route.useLoaderData();
   return (
-    <PublishedOr page="faq" pageName="faq">
+    <PublishedOr page="faq" pageName="faq" initialDocument={publishedDocument} status={publishedDocumentStatus} siteConfigContent={siteConfigContent} globalDocument={globalDocument} usesSeedFallback={usesSeedFallback}>
       <FaqPage />
     </PublishedOr>
   );

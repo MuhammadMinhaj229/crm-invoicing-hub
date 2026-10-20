@@ -1,41 +1,28 @@
-# Outside services
+# Integration boundaries
 
-Nothing is faked here. Where a platform does not allow something, the app
-says so on the **Social** page instead of pretending.
+Safar Studio's current release is the public website and the Puck visual page builder. Old plans and environment variable names may mention other capabilities; do not treat CRM, finance, outbound messaging, social publishing or automation consoles as shipped in this route tree.
 
-## WhatsApp
+## Supabase
 
-Two ways, both behind one adapter, so you can move from one to the other
-without changing anything else.
+Supabase Auth and PostgreSQL support editor access, shared page documents, drafts, published content and revisions. Follow [database setup](database.md) for the migration order and server-controlled editor-role provisioning.
 
-1. **Your own server (Evolution API).** Free and open source. Pair by QR.
-   Set `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE`.
-2. **Official Meta Cloud API.** Needs an approved WhatsApp Business account.
-   Set `WHATSAPP_CLOUD_TOKEN`, `WHATSAPP_CLOUD_PHONE_ID`, `WHATSAPP_VERIFY_TOKEN`.
+## Optional inbound WhatsApp webhook
 
-If both are set, the official one is used.
+The repository contains `/api/public/whatsapp/webhook` as an optional adapter for an existing business database schema. The CMS migrations here do **not** create `webhook_events`, `conversations`, `contacts` or `messages`. Do not enable this endpoint unless those tables, their unique constraints and the intended least-privilege access model already exist.
 
-Incoming messages: point the provider's webhook at
-`https://YOUR-SITE/api/public/whatsapp/webhook`.
-Every call must carry the shared secret (`x-webhook-secret` header or
-`?secret=`), matching `WHATSAPP_WEBHOOK_SECRET`. Repeats of the same message
-are ignored, so a retry never creates two records.
+### Meta WhatsApp Cloud API
 
-## Social platforms
+Configure `WHATSAPP_VERIFY_TOKEN` for the GET verification challenge and `META_APP_SECRET` to verify POST `X-Hub-Signature-256` HMAC signatures on the exact raw body.
 
-| Platform | Can | Cannot |
-| --- | --- | --- |
-| Instagram (Business) | Publish photos and reels, read comments, read messages with an approved app | Work with a personal account |
-| Facebook Page | Publish posts, read comments and messages, read page stats | Post to personal profiles |
-| Google Business Profile | Publish updates, read and reply to reviews | Change or remove honest reviews |
-| LinkedIn Page | Publish company posts, read simple stats | Read private messages |
-| YouTube | Upload videos, read comments and views | Change public numbers |
+### Evolution API
 
-Each one needs its own keys, listed in `.env.example`. Until the keys are
-set, the Social page shows the account as not connected and a planned post
-is kept as a draft — it is never marked as sent.
+Configure `WHATSAPP_WEBHOOK_SECRET` and ensure the provider sends it in the `x-webhook-secret` header. Query-string secrets are not accepted.
 
-## Checking
+Both inbound paths use a server-only `DATABASE_URL` and transactionally persist event idempotency, the conversation and the message. Prefer a dedicated database role restricted to the tables and operations it needs. If server credentials or legacy tables are missing, the endpoint intentionally fails rather than accepting unauthenticated writes.
 
-The team console asks the server which services really have their keys.
-No key value is ever sent back to the browser.
+## Not included in this release
+
+- Legacy CRM, invoices, finance or service-request workspaces.
+- Outbound WhatsApp sending and a multi-channel inbox.
+- Social-platform publishing.
+- Business automation execution.

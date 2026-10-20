@@ -1,43 +1,43 @@
-# When something is not right
+# Troubleshooting
 
-## "Connect your database in Settings first"
+## Studio redirects me to sign in
 
-The browser has no database keys. Open **Settings → Connections**, paste
-your project URL and public key, press Test, then reload.
+Confirm the production deployment has `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Then verify the account exists in the same Supabase Auth project and its server-controlled `app_metadata.cms_role` is `owner`, `admin` or `editor`. Sign out and back in after changing roles so the token refreshes.
 
-## A page says a table is missing
+## Published content does not show
 
-The setup script has not been run, or a newer version has not been run yet.
-Open **Settings → Connections**, press **Copy setup script**, and run the
-whole thing in your Supabase SQL editor. It only adds, so it is safe to run
-again.
+Verify the route's page identifier, the `cms_sections` row's `section_key = '__document'` and `status = 'published'`. The public website reads through `get_published_page_document(text)`; it should not query `cms_sections` directly. Inspect Vercel runtime logs for PostgREST or schema errors. A local browser draft is never public content.
 
-## A message shows "not delivered"
+## Publish reports a missing function
 
-The messaging service is not connected. Check the Connections panel on the
-Dashboard. It tells you exactly which settings are missing. The message is
-kept, so you can send it again once the service is connected.
+Apply `supabase/migrations/20261014030938_cms_foundation.sql`, `supabase/migrations/20261014030941_atomic_page_publish.sql`, `supabase/migrations/20261014030945_lock_down_cms_access.sql` and `supabase/migrations/20261014030947_seed_bootstrap_and_handshake.sql` in order, after reviewing the intended database project and RLS policies. Then run the one-time bootstrap command from a trusted server environment: `bun run cms:bootstrap`. Do not work around a missing RPC with direct writes or by disabling RLS.
 
-## Incoming WhatsApp messages do not arrive
+## Database handshake says seed required
 
-1. The webhook must point to `https://YOUR-SITE/api/public/whatsapp/webhook`.
-2. The call must carry the shared secret that matches `WHATSAPP_WEBHOOK_SECRET`.
-3. `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` must be set on the host.
+Check that all four migrations have been applied to the same Supabase project used by the public site and editor. Confirm that the project reference in `SUPABASE_URL` matches `SUPABASE_PROJECT_REF`, then run `bun run cms:bootstrap` from the trusted repository environment. The bootstrap uses `src/content/seed.json` only for first initialization and never overwrites live edits. If CMS records already exist but the seed marker is missing, the bootstrap refuses to proceed; inspect and reconcile those records rather than deleting them or force-seeding.
 
-Every attempt, good or bad, is written to `webhook_events` with the reason.
+## Realtime says reconnecting
 
-## A social account says "not connected"
+A successful handshake proves the database RPC responded; it does not prove Realtime is subscribed. Check the Supabase Realtime service, the `supabase_realtime` publication membership for `cms_sections` and `cms_site_config`, and the editor's approved `app_metadata.cms_role`. A remote-change indicator asks the editor to review/reload current state; it does not replace unsaved edits automatically.
 
-Its keys are not set on the host. The Social page lists exactly which ones
-each platform needs, and what that platform does and does not allow.
+## Draft saves are denied
 
-## The website shows old text
+Check the current auth token's `app_metadata.cms_role`, the draft-only column grants and every policy on `cms_sections`. Public reads use a narrow RPC; editors cannot write `content`, `status` or `version` directly. Being signed in alone does not grant editor access.
 
-Website content has a draft and a published version. Open **Website**,
-check the section, and press **Publish**.
+## Build or CI fails
 
-## Numbers look wrong
+Reproduce from a clean checkout:
 
-Every number on the Dashboard is counted from real records. If one looks
-wrong, open the matching page (Customers, Finance, Inbox) and check the
-records behind it. Nothing is estimated or filled in.
+```bash
+bun install
+bun run lint:architecture
+bun run typecheck
+bun run test
+bun run build
+```
+
+Read the first compiler/parser error in GitHub Actions or Vercel logs, not only the final generic build failure.
+
+## WhatsApp webhook is unavailable
+
+The webhook adapter is optional and expects pre-existing `webhook_events`, `conversations`, `contacts` and `messages` tables. It requires server-only `DATABASE_URL`; Meta additionally requires `WHATSAPP_VERIFY_TOKEN` and `META_APP_SECRET`, while Evolution requires `WHATSAPP_WEBHOOK_SECRET` delivered in `x-webhook-secret`. Missing signatures, credentials or payload prerequisites fail closed. The CMS migration does not create those business tables.

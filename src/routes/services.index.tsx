@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PublishedOr } from "../components/page-builder/published-page";
+import { loadPublishedPage } from "../lib/page-builder/published-state";
 import { ArrowRight } from "lucide-react";
 
 import { PageShell } from "../components/layout/page-shell";
@@ -15,17 +16,17 @@ const DESCRIPTION =
   "Shopping, home repairs, hospital visits, parcels, paperwork and property checks — done by people we have checked, with photos and a price agreed first.";
 
 export const Route = createFileRoute("/services/")({
-  head: () => ({
+  head: ({ loaderData }) => ({
     meta: [
-      { title: `${TITLE} — ${site.brand.name}` },
-      { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
+      { title: loaderData?.publishedDocument?.metadata?.seo.title ?? `${TITLE} — ${site.brand.name}` },
+      { name: "description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? DESCRIPTION },
+      { property: "og:title", content: loaderData?.publishedDocument?.metadata?.seo.title ?? TITLE },
+      { property: "og:description", content: loaderData?.publishedDocument?.metadata?.seo.description ?? DESCRIPTION },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/services" },
+      { property: "og:url", content: loaderData?.publishedDocument?.metadata?.path ?? "/services" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/services" }],
+    links: [{ rel: "canonical", href: loaderData?.publishedDocument?.metadata?.path ?? "/services" }],
     scripts: [
       { type: "application/ld+json", children: JSON.stringify(serviceListSchema()) },
       {
@@ -39,6 +40,11 @@ export const Route = createFileRoute("/services/")({
       },
     ],
   }),
+  loader: async () => {
+    const publishedPage = await loadPublishedPage("services");
+    if (publishedPage.publishedDocumentStatus === "unpublished") throw notFound();
+    return publishedPage;
+  },
   component: ServicesPageRoute,
 });
 
@@ -95,8 +101,9 @@ function ServicesPage() {
 }
 
 function ServicesPageRoute() {
+  const { publishedDocument, publishedDocumentStatus, siteConfigContent, globalDocument, usesSeedFallback } = Route.useLoaderData();
   return (
-    <PublishedOr page="services" pageName="services">
+    <PublishedOr page="services" pageName="services" initialDocument={publishedDocument} status={publishedDocumentStatus} siteConfigContent={siteConfigContent} globalDocument={globalDocument} usesSeedFallback={usesSeedFallback}>
       <ServicesPage />
     </PublishedOr>
   );

@@ -77,7 +77,7 @@ export type Block =
   | BaseBlock<"serviceStory", { eyebrow: string; title: string; text: string; items: CardItem[] }>
   | BaseBlock<"trustDossier", { eyebrow: string; title: string; text: string; items: CardItem[] }>
   | BaseBlock<"proofReturn", { eyebrow: string; title: string; text: string; image: string; imageAlt: string; items: CardItem[] }>
-  | BaseBlock<"serviceFilm", { eyebrow: string; title: string; text: string; items: CardItem[] }>
+  | BaseBlock<"serviceFilm", { eyebrow: string; title: string; text: string; src: string; poster: string; items: CardItem[] }>
 
   | BaseBlock<"storyCarousel", { title: string; text: string; items: StorySlide[] }>
   | BaseBlock<"invoiceExample", { title: string; text: string; items: InvoiceExampleRow[] }>
@@ -97,8 +97,24 @@ export type Block =
 
 export type BlockType = Block["type"];
 
+export interface PageSeoMetadata {
+  title: string;
+  description: string;
+}
+
+export interface PageMetadata {
+  label: string;
+  /** Canonical route path for the public site. */
+  path: string;
+  seo: PageSeoMetadata;
+}
+
 export interface PageDocument {
+  /** Persisted document format version; absent in legacy documents means v1. */
+  schemaVersion?: number;
   page: string;
+  /** Route/SEO metadata from the seed is preserved across visual edits. */
+  metadata?: PageMetadata;
   blocks: Block[];
   updatedAt?: string;
 }
@@ -168,7 +184,7 @@ export function createBlock(type: BlockType): Block {
     case "proofReturn":
       return { id, type, layout: defaultLayout({ width: "full", background: "primary" }), props: { eyebrow: "Proof returns home", title: "You see how it ended.", text: "The completed work comes back to your phone as a clear update.", image: updatesArt, imageAlt: "A completed task update returning to a family member in the Gulf", items: ["A photo of the work", "The shop or worker bill", "Our fee shown separately", "A short message on WhatsApp"].map((title) => ({ id: uid(), title, text: "" })) } };
     case "serviceFilm":
-      return { id, type, layout: defaultLayout({ width: "normal", spaceTop: 4, spaceBottom: 4 }), props: { eyebrow: "Our story in two minutes", title: "The worry you carry. The help we bring.", text: "From a worried night in the Gulf to your parents cared for at home — the whole journey, scene by scene.", items: ["Elderly care visits", "Groceries and medicines", "Home and repair checks", "Photo proof after every task"].map((title) => ({ id: uid(), title, text: "" })) } };
+      return { id, type, layout: defaultLayout({ width: "normal", spaceTop: 4, spaceBottom: 4 }), props: { eyebrow: "Our story in two minutes", title: "The worry you carry. The help we bring.", text: "From a worried night in the Gulf to your parents cared for at home — the whole journey, scene by scene.", src: "/media/safar-brand-film.mp4", poster: "/media/safar-brand-film-poster.jpg", items: ["Elderly care visits", "Groceries and medicines", "Home and repair checks", "Photo proof after every task"].map((title) => ({ id: uid(), title, text: "" })) } };
     case "storyCarousel":
       return { id, type, layout: defaultLayout({ width: "normal", spaceTop: 5, spaceBottom: 5 }), props: { title: "We understand the distance.", text: "The practical needs back home do not pause while you are away.", items: [
 

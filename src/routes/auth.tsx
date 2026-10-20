@@ -1,16 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 
+import { hasCmsEditorAccess } from "../lib/page-builder/access";
 import { getSupabase, isSupabaseConfigured } from "../lib/supabase";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — SAFAR N MANZIL" },
-      { name: "description", content: "Secure sign-in to the SAFAR N MANZIL website builder." },
-      { property: "og:title", content: "Sign in — SAFAR N MANZIL" },
-      { property: "og:description", content: "Secure sign-in to the SAFAR N MANZIL website builder." },
+      { title: "Sign in — Safar Studio" },
+      { name: "description", content: "Restricted sign-in for approved SAFAR N MANZIL website editors." },
+      { property: "og:title", content: "Sign in — Safar Studio" },
+      { property: "og:description", content: "Restricted sign-in for approved website editors." },
       { property: "og:type", content: "website" },
+      { name: "robots", content: "noindex, nofollow" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
@@ -19,11 +21,9 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   if (!isSupabaseConfigured()) {
@@ -33,17 +33,15 @@ function AuthPage() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary font-display text-lg font-bold text-primary-foreground">
             S
           </div>
-          <h1 className="mt-4 font-display text-xl font-bold text-foreground">
-            Connect your database first
-          </h1>
+          <h1 className="mt-4 font-display text-xl font-bold text-foreground">Connect the database first</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            The website builder signs team members in through your own Supabase project. Link your database, then come back here to sign in.
+            Safar Studio uses your shared Supabase project for approved editor sign-in and page publishing.
           </p>
           <Link
             to="/connect"
             className="mt-6 inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90"
           >
-            Connect the database
+            Configure connection
           </Link>
         </div>
       </div>
@@ -53,22 +51,26 @@ function AuthPage() {
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     const supabase = getSupabase();
-    if (!supabase) return;
+    if (!supabase || busy) return;
+
     setBusy(true);
     setError(null);
-    setNotice(null);
     try {
-      if (mode === "sign-in") {
-        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-        if (signInError) throw signInError;
-        navigate({ to: "/builder", replace: true });
-      } else {
-        const { error: signUpError } = await supabase.auth.signUp({ email, password });
-        if (signUpError) throw signUpError;
-        setNotice("Account created. If email confirmation is enabled, check your inbox.");
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (signInError) throw signInError;
+
+      const { data, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      if (!data.user || !hasCmsEditorAccess(data.user.app_metadata?.["cms_role"])) {
+        await supabase.auth.signOut();
+        setError("This account is not provisioned as a website editor. Ask the project owner to grant CMS access.");
+        return;
       }
+
+      await navigate({ to: "/builder", replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : "Sign-in failed. Please try again.");
     } finally {
       setBusy(false);
     }
@@ -81,51 +83,45 @@ function AuthPage() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary font-display text-lg font-bold text-primary-foreground">
             S
           </div>
-          <h1 className="mt-4 font-display text-xl font-bold text-foreground">SAFAR N MANZIL</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {mode === "sign-in" ? "Sign in to the website builder" : "Create a team account"}
-          </p>
+          <p className="mt-4 text-xs font-bold uppercase tracking-[0.16em] text-primary">Safar Studio</p>
+          <h1 className="mt-2 font-display text-xl font-bold text-foreground">SAFAR N MANZIL</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Sign in with an approved editor account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">
-              Email
-            </label>
+            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">Email</label>
             <input
               id="email"
+              name="email"
               type="email"
+              autoComplete="username"
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
-              placeholder="you@safar.com"
+              placeholder="you@example.com"
             />
           </div>
           <div>
-            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-foreground">
-              Password
-            </label>
+            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-foreground">Password</label>
             <input
               id="password"
+              name="password"
               type="password"
+              autoComplete="current-password"
               required
               minLength={8}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
-              placeholder="Minimum 8 characters"
+              placeholder="Your password"
             />
           </div>
 
           {error ? (
-            <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <p role="alert" className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
               {error}
-            </p>
-          ) : null}
-          {notice ? (
-            <p className="rounded-lg bg-accent px-3 py-2 text-sm text-accent-foreground">
-              {notice}
             </p>
           ) : null}
 
@@ -134,23 +130,12 @@ function AuthPage() {
             disabled={busy}
             className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90 disabled:opacity-50"
           >
-            {busy ? "Please wait…" : mode === "sign-in" ? "Sign in" : "Create account"}
+            {busy ? "Signing in…" : "Sign in"}
           </button>
         </form>
-
-
-        <button
-          onClick={() => {
-            setMode(mode === "sign-in" ? "sign-up" : "sign-in");
-            setError(null);
-            setNotice(null);
-          }}
-          className="mt-4 w-full text-center text-sm text-muted-foreground underline-offset-2 hover:underline"
-        >
-          {mode === "sign-in"
-            ? "First time here? Create the owner account"
-            : "Already have an account? Sign in"}
-        </button>
+        <p className="mt-4 text-center text-xs leading-relaxed text-muted-foreground">
+          Access is provisioned by the project owner. Self-service account creation is not available in this studio.
+        </p>
       </div>
     </div>
   );

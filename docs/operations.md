@@ -1,33 +1,24 @@
-# Day to day
+# Operating Safar Studio
 
-## The team console
+## Routine publishing workflow
 
-| Page | What it is for |
-| --- | --- |
-| Dashboard | Today's numbers and which connections are working |
-| Website | Change every word and picture on the public site |
-| Customers | Leads, customers, their whole story |
-| Inbox | Every WhatsApp and social chat, in one place |
-| Service Requests | Jobs being done for families |
-| Website Intelligence | Where visitors come from and what they look at |
-| Finance | Invoices, payments, expenses, what is owed |
-| Vendors & Partners | People who do the work |
-| Business Knowledge | Services, prices, areas, hours, answers |
-| Automations | Small jobs that happen on their own |
-| Social | Accounts and planned posts |
-| Settings | Connections, look, rules, lead points |
+1. Sign in with an explicitly provisioned CMS editor account.
+2. Select the page and load its shared draft or published document.
+3. Edit the page and save a draft.
+4. Review the public page separately.
+5. Publish only after validation succeeds.
+6. Verify the resulting public page and publication version; record any issue before editing further.
 
-## Normal week
+The publishing RPC checks the expected version and writes the published document and a revision in one transaction. A stale version is a conflict requiring a reload/review, not a reason to force a write.
 
-- Morning: open the Dashboard, clear unread messages, call the hot leads.
-- Any new enquiry becomes a lead by itself, with its source recorded.
-- When a job is agreed, open a service request and assign a partner.
-- When it is done, raise the invoice and record the payment.
-- Quiet customers show up on their own after 7 days; after 30 days they
-  are counted as lost. Both numbers can be changed in Settings.
+## Releases and maintenance
 
-## When something goes wrong
+- Confirm the GitHub Actions run for the exact commit and check the matching Vercel deployment.
+- Apply Supabase migrations independently after schema/RLS review and backup.
+- Keep server-only variables in Vercel's server environment. Never expose a database password or webhook secret in a `VITE_*` variable.
+- Inspect Vercel runtime/build logs and Supabase Auth/database logs after substantial changes.
+- Verify backups and rehearse restoration before relying on production data for recovery.
 
-Nothing on the website depends on an outside service. If WhatsApp or a
-social account is down, the website keeps working, the enquiry is still
-saved, and the message is kept as "not delivered" — never shown as sent.
+## Supported product scope
+
+This repository currently ships a public website and its visual publishing studio. Older docs may refer to CRM, finance, inbox, social publishing and automations; those workspaces are not present in the current route tree. The inbound WhatsApp endpoint is an optional adapter that requires separately provisioned legacy business tables and explicit server-side authentication.

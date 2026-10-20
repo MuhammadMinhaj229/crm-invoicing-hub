@@ -7,11 +7,11 @@ import { generalEnquiryMessage } from "../../lib/whatsapp/templates";
 import { submitWebsiteEnquiry } from "../../lib/website-capture";
 import { track } from "../../lib/analytics";
 import type { Block, BlockLayout, ButtonItem } from "../../lib/page-builder/model";
+import { isSafeHref } from "../../lib/page-builder/safe-url";
 import { cn } from "../../lib/utils";
 import { StoryCarousel } from "../site/story-carousel";
 import { InvoiceExample } from "../site/invoice-example";
 import { ServiceFilm } from "../site/service-film";
-import { brandFilm, brandFilmPoster } from "../../lib/media";
 
 
 /* ---------- editing context ---------- */
@@ -80,13 +80,16 @@ export function useResolveHref() {
   const contact = useSiteContact();
   return (href: string): { url: string; external: boolean } => {
     const h = href.trim();
+    // Editor previews render user-authored props before publication validation.
+    // Reject unsafe schemes here too, rather than relying only on the save path.
+    if (!isSafeHref(h)) return { url: "#", external: false };
     if (h === "whatsapp") {
       const url = buildWhatsAppUrl(contact.whatsapp, generalEnquiryMessage());
       return url ? { url, external: true } : { url: "/contact", external: false };
     }
     if (h === "phone") return { url: buildTelUrl(contact.phone) ?? "/contact", external: false };
     if (h === "email") return { url: buildMailUrl(contact.email, "Help for my family") ?? "/contact", external: false };
-    if (/^https?:\/\//.test(h)) return { url: h, external: true };
+    if (h.toLowerCase().startsWith("http://") || h.toLowerCase().startsWith("https://")) return { url: h, external: true };
     return { url: h || "#", external: false };
   };
 }
@@ -393,8 +396,8 @@ function BlockBody({ block }: { block: Block }) {
       const p = block.props;
       return (
         <ServiceFilm
-          src={brandFilm.url}
-          poster={brandFilmPoster.url}
+          src={p.src}
+          poster={p.poster}
           eyebrow={p.eyebrow}
           title={p.title}
           text={p.text}
@@ -471,8 +474,17 @@ function BlockBody({ block }: { block: Block }) {
                 </>
               );
               const cls = "soft-card block p-6";
-              return c.href && !editing ? (
-                <a key={c.id} href={c.href} className={cn(cls, "transition hover:-translate-y-0.5")}>
+              const href = c.href?.trim() ?? "";
+              const safeHref = href && isSafeHref(href) ? href : null;
+              const external = Boolean(safeHref && (safeHref.toLowerCase().startsWith("http://") || safeHref.toLowerCase().startsWith("https://")));
+              return safeHref && !editing ? (
+                <a
+                  key={c.id}
+                  href={safeHref}
+                  {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  onClick={() => track("cta.clicked", { label: c.title, href: safeHref })}
+                  className={cn(cls, "transition hover:-translate-y-0.5")}
+                >
                   {inner}
                 </a>
               ) : (
