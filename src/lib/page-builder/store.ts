@@ -104,6 +104,8 @@ export async function fetchPublishedDocument(page: string): Promise<PageDocument
 }
 
 export async function fetchDocumentState(page: string): Promise<DocumentState> {
+  // Local storage is an untrusted, fallible cache: malformed JSON must not
+  // prevent the editor from opening or recovering from the cloud copy.
   const local = readLocal(LOCAL(page));
   const supabase = getSupabase();
 
@@ -186,7 +188,6 @@ export async function saveDocumentDraft(doc: PageDocument): Promise<"cloud" | "l
       // Browser storage is only a convenience; shared persistence is attempted below.
     }
   }
-
   const supabase = getSupabase();
   if (!supabase) return "local";
 
