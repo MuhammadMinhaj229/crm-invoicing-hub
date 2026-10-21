@@ -1,35 +1,32 @@
-import { site } from "../../content/site";
-import { services } from "../../content/services";
-import { faqs } from "../../content/faqs";
-import type { ServiceDefinition } from "../../types/service";
+import { blueprint, faqsForDocument, services, type ServiceSummary } from "../site/blueprint";
+import type { PageDocument } from "../page-builder/model";
 
 /**
- * Structured data is generated from the same content layer the pages render,
- * so a schema can never claim something the visitor does not see.
- * Fields with no real value are omitted rather than filled with placeholders.
+ * Structured data generated from the same seed/published documents the pages
+ * render. Fields without a real value are omitted, never invented.
  */
 export function organizationSchema() {
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: site.brand.name,
-    description: site.brand.description,
-    slogan: site.brand.motto,
+    name: blueprint.brand.name,
   };
-  if (site.contact.email) schema['email'] = site.contact.email;
-  if (site.contact.phone) schema['telephone'] = site.contact.phone;
-  if (site.serviceAreas.length) schema['areaServed'] = site.serviceAreas;
+  if (blueprint.brand.description) schema["description"] = blueprint.brand.description;
+  if (blueprint.brand.motto) schema["slogan"] = blueprint.brand.motto;
+  if (blueprint.contact.email) schema["email"] = blueprint.contact.email;
+  if (blueprint.contact.phone) schema["telephone"] = blueprint.contact.phone;
+  if (blueprint.serviceAreas.length) schema["areaServed"] = blueprint.serviceAreas;
   return schema;
 }
 
-export function serviceSchema(service: ServiceDefinition) {
+export function serviceSchema(service: ServiceSummary) {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
     name: service.title,
     description: service.description,
     serviceType: service.title,
-    provider: { "@type": "Organization", name: site.brand.name },
+    provider: { "@type": "Organization", name: blueprint.brand.name },
   };
 }
 
@@ -42,16 +39,18 @@ export function serviceListSchema() {
       position: index + 1,
       name: service.title,
       description: service.shortDescription,
-      url: `/services/${service.slug}`,
+      url: service.path,
     })),
   };
 }
 
-export function faqSchema() {
+export function faqSchema(document: PageDocument | null) {
+  const items = faqsForDocument(document);
+  if (!items.length) return null;
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map((item) => ({
+    mainEntity: items.map((item) => ({
       "@type": "Question",
       name: item.question,
       acceptedAnswer: { "@type": "Answer", text: item.answer },

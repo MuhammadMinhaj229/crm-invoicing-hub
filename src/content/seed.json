@@ -62,6 +62,42 @@
       "primary": "Ask for help now",
       "whatsapp": "Message us on WhatsApp",
       "call": "Call us"
+    },
+    "messages": {
+      "enquiry": [
+        "I live in the Gulf and I need help for my family in India.",
+        "Please tell me how you can help and what it costs."
+      ],
+      "service": "Please tell me what you need from me and what it will cost.",
+      "emailSubject": "Help for my family"
+    },
+    "header": {
+      "rotatingMessages": [
+        "We do...",
+        "We assist...",
+        "We provide...",
+        "We are always here...",
+        "We are always with you..."
+      ]
+    },
+    "footer": {
+      "legal": "© SAFAR N MANZIL. All rights reserved.",
+      "teamLoginLabel": "Team login",
+      "exploreLabel": "Explore",
+      "contactLabel": "Reach us"
+    },
+    "forms": {
+      "namePlaceholder": "Your name",
+      "phonePlaceholder": "Your WhatsApp number",
+      "cityPlaceholder": "Family's city in India",
+      "needPlaceholder": "What does your family need?",
+      "successMessage": "Thank you — we will message you soon.",
+      "errorMessage": "We could not save this right now. Please message us on WhatsApp."
+    },
+    "seo": {
+      "siteName": "SAFAR N MANZIL",
+      "defaultTitle": "Safar N manzil — Your care, carried home",
+      "defaultDescription": "Practical help for your family in India, coordinated while you live in the Gulf—with the plan, price and proof shared clearly."
     }
   },
   "theme": {
