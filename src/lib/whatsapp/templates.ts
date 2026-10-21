@@ -1,4 +1,4 @@
-import { site } from "../../content/site";
+import { blueprint } from "../site/blueprint";
 
 export interface EnquiryFields {
   name?: string | undefined;
@@ -13,37 +13,27 @@ function lines(parts: (string | false | undefined)[]): string {
   return parts.filter(Boolean).join("\n");
 }
 
-/** A short opener used by header, hero and floating buttons. */
+/** A short opener used by header, hero and floating buttons (wording from seed). */
 export function generalEnquiryMessage(): string {
-  return lines([
-    `Hello ${site.brand.name},`,
-    "",
-    "I live in the Gulf and I need help for my family in India.",
-    "Please tell me how you can help and what it costs.",
-  ]);
+  return lines([`Hello ${blueprint.brand.name},`, "", ...blueprint.messages.enquiry]);
 }
 
 /** Opener for a specific service page. */
 export function serviceEnquiryMessage(serviceTitle: string): string {
-  return lines([
-    `Hello ${site.brand.name},`,
-    "",
-    `I need help with: ${serviceTitle}`,
-    "Please tell me what you need from me and what it will cost.",
-  ]);
+  return lines([`Hello ${blueprint.brand.name},`, "", `I need help with: ${serviceTitle}`, blueprint.messages.service]);
 }
 
-/** Full structured message composed from the contact form. */
+/** Full structured message composed from a contact form. */
 export function detailedEnquiryMessage(fields: EnquiryFields): string {
   return lines([
-    `Hello ${site.brand.name},`,
+    `Hello ${blueprint.brand.name},`,
     "",
     fields.name && `Name: ${fields.name}`,
-    fields.livingIn && `I live in: ${fields.livingIn}`,
-    fields.familyCity && `My family is in: ${fields.familyCity}`,
-    fields.service && `Help needed: ${fields.service}`,
+    fields.livingIn && `Location: ${fields.livingIn}`,
+    fields.familyCity && `City: ${fields.familyCity}`,
+    fields.service && `Service: ${fields.service}`,
     fields.urgency && `How soon: ${fields.urgency}`,
     "",
-    fields.message ? `Details: ${fields.message}` : "Please tell me how you can help.",
+    fields.message ? `Details: ${fields.message}` : blueprint.messages.enquiry.at(-1),
   ]);
 }

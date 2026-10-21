@@ -3,16 +3,14 @@
  *
  * WHY: every UI component reads business facts through these types so that
  * contact details, navigation and legal copy exist in exactly one place
- * (`src/content/site.ts`) and can later be swapped for a CMS row without
+ * (`src/content/seed.json`) and can later be swapped for a CMS row without
  * touching presentation code.
  */
 
-import type { LinkProps } from "@tanstack/react-router";
-
 export interface NavigationItem {
   label: string;
-  /** Typed against the generated route tree so dead links fail at build time. */
-  href: NonNullable<LinkProps["to"]>;
+  /** Site path declared in seed.json. */
+  href: string;
   /** Short line used in the mobile drawer. */
   hint?: string;
 }
