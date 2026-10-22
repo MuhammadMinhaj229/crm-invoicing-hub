@@ -285,13 +285,15 @@ export function defaultDocument(page: string): PageDocument {
   }
 
   if (page.startsWith("service:")) {
-    const sv = services.find((x) => `service:${x.slug}` === page);
+    const sv = (services as any[]).find((x) => `service:${x.slug}` === page);
     if (sv) {
+      const processList = Array.isArray(sv.process) ? sv.process : [];
+      const deliverablesList = Array.isArray(sv.deliverables) ? sv.deliverables : [];
       return b([
         { id: uid(), type: "heading", layout: defaultLayout({ spaceTop: 4 }), props: { eyebrow: "Service", text: sv.title, level: "h1" } },
         { id: uid(), type: "text", layout: defaultLayout({ spaceTop: 0 }), props: { text: sv.description } },
-        { id: uid(), type: "cards", layout: defaultLayout(), props: { title: "How it works", subtitle: "", columns: 3, items: sv.process.map((p) => ({ id: uid(), title: `${p.step}. ${p.title}`, text: p.description })) } },
-        { id: uid(), type: "cards", layout: defaultLayout({ background: "muted" }), props: { title: "What you get", subtitle: sv.pricingNote, columns: 2, items: sv.deliverables.map((d) => ({ id: uid(), title: d, text: "" })) } },
+        { id: uid(), type: "cards", layout: defaultLayout(), props: { title: "How it works", subtitle: "", columns: 3, items: processList.map((p: any) => ({ id: uid(), title: `${p.step}. ${p.title}`, text: p.description })) } },
+        { id: uid(), type: "cards", layout: defaultLayout({ background: "muted" }), props: { title: "What you get", subtitle: sv.pricingNote ?? "", columns: 2, items: deliverablesList.map((d: any) => ({ id: uid(), title: String(d), text: "" })) } },
         createBlock("contactStrip"),
       ]);
     }
@@ -345,29 +347,37 @@ export function isPageDocument(value: unknown): value is PageDocument {
   const validTypes = new Set<string>([...BLOCK_LIBRARY.map((block) => block.type), "navigation"]);
   const ids = new Set<string>();
 
-  for (const candidate of doc.blocks) {
+  for (const candidate of (doc.blocks as unknown[])) {
     if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) return false;
     const block = candidate as Record<string, unknown>;
-    if (typeof block.id !== "string" || block.id.length === 0 || block.id.length > 120) return false;
-    if (ids.has(block.id)) return false;
-    ids.add(block.id);
+    const blockId = block["id"];
+    if (typeof blockId !== "string" || blockId.length === 0 || blockId.length > 120) return false;
+    if (ids.has(blockId)) return false;
+    ids.add(blockId);
 
-    if (typeof block.type !== "string" || !validTypes.has(block.type)) return false;
-    if (!block.props || typeof block.props !== "object" || Array.isArray(block.props)) return false;
+    const blockType = block["type"];
+    if (typeof blockType !== "string" || !validTypes.has(blockType)) return false;
+    const blockProps = block["props"];
+    if (!blockProps || typeof blockProps !== "object" || Array.isArray(blockProps)) return false;
 
-    const layout = block.layout;
+    const layout = block["layout"];
     if (!layout || typeof layout !== "object" || Array.isArray(layout)) return false;
     const l = layout as Record<string, unknown>;
-    if (!["left", "center", "right"].includes(String(l.align))) return false;
-    if (!["narrow", "normal", "full"].includes(String(l.width))) return false;
-    if (!["none", "muted", "card", "primary", "accent"].includes(String(l.background))) return false;
-    if (typeof l.spaceTop !== "number" || !Number.isFinite(l.spaceTop) || l.spaceTop < 0 || l.spaceTop > 6) return false;
-    if (typeof l.spaceBottom !== "number" || !Number.isFinite(l.spaceBottom) || l.spaceBottom < 0 || l.spaceBottom > 6) return false;
-    if (typeof l.hideMobile !== "boolean" || typeof l.hideDesktop !== "boolean") return false;
+    if (!["left", "center", "right"].includes(String(l["align"]))) return false;
+    if (!["narrow", "normal", "full"].includes(String(l["width"]))) return false;
+    if (!["none", "muted", "card", "primary", "accent"].includes(String(l["background"]))) return false;
+    const spaceTop = l["spaceTop"];
+    if (typeof spaceTop !== "number" || !Number.isFinite(spaceTop) || spaceTop < 0 || spaceTop > 6) return false;
+    const spaceBottom = l["spaceBottom"];
+    if (typeof spaceBottom !== "number" || !Number.isFinite(spaceBottom) || spaceBottom < 0 || spaceBottom > 6) return false;
+    if (typeof l["hideMobile"] !== "boolean" || typeof l["hideDesktop"] !== "boolean") return false;
 
-    if (block.anchor !== undefined && (typeof block.anchor !== "string" || block.anchor.length > 120)) return false;
-    if (block.hidden !== undefined && typeof block.hidden !== "boolean") return false;
-    if (block.locked !== undefined && typeof block.locked !== "boolean") return false;
+    const anchor = block["anchor"];
+    if (anchor !== undefined && (typeof anchor !== "string" || anchor.length > 120)) return false;
+    const hidden = block["hidden"];
+    if (hidden !== undefined && typeof hidden !== "boolean") return false;
+    const locked = block["locked"];
+    if (locked !== undefined && typeof locked !== "boolean") return false;
   }
 
   if (doc.updatedAt !== undefined && typeof doc.updatedAt !== "string") return false;
