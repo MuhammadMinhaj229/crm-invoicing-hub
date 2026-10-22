@@ -121,7 +121,7 @@ function ServiceDetail() {
         <Reveal>
           <h2 className="font-display text-2xl font-bold">What is included</h2>
           <ul className="mt-4 space-y-3">
-            {service.features.map((feature) => (
+            {service.features.map((feature: string) => (
               <li key={feature} className="flex gap-3 text-muted-foreground">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
                 <span>{feature}</span>
@@ -133,7 +133,7 @@ function ServiceDetail() {
         <Reveal delay={80}>
           <h2 className="font-display text-2xl font-bold">What comes back to you</h2>
           <ul className="mt-4 space-y-3">
-            {service.deliverables.map((item) => (
+            {service.deliverables.map((item: string) => (
               <li key={item} className="flex gap-3 text-muted-foreground">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
                 <span>{item}</span>
@@ -147,7 +147,7 @@ function ServiceDetail() {
         <div className="mx-auto max-w-6xl px-5">
           <h2 className="font-display text-2xl font-bold">How one job goes</h2>
           <ol className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {service.process.map((step, index) => (
+            {service.process.map((step: any, index: number) => (
               <Reveal as="li" key={step.step} delay={index * 70}>
                 <div className="h-full rounded-2xl border border-border bg-background p-5">
                   <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground">
