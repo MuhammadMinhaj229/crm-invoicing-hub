@@ -10,7 +10,7 @@
 
 ---
 
-## ✨ Key Capabilities
+## Key Capabilities
 
 - **In-Place Visual Editing:** Powered by `@puckeditor/core` and Drag-and-Drop Kit (`@dnd-kit`), owners can click any section, reorder blocks, and alter copy directly on their screen.
 - **Supabase Cloud Sync:** Page schemas, published revisions, and media assets are stored safely with Row-Level Security (RLS) in PostgreSQL.
@@ -20,7 +20,7 @@
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend:** React, Vite, TanStack Router, Tailwind CSS, Lucide Icons
 - **Visual Builder:** `@puckeditor/core`, `@dnd-kit/core`, `@dnd-kit/sortable`
@@ -29,7 +29,7 @@
 
 ---
 
-## 💻 Local Development Setup
+## Local Development Setup
 
 ### Prerequisites
 - Node.js `18.x` or higher (or `bun`)
@@ -64,7 +64,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
-## 🚀 How to Deploy to Vercel
+## How to Deploy to Vercel
 
 1. Push your repository to GitHub.
 2. In the **[Vercel Dashboard](https://vercel.com/)**, click **Add New Project** and select `crm-invoicing-hub`.
@@ -79,6 +79,6 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
-## 👤 Author & Support
+## Author & Support
 Engineered by **Mohammed Minhaj Mahmood** for SAFAR N MANZIL & Alif Growth Media.  
-For technical support or customization: [hello.alifstudio@gmail.com](mailto:hello.alifstudio@gmail.com).
+For technical support or customization: [minhajmuhammad229@gmail.com](mailto:minhajmuhammad229@gmail.com).
