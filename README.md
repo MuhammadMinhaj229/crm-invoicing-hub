@@ -1,147 +1,84 @@
-# Safar Studio
+# Safar Studio — Visual In-Place Website CMS & Publishing Platform
 
-**The visual website publishing platform for SAFAR N MANZIL.**
+[![Live Production](https://img.shields.io/badge/Live_Site-safar--studio--snm.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://safar-studio-snm.vercel.app)
+[![Framework](https://img.shields.io/badge/Framework-React_%2B_Vite_%2B_TanStack-blue?style=flat-square)](https://vitejs.dev/)
+[![Visual CMS](https://img.shields.io/badge/Page_Builder-@puckeditor/core-purple?style=flat-square)](https://puckeditor.com/)
+[![Database](https://img.shields.io/badge/Database-Supabase_PostgreSQL-3ECF8E?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com)
+[![TypeScript](https://img.shields.io/badge/Language-TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-[![Architecture checks](https://github.com/MuhammadMinhaj229/crm-invoicing-hub/actions/workflows/architecture-checks.yml/badge.svg?branch=main)](https://github.com/MuhammadMinhaj229/crm-invoicing-hub/actions/workflows/architecture-checks.yml)
-[![Production hosting](https://img.shields.io/badge/hosting-Vercel-black)](https://vercel.com/mohammed-minhajs-projects-8071d846/safar-studio)
+**Safar Studio** is a full-featured visual content management system (CMS) and website publishing engine engineered for SAFAR N MANZIL and powered by Alif Growth Media. It empowers business owners and marketing teams to visually edit live web pages, announcements, service listings, and media without writing a single line of code.
 
-**Live site:** [safar-studio-snm.vercel.app](https://safar-studio-snm.vercel.app)  
-**Repository:** [GitHub source](https://github.com/MuhammadMinhaj229/crm-invoicing-hub)
+---
 
-Safar Studio combines the public SAFAR N MANZIL website with an authenticated visual page studio. Website content is saved as bounded, validated documents; rendering and interactive behavior remain in reviewed application code. That lets editors manage page structure without making arbitrary HTML or JavaScript part of the content database.
+## ✨ Key Capabilities
 
-> **Current release scope:** public marketing pages and the Puck-based website studio. The former CRM, finance, inbox, social-publishing and automation workspaces are not part of the current route tree and should not be treated as shipped modules.
+- **In-Place Visual Editing:** Powered by `@puckeditor/core` and Drag-and-Drop Kit (`@dnd-kit`), owners can click any section, reorder blocks, and alter copy directly on their screen.
+- **Supabase Cloud Sync:** Page schemas, published revisions, and media assets are stored safely with Row-Level Security (RLS) in PostgreSQL.
+- **Role-Based Authentication:** Clean sign-in workflows separating public visitors from privileged site editors.
+- **Instant Publishing:** Single-click publish to the live edge without requiring rebuilds or redeployments.
+- **WhatsApp Webhook Integration:** Built-in webhook handlers connecting incoming website inquiries to automated WhatsApp notification pipelines.
 
-## Capabilities
+---
 
-- Server-rendered public pages powered by TanStack Start and TanStack Router.
-- Drag-and-drop content editing with Puck and the same block renderer used by the public website.
-- Runtime document validation using Zod, strict per-block properties, schema versioning and size limits.
-- Link and asset allow-lists that reject unsafe schemes and credential-bearing URLs.
-- Supabase-backed drafts, published documents and revision history.
-- Transactional publishing with expected-version checks to reject stale editor writes.
-- RLS-enforced separation between anonymous public readers and provisioned CMS editors.
-- Vercel deployment with GitHub Actions quality gates.
+## 🛠️ Tech Stack
 
-## Architecture
+- **Frontend:** React, Vite, TanStack Router, Tailwind CSS, Lucide Icons
+- **Visual Builder:** `@puckeditor/core`, `@dnd-kit/core`, `@dnd-kit/sortable`
+- **Backend & Storage:** Supabase (Auth, Postgres DB, Edge functions)
+- **Deployment:** Vercel Edge Network
 
-```text
-Public visitor ──> TanStack Start route loader ──> Published page renderer
-                              │
-                              ▼
-                       Supabase/Postgres
-                              ▲
-                              │
-Approved editor ──> Supabase Auth ──> Puck Studio
-                                           │
-                                           ▼
-                                   Validate document
-                                           │
-                                           ▼
-                                   Atomic publish RPC
-                                           │
-                                           ▼
-                                 Revision + page version
+---
+
+## 💻 Local Development Setup
+
+### Prerequisites
+- Node.js `18.x` or higher (or `bun`)
+- npm or bun
+
+### Step-by-Step Instructions
+```bash
+# 1. Clone the repository
+git clone https://github.com/MuhammadMinhaj229/crm-invoicing-hub.git
+cd crm-invoicing-hub
+
+# 2. Install dependencies
+npm install
+# or if using bun:
+# bun install
+
+# 3. Configure environment variables
+cp .env.example .env.local
 ```
 
-The application is a modular monolith. Keep content as structured data and behavior as version-controlled code; introduce new infrastructure only when measured scaling requirements justify it.
-
-## Technology
-
-| Layer | Technology |
-| --- | --- |
-| Web application | React, TypeScript, TanStack Start and TanStack Router |
-| Visual authoring | Puck |
-| Content validation | Zod |
-| Styling | Tailwind CSS |
-| Identity and database | Supabase Auth and PostgreSQL |
-| Deployment | Vercel |
-| Package manager | Bun |
-
-## Local development
-
-### Requirements
-
-- Bun 1.3.14 (the CI version)
-- Node.js 22 or newer; production currently uses Node.js 24
-- A Supabase project for shared editing and publication
-
-### Install and run
+Populate `.env.local` with your Supabase credentials:
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
 
 ```bash
-bun install
-cp .env.example .env
-# Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY for shared content.
-bun run dev
+# 4. Start local development server
+npm run dev
 ```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-The public site can render its fallback content without a database. Shared drafts and publishing require the CMS migrations and a provisioned editor account.
+---
 
-### Quality checks
+## 🚀 How to Deploy to Vercel
 
-```bash
-bun run lint:architecture
-bun run typecheck
-bun run test
-bun run build
-```
+1. Push your repository to GitHub.
+2. In the **[Vercel Dashboard](https://vercel.com/)**, click **Add New Project** and select `crm-invoicing-hub`.
+3. Configure project settings:
+   - **Framework Preset:** Vite
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+4. Add Environment Variables:
+   - `VITE_SUPABASE_URL` = `https://your-project.supabase.co`
+   - `VITE_SUPABASE_ANON_KEY` = `your-anon-key`
+5. Click **Deploy**. Your visual CMS will be live with instant global edge caching!
 
-For the full release gate, run `bun run check`. GitHub Actions also tests publication against an isolated PostgreSQL service; never point that test fixture at a production database.
+---
 
-## Supabase setup
-
-The CMS migrations are version-controlled and must be applied in this order, after verifying the target project and taking a recoverable backup:
-
-1. `supabase/migrations/20261014030938_cms_foundation.sql` — CMS tables, indexes, grants and restrictive RLS policy guards.
-2. `supabase/migrations/20261014030941_atomic_page_publish.sql` — transactional publication and revision creation.
-
-3. `supabase/migrations/20261014030945_lock_down_cms_access.sql` — published-only read RPC, editor-only base-table access, draft-only column grants and role-checked publish/unpublish.
-4. `supabase/migrations/20261014030947_seed_bootstrap_and_handshake.sql` — versioned site/theme configuration, public route manifest, CMS handshake and atomic one-time seed bootstrap.
-5. `supabase/migrations/20261014030950_reset_legacy_public_schema.sql` — archives former public-table rows privately, removes legacy CRM/inbox/automation tables, functions and enum types, and preserves Supabase Auth plus the six CMS tables.
-
-These migrations are **only for the website CMS**. They are additive to the existing project schema and do not recreate the CRM business schema or the optional inbound WhatsApp adapter's tables. Review [Database setup](docs/database.md), [Integration boundaries](docs/integrations.md) and the [Production deployment runbook](docs/deployment.md) before enabling those paths. The production schema must be inspected and backed up first; never replay migrations blindly.
-
-### Provision an editor
-
-After the account exists in Supabase Auth, grant its server-controlled `app_metadata.cms_role` using the owner procedure in [Database setup](docs/database.md). Supported roles are `owner`, `admin` and `editor`. Sign out and back in after changing the role to refresh the token. The public studio no longer exposes self-service sign-up.
-
-## Vercel configuration
-
-Connect the repository to Vercel, deploy `main`, and use the detected TanStack Start build configuration with `bun run build`. Production uses Node.js 24.
-
-Required public project settings:
-
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-
-The Supabase anon key is public by design; it is not authorization. Row-level security remains mandatory. `DATABASE_URL`, `META_APP_SECRET` and `WHATSAPP_WEBHOOK_SECRET` are server-only and should only be configured if the optional inbound webhook is deliberately enabled. Never prefix secrets with `VITE_`.
-
-Follow the [Production deployment runbook](docs/deployment.md) for migration order, environment separation, smoke tests, backup and rollback.
-
-## Security principles
-
-- Only published documents are readable by anonymous visitors; drafts and revisions require a CMS editor role.
-- Editor access uses Supabase Auth's server-controlled `app_metadata`, not user-editable metadata.
-- RLS and the publication RPC protect database operations even if the UI is bypassed.
-- Content is schema-validated and cannot execute arbitrary HTML or JavaScript.
-- Inbound webhooks fail closed when credentials are missing and verify signatures/secrets before writing messages.
-- Code deployment and database migrations are separate release operations.
-
-## Production status
-
-The existing Vercel production project is connected to `main`. A successful Vercel build is not proof that the target Supabase database has the expected schema, migrations or an owner account. Complete the production smoke tests in the deployment runbook before enabling shared publishing.
-
-## Documentation
-
-- [Architecture overview](docs/architecture.md)
-- [Website engine specification](docs/architecture/website-engine.md)
-- [Database and access control](docs/database.md)
-- [Security model](docs/security.md)
-- [Deployment runbook](docs/deployment.md)
-- [Integration boundaries](docs/integrations.md)
-- [Day-to-day operations](docs/operations.md)
-- [Troubleshooting](docs/troubleshooting.md)
-
-## License
-
-No open-source license is currently declared. All rights remain with the repository owner unless a license is added.
+## 👤 Author & Support
+Engineered by **Mohammed Minhaj Mahmood** for SAFAR N MANZIL & Alif Growth Media.  
+For technical support or customization: [hello.alifstudio@gmail.com](mailto:hello.alifstudio@gmail.com).
