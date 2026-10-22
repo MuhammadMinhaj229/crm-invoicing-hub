@@ -39,7 +39,7 @@ export const Route = createFileRoute("/services/$slug")({
       ],
       links: [{ rel: "canonical", href: loaderData.publishedDocument?.metadata?.path ?? `/services/${params.slug}` }],
       scripts: [
-        { type: "application/ld+json", children: JSON.stringify(serviceSchema(service)) },
+        { type: "application/ld+json", children: JSON.stringify(serviceSchema({ ...service, path: `/services/${service.slug}` })) },
         {
           type: "application/ld+json",
           children: JSON.stringify(
