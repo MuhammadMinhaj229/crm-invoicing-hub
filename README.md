@@ -10,6 +10,20 @@
 
 ---
 
+## Architecture Flow
+
+```mermaid
+flowchart TD
+    Admin["Administrator / Content Editor"] --> Auth["Role-Based Authentication (Supabase)"]
+    Auth --> Editor["Puck Visual Page Builder Canvas"]
+    Editor --> Schema["JSON Document Schema & Component Blocks"]
+    Schema --> Postgres[("PostgreSQL Schema Storage")]
+    Postgres --> Revalidate["Instant Edge Cache Invalidation"]
+    Revalidate --> Storefront["Live Public Web Storefront"]
+```
+
+---
+
 ## Key Capabilities
 
 - **In-Place Visual Editing:** Powered by `@puckeditor/core` and Drag-and-Drop Kit (`@dnd-kit`), owners can click any section, reorder blocks, and alter copy directly on their screen.
