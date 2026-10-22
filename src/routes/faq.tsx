@@ -41,7 +41,7 @@ export const Route = createFileRoute("/faq")({
     ],
     links: [{ rel: "canonical", href: loaderData?.publishedDocument?.metadata?.path ?? "/faq" }],
     scripts: [
-      { type: "application/ld+json", children: JSON.stringify(faqSchema()) },
+      { type: "application/ld+json", children: JSON.stringify(faqSchema(loaderData?.publishedDocument ?? null)) },
       {
         type: "application/ld+json",
         children: JSON.stringify(
