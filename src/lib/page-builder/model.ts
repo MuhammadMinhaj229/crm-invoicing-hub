@@ -292,8 +292,8 @@ export function defaultDocument(page: string): PageDocument {
       return b([
         { id: uid(), type: "heading", layout: defaultLayout({ spaceTop: 4 }), props: { eyebrow: "Service", text: sv.title, level: "h1" } },
         { id: uid(), type: "text", layout: defaultLayout({ spaceTop: 0 }), props: { text: sv.description } },
-        { id: uid(), type: "cards", layout: defaultLayout(), props: { title: "How it works", subtitle: "", columns: 3, items: processList.map((p) => ({ id: uid(), title: `${p.step}. ${p.title}`, text: p.description })) } },
-        { id: uid(), type: "cards", layout: defaultLayout({ background: "muted" }), props: { title: "What you get", subtitle: sv.pricingNote ?? "", columns: 2, items: deliverablesList.map((d) => ({ id: uid(), title: String(d), text: "" })) } },
+        { id: uid(), type: "cards", layout: defaultLayout(), props: { title: "How it works", subtitle: "", columns: 3, items: (sv.process || []).map((p: ServiceProcessStep) => ({ id: uid(), title: `${p.step}. ${p.title}`, text: p.description })) } },
+        { id: uid(), type: "cards", layout: defaultLayout({ background: "muted" }), props: { title: "What you get", subtitle: sv.pricingNote ?? "", columns: 2, items: (sv.deliverables || []).map((d: string) => ({ id: uid(), title: d, text: "" })) } },
         createBlock("contactStrip"),
       ]);
     }
