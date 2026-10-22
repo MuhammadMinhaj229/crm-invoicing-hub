@@ -1,4 +1,26 @@
-import type { ServiceDefinition } from "../types/service";
+export interface ServiceProcessStep {
+  step: number;
+  title: string;
+  description: string;
+}
+
+export interface ServiceDefinition {
+  id: string;
+  slug: string;
+  title: string;
+  shortDescription: string;
+  description: string;
+  icon?: string;
+  features: string[];
+  deliverables: string[];
+  process: ServiceProcessStep[];
+  pricingNote?: string;
+  seo: {
+    title: string;
+    description: string;
+  };
+}
+
 
 /**
  * Canonical service catalogue. The homepage, the services pages, the WhatsApp
